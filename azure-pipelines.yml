@@ -40,7 +40,7 @@ jobs:
       - powershell: New-Item -Type Directory -Force ${env:VCPKG_DEFAULT_BINARY_CACHE}
       - task: Cache@2
         inputs:
-          key: "2023-06 | vcpkg | x64"
+          key: "2023-07 | vcpkg | x64"
           path: $(vcpkg.default.binary.cache)
 
       - task: run-vcpkg@0
@@ -51,6 +51,7 @@ jobs:
           VCPKG_DEFAULT_TRIPLET: x64-windows
 
       - powershell: vcpkg integrate install
+      - powershell: nuget restore App1.sln
 
       - task: VSBuild@1
         inputs:

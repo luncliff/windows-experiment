@@ -22,10 +22,10 @@ configuration:
   - debug
   # - release
 
-cache:
-  - c:/tools/vcpkg/downloads
-  - c:/tools/vcpkg/caches
-  - C:/Program Files (x86)/Microsoft SDKs/NuGetPackages
+# cache:
+#   - c:/tools/vcpkg/downloads
+#   - c:/tools/vcpkg/caches
+#   - C:/Program Files (x86)/Microsoft SDKs/NuGetPackages
 
 environment:
   global:
@@ -37,7 +37,7 @@ install:
 
 before_build:
   - ps: New-Item -Type Directory -Force -Path "${env:VCPKG_DEFAULT_BINARY_CACHE}"
-  - ps: vcpkg install --triplet=x64-windows spdlog
+  - ps: vcpkg install --triplet=x64-windows spdlog protobuf directxtex[tools] directxtk[tools] directxmesh[tools]
   - ps: vcpkg integrate install
 
 build:
