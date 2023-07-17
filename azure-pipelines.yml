@@ -1,0 +1,62 @@
+#
+# References
+#   https://github.com/actions/virtual-environments/blob/main/images/win/Windows2022-Readme.md
+#
+
+trigger:
+  branches:
+    exclude:
+      - docs
+      - gh-pages
+
+schedules:
+  - cron: "10 4 * * 6"
+    displayName: "Weekly"
+    branches:
+      include:
+        - main
+
+variables:
+  - name: vcpkg.commit
+    value: "f6a5d4e8eb7476b8d7fc12a56dff300c1c986131" # tag 2023.06.20
+  - name: vcpkg.feature.flags
+    value: "registries,binarycaching,manifests"
+  - name: vcpkg.default.binary.cache
+    value: $(Build.BinariesDirectory)/vcpkg-caches
+  - name: vcpkg.downloads
+    value: $(Build.BinariesDirectory)/vcpkg-caches
+
+jobs:
+  - job: Build
+    pool:
+      vmImage: "windows-2022" 
+    # strategy:
+    #   matrix:
+    #     release_x64:
+    #       build.platform: x64
+    #       build.configuration: Release
+    #       vcpkg.target.triplet: x64-windows
+    steps:
+      - powershell: New-Item -Type Directory -Force ${env:VCPKG_DEFAULT_BINARY_CACHE}
+      - task: Cache@2
+        inputs:
+          key: "2023-06 | vcpkg | x64"
+          path: $(vcpkg.default.binary.cache)
+
+      - task: run-vcpkg@0
+        inputs:
+          vcpkgGitCommitId: $(vcpkg.commit)
+          vcpkgArguments: "spdlog protobuf directxtex[tools] directxtk[tools] directxmesh[tools]"
+        env:
+          VCPKG_DEFAULT_TRIPLET: x64-windows
+
+      - powershell: vcpkg integrate install
+
+      - task: VSBuild@1
+        inputs:
+          solution: App1.sln
+          platform: "x64" # x64|Win32
+          configuration: "Debug" # Debug|Release
+          clean: true
+          msbuildArchitecture: "x64"
+          logFileVerbosity: detailed
