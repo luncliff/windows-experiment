@@ -1,0 +1,46 @@
+version: 0.{build}
+
+notifications:
+  - provider: Email
+    to:
+      - luncliff@gmail.com
+
+branches:
+  except:
+    - gh-pages
+    - docs/*
+
+shallow_clone: true
+clone_depth: 1
+
+image: Visual Studio 2022
+
+platform:
+  - x64
+
+configuration:
+  - debug
+  # - release
+
+cache:
+  - c:/tools/vcpkg/downloads
+  - c:/tools/vcpkg/caches
+  - C:/Program Files (x86)/Microsoft SDKs/NuGetPackages
+
+environment:
+  global:
+    VCPKG_ROOT: c:/tools/vcpkg
+    VCPKG_DEFAULT_BINARY_CACHE: c:/tools/vcpkg/caches
+
+install:
+  - ps: nuget restore App1.sln
+
+before_build:
+  - ps: New-Item -Type Directory -Force -Path "${env:VCPKG_DEFAULT_BINARY_CACHE}"
+  - ps: vcpkg install --triplet=x64-windows spdlog
+  - ps: vcpkg integrate project
+
+build:
+  project: App1/App1.vcxproj
+  parallel: true
+  verbosity: minimal # detailed
