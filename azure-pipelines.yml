@@ -51,6 +51,7 @@ jobs:
           VCPKG_DEFAULT_TRIPLET: x64-windows
 
       - powershell: vcpkg integrate install
+      - powershell: nuget restore App1.sln
 
       - task: VSBuild@1
         inputs:

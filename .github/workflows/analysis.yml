@@ -6,8 +6,10 @@ jobs:
   build:
     name: SonarCloud
     runs-on: windows-latest
-    # env:
-    #   BUILD_WRAPPER_OUT_DIR: bw-output
+
+    env:
+      SONAR_USER_HOME: "${{ github.workspace }}/.sonar"
+
     steps:
       - uses: actions/checkout@v3
         with:
@@ -16,12 +18,22 @@ jobs:
       - uses: microsoft/setup-msbuild@v1.1
         with:
           msbuild-architecture: x64
+      - uses: NuGet/setup-nuget@v1.2.0
 
       - uses: SonarSource/sonarcloud-github-c-cpp@v1
+
+      - name: "Run NuGet Restore"
+        run: |
+          nuget restore App1.sln
 
       - name: "Run build-wrapper"
         run: |
           build-wrapper-win-x86-64 --out-dir bw-output MSBuild App1.sln /t:rebuild /p:platform="x64" /p:configuration="Debug"
+
+      - uses: actions/cache@v3
+        with:
+          key: "sonar-${{ runner.os }}"
+          path: "${{ github.workspace }}/.sonar" # SONAR_USER_HOME
 
       - name: "Run sonar-scanner"
         env:
