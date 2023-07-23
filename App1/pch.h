@@ -40,9 +40,19 @@
 
 // Standard C++
 #include <filesystem>
+#include <string_view>
+#include <system_error>
 
 namespace winrt::App1 {
 
-// ...
+void set_log_stream(const char* name) noexcept(false);
+
+/**
+ * @see https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-getmodulefilenamew
+ * @see GetModuleFileNameW
+ */
+DWORD get_module_path(WCHAR* path, UINT capacity) noexcept(false);
+
+std::filesystem::path get_module_path() noexcept(false);
 
 } // namespace winrt::App1
