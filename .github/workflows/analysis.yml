@@ -42,7 +42,7 @@ jobs:
 
       - name: "Run build-wrapper"
         run: |
-          build-wrapper-win-x86-64 --out-dir bw-output MSBuild App1.sln /t:rebuild /p:platform="x64" /p:configuration="Debug"
+          build-wrapper-win-x86-64 --out-dir bw-output MSBuild App1.sln /t:rebuild /p:platform="x64" /p:configuration="Debug" /p:BuildProjectReferences=false /t:"App1"
 
       - uses: actions/cache@v3
         with:
