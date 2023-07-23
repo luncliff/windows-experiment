@@ -1,0 +1,37 @@
+{
+  "name": "windows-experiment",
+  "version": "0.2329.0",
+  "description": "Personal Windows SDK experiments",
+  "homepage": "https://github.com/madler/zlib",
+  "license": "CC0-1.0",
+  "supports": "windows",
+  "dependencies": [
+    "ms-gsl",
+    "spdlog",
+    "tinygltf",
+    "directxtex",
+    {
+      "name": "directxtex",
+      "features": [
+        "tools"
+      ],
+      "host": true
+    },
+    "directxtk",
+    {
+      "name": "directxtk",
+      "features": [
+        "tools"
+      ],
+      "host": true
+    },
+    "directxmesh",
+    {
+      "name": "directxmesh",
+      "features": [
+        "tools"
+      ],
+      "host": true
+    }
+  ]
+}

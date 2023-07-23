@@ -22,6 +22,20 @@ jobs:
 
       - uses: SonarSource/sonarcloud-github-c-cpp@v1
 
+      - uses: lukka/run-vcpkg@v11.1
+        with:
+          vcpkgDirectory: "C:/vcpkg"
+          vcpkgGitCommitId: "f6a5d4e8eb7476b8d7fc12a56dff300c1c986131" # 2023.06.20
+          vcpkgJsonGlob: "**/vcpkg.json"
+          runVcpkgInstall: true
+        env:
+          VCPKG_FEATURE_FLAGS: "registries,binarycaching,manifests"
+          VCPKG_DEFAULT_TRIPLET: "x64-windows"
+          # VCPKG_INSTALLED_DIR: ${{ github.workspace }}/externals
+
+      - name: "Run vcpkg-integrate"
+        run: vcpkg integrate install
+
       - name: "Run NuGet Restore"
         run: |
           nuget restore App1.sln

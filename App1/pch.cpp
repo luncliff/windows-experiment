@@ -1,10 +1,60 @@
+#define FMT_HEADER_ONLY
+#define SPDLOG_HEADER_ONLY
 #include "pch.h"
 
-#include <hstring.h>
-#include <restrictederrorinfo.h>
+#include <cstdio>
+#include <spdlog/pattern_formatter.h>
+#include <spdlog/sinks/base_sink.h>
+#include <spdlog/sinks/msvc_sink.h>
+#include <spdlog/sinks/stdout_sinks.h>
+#include <spdlog/spdlog.h>
+
+#include "winrt_fmt_helper.hpp"
 
 namespace winrt::App1 {
 
-// ...
+auto make_logger(const char* name, FILE* fout) noexcept(false) {
+    using namespace spdlog::sinks;
+    std::vector<spdlog::sink_ptr> sinks{};
+#if defined(_DEBUG)
+    sinks.emplace_back(std::make_shared<msvc_sink_st>());
+#endif
+    if (fout == stdout)
+        sinks.emplace_back(std::make_shared<wincolor_stdout_sink_st>());
+    else if (fout == stderr)
+        sinks.emplace_back(std::make_shared<wincolor_stderr_sink_st>());
+    else {
+        using mutex_t = spdlog::details::console_nullmutex;
+        using sink_t = spdlog::sinks::stdout_sink_base<mutex_t>;
+        sinks.emplace_back(std::make_shared<sink_t>(fout));
+    }
+    return std::make_shared<spdlog::logger>(name, sinks.begin(), sinks.end());
+}
+
+void set_log_stream(const char* name) noexcept(false) {
+    std::shared_ptr logger = make_logger(name, stdout);
+    logger->set_pattern("%T.%e [%L] %8t %v");
+#if defined(_DEBUG)
+    logger->set_level(spdlog::level::level_enum::debug);
+#endif
+    spdlog::set_default_logger(logger);
+}
+
+DWORD get_module_path(WCHAR* path, UINT capacity) noexcept(false) {
+    if (path == nullptr)
+        throw std::invalid_argument{__func__};
+    DWORD size = GetModuleFileNameW(nullptr, path, capacity);
+    if (size == 0)
+        throw std::system_error{static_cast<int>(GetLastError()), std::system_category(), "GetModuleFileNameW"};
+    return size;
+}
+
+std::filesystem::path get_module_path() noexcept(false) {
+    wchar_t buf[260]{};
+    auto len = get_module_path(buf, 260);
+    //std::locale loc{".65001"};
+    //return std::filesystem::path{std::wstring_view{buf, len}, loc};
+    return std::wstring_view{buf, len};
+}
 
 } // namespace winrt::App1
