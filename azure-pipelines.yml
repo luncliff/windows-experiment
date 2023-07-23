@@ -43,15 +43,17 @@ jobs:
           key: "2023-07 | vcpkg | x64"
           path: $(vcpkg.default.binary.cache)
 
-      - task: run-vcpkg@0
-        inputs:
-          vcpkgGitCommitId: $(vcpkg.commit)
-          vcpkgArguments: "spdlog protobuf directxtex[tools] directxtk[tools] directxmesh[tools]"
+      - powershell: |
+          vcpkg install --debug --x-install-root "$(Build.SourcesDirectory)/externals"
+          vcpkg integrate install
+        displayName: "Setup Vcpkg"
         env:
           VCPKG_DEFAULT_TRIPLET: x64-windows
+          VCPKG_MANIFEST_DIR: $(Build.SourcesDirectory)
 
-      - powershell: vcpkg integrate install
-      - powershell: nuget restore App1.sln
+      - powershell: |
+          nuget restore App1.sln
+        displayName: "Restore NuGet"
 
       - task: VSBuild@1
         inputs:
