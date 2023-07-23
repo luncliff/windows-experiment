@@ -1,6 +1,7 @@
 .vscode
 .sonar
 
+vcpkg_installed
 externals
 
 # Created by https://www.toptal.com/developers/gitignore/api/c++,visualstudio,visualstudiocode,csharp
