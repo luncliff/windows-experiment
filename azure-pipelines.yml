@@ -40,7 +40,10 @@ jobs:
       - powershell: New-Item -Type Directory -Force ${env:VCPKG_DEFAULT_BINARY_CACHE}
       - task: Cache@2
         inputs:
-          key: "2023-07 | vcpkg | x64"
+          key: "2023-07-23 | vcpkg | x64"
+          restoreKeys: |
+            "2023-07-23 | vcpkg | x64"
+            "2023-07 | vcpkg | x64"
           path: $(vcpkg.default.binary.cache)
 
       - powershell: |
@@ -51,8 +54,7 @@ jobs:
           VCPKG_DEFAULT_TRIPLET: x64-windows
           VCPKG_MANIFEST_DIR: $(Build.SourcesDirectory)
 
-      - powershell: |
-          nuget restore App1.sln
+      - powershell: nuget restore App1.sln
         displayName: "Restore NuGet"
 
       - task: VSBuild@1
@@ -63,3 +65,12 @@ jobs:
           clean: true
           msbuildArchitecture: "x64"
           logFileVerbosity: detailed
+
+      - task: VSTest@2
+        inputs:
+          testSelector: "testAssemblies"
+          platform: "x64" # x64|Win32
+          configuration: "Debug" # Debug|Release
+          vsTestVersion: latest
+          runSettingsFile: "UnitTest1/mta.runsettings"
+          testAssemblyVer2: "x64\\Debug\\UnitTest*.dll"
