@@ -7,7 +7,7 @@ name: Analysis
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
-  build:
+  sonarcloud:
     name: SonarCloud
     runs-on: windows-latest
 
@@ -29,7 +29,7 @@ jobs:
       - uses: lukka/run-vcpkg@v11.1
         with:
           vcpkgDirectory: "C:/vcpkg"
-          vcpkgGitCommitId: "f6a5d4e8eb7476b8d7fc12a56dff300c1c986131" # 2023.06.20
+          vcpkgGitCommitId: "9d47b24eacbd1cd94f139457ef6cd35e5d92cc84" # 2023.07.21
           vcpkgJsonGlob: "**/vcpkg.json"
           runVcpkgInstall: true
         env:

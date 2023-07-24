@@ -2,7 +2,7 @@
   "name": "windows-experiment",
   "version": "0.2330.0",
   "description": "Personal Windows SDK experiments",
-  "homepage": "https://github.com/madler/zlib",
+  "homepage": "https://github.com/luncliff/windows-experiment",
   "license": "CC0-1.0",
   "supports": "windows",
   "dependencies": [
