@@ -19,13 +19,20 @@ jobs:
 
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
+      VCPKG_DOWNLOADS: "${{ github.workspace }}/packages"
+      VCPKG_DEFAULT_BINARY_CACHE: "${{ github.workspace }}/packages"
+
     steps:
       - uses: actions/checkout@v3
 
       - uses: microsoft/setup-msbuild@v1.1
         with:
           msbuild-architecture: x64
+
+      - uses: actions/cache@v3
+        with:
+          key: "github-dependency-cache-2331"
+          path: "${{ github.workspace }}/packages"
 
       - uses: lukka/run-vcpkg@v11.1
         with:
