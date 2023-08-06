@@ -16,7 +16,6 @@ using namespace Microsoft::UI::Xaml::Navigation;
 App::App() {
     InitializeComponent();
     set_log_stream("App");
-
 #if defined _DEBUG && !defined DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION
     //auto handler = std::bind(&App::OnUnhandledException, this, _1, _2);
     UnhandledException({this, &App::OnUnhandledException});
@@ -34,6 +33,7 @@ void App::OnUnhandledException(IInspectable const&, UnhandledExceptionEventArgs 
 
 void App::OnLaunched(LaunchActivatedEventArgs const&) {
     spdlog::info("{}: {}", "App", __func__);
+    spdlog::info("{}: module_path {}", "App", get_module_path());
     window = make<MainWindow>();
     window.Activate();
 }

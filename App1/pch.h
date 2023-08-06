@@ -44,6 +44,7 @@
 #include <system_error>
 
 namespace winrt::App1 {
+namespace fs = std::filesystem;
 
 void set_log_stream(const char* name) noexcept(false);
 
@@ -52,7 +53,6 @@ void set_log_stream(const char* name) noexcept(false);
  * @see GetModuleFileNameW
  */
 DWORD get_module_path(WCHAR* path, UINT capacity) noexcept(false);
-
-std::filesystem::path get_module_path() noexcept(false);
+fs::path get_module_path() noexcept(false);
 
 } // namespace winrt::App1

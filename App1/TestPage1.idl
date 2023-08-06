@@ -1,0 +1,9 @@
+namespace App1 {
+
+runtimeclass TestPage1 : Microsoft.UI.Xaml.Controls.Page {
+    TestPage1();
+
+    Int32 MyProperty;
+}
+
+} // namespace App1

@@ -33,7 +33,7 @@ auto make_logger(const char* name, FILE* fout) noexcept(false) {
 
 void set_log_stream(const char* name) noexcept(false) {
     std::shared_ptr logger = make_logger(name, stdout);
-    logger->set_pattern("%T.%e [%L] %8t %v");
+    logger->set_pattern("%T.%e [%L] %n %8t %v");
 #if defined(_DEBUG)
     logger->set_level(spdlog::level::level_enum::debug);
 #endif
@@ -49,11 +49,9 @@ DWORD get_module_path(WCHAR* path, UINT capacity) noexcept(false) {
     return size;
 }
 
-std::filesystem::path get_module_path() noexcept(false) {
+fs::path get_module_path() noexcept(false) {
     wchar_t buf[260]{};
     auto len = get_module_path(buf, 260);
-    //std::locale loc{".65001"};
-    //return std::filesystem::path{std::wstring_view{buf, len}, loc};
     return std::wstring_view{buf, len};
 }
 
