@@ -55,10 +55,10 @@ class vstest_sink final : public spdlog::sinks::sink {
  */
 TEST_MODULE_INITIALIZE(Initialize) {
     auto logger = std::make_shared<spdlog::logger>( //
-        "UnitTests1", spdlog::sinks_init_list{
-                          std::make_shared<spdlog::sinks::stdout_color_sink_st>(), //
-                          std::make_shared<vstest_sink>()                          //
-                      });
+        "UnitTest1", spdlog::sinks_init_list{
+                         std::make_shared<spdlog::sinks::stdout_color_sink_st>(), //
+                         std::make_shared<vstest_sink>()                          //
+                     });
     logger->set_pattern("%T.%e [%L] %8t %v");
     logger->set_level(spdlog::level::level_enum::debug);
     spdlog::set_default_logger(logger);
