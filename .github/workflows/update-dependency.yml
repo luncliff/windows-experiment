@@ -31,13 +31,13 @@ jobs:
 
       - uses: actions/cache@v3
         with:
-          key: "github-dependency-cache-2331"
+          key: "github-dependency-cache-0.2345.0"
           path: "${{ github.workspace }}/packages"
 
       - uses: lukka/run-vcpkg@v11.1
         with:
           vcpkgDirectory: "C:/vcpkg"
-          vcpkgGitCommitId: "9d47b24eacbd1cd94f139457ef6cd35e5d92cc84" # 2023.07.21
+          vcpkgGitCommitId: "8eb57355a4ffb410a2e94c07b4dca2dffbee8e50" # 2023.10.19
           vcpkgJsonGlob: "**/vcpkg.json"
           runVcpkgInstall: true
         env:

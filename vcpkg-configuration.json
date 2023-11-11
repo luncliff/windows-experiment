@@ -2,11 +2,11 @@
     "default-registry": {
         "kind": "git",
         "repository": "https://github.com/Microsoft/vcpkg",
-        "baseline": "9d47b24eacbd1cd94f139457ef6cd35e5d92cc84"
+        "baseline": "8eb57355a4ffb410a2e94c07b4dca2dffbee8e50"
     },
     "registries": [
         {
-            "baseline": "8c30c4652e8c31f6e79ab6557b4f08f61c728fb6",
+            "baseline": "a2931d4e3951ebbdbc12d608cb107dbd75f0817e",
             "packages": [
                 "libdispatch",
                 "zenny-atomic"
