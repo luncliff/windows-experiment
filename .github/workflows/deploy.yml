@@ -1,0 +1,78 @@
+name: Deploy
+
+# manual deploy
+on: 
+  push:
+    branches:
+      - support/msixbundle
+  workflow_dispatch:
+
+jobs:
+  build_and_upload:
+    runs-on: windows-latest
+
+    env:
+      VCPKG_DOWNLOADS: "${{ github.workspace }}/packages"
+      VCPKG_DEFAULT_BINARY_CACHE: "${{ github.workspace }}/packages"
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: microsoft/setup-msbuild@v1.1
+        with:
+          msbuild-architecture: x64
+
+      - uses: actions/cache@v3
+        with:
+          key: "github-dependency-cache-0.2345.0"
+          path: "${{ github.workspace }}/packages"
+
+      - uses: lukka/run-vcpkg@v11.1
+        with:
+          vcpkgDirectory: "C:/vcpkg"
+          vcpkgGitCommitId: "8eb57355a4ffb410a2e94c07b4dca2dffbee8e50" # 2023.10.19
+          vcpkgJsonGlob: "**/vcpkg.json"
+          runVcpkgInstall: true
+        env:
+          VCPKG_FEATURE_FLAGS: "registries,binarycaching,manifests,dependencygraph"
+          VCPKG_DEFAULT_TRIPLET: "x64-windows"
+
+      - name: "Run vcpkg integrate"
+        run: vcpkg integrate install
+
+      - name: "Run NuGet Restore"
+        run: |
+          nuget restore App1.sln
+
+      - name: "Run MSBuild"
+        run: |
+          MSBuild App1/App1.vcxproj /p:platform="x64" /p:configuration="Debug"
+
+      - name: "Run appxmanifest.ps1"
+        id: appxmanifest
+        run: |
+          $Version = $(./scripts/headver.ps1 -Build ${{ github.run_number }})
+          Write-Output "version=$Version" >> $env:GITHUB_ENV
+          ./scripts/update-appxmanifest.ps1 `
+            -ManifestPath "./App1 (Package)/Package.appxmanifest" `
+            -Version $Version
+        shell: pwsh
+
+      - name: "Run publish.ps1"
+        run: |
+          ./scripts/publish.ps1 `
+            -WapProjectPath "App1 (Package)/App1 (Package).wapproj" `
+            -Configuration Debug `
+            -OutDir "${{ github.workspace }}/outputs"
+          Write-Output "${{ steps.appxmanifest.outputs.version }}"
+          Get-ChildItem "${{ github.workspace }}/outputs"
+        shell: pwsh
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: outputs
+          path: |
+            outputs/App1 (Package)_0.2345*/*.ps1
+            outputs/App1 (Package)_0.2345*/*.appxsym
+            outputs/App1 (Package)_0.2345*/*.msixbundle
+          if-no-files-found: error
