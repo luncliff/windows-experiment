@@ -47,6 +47,11 @@ void MainWindow::on_item_invoked(NavigationView const&, NavigationViewItemInvoke
         frame.Navigate(name, params);
         return;
     }
+    if (item == L"Support") {
+        TypeName name{L"App1.SupportPage", TypeKind::Custom};
+        frame.Navigate(name, params);
+        return;
+    }
 }
 
 void MainWindow::on_back_requested(NavigationView const&, NavigationViewBackRequestedEventArgs const&) {
