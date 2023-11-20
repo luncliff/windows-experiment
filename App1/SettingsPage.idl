@@ -1,0 +1,7 @@
+namespace App1 {
+
+[default_interface] runtimeclass SettingsPage : Microsoft.UI.Xaml.Controls.Page {
+    SettingsPage();
+}
+
+} // namespace App1
