@@ -7,6 +7,7 @@
     <Page Include="MainWindow.xaml" />
     <Page Include="TestPage1.xaml" />
     <Page Include="SupportPage.xaml" />
+    <Page Include="SettingsPage.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl" />
