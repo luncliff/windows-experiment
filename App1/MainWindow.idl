@@ -1,8 +1,12 @@
 namespace App1 {
 
+// https://learn.microsoft.com/en-us/uwp/midl-3/intro
 [default_interface] runtimeclass MainWindow : Microsoft.UI.Xaml.Window {
     MainWindow();
 
+    UInt64 WindowHandle {
+        get;
+    };
     Microsoft.UI.Xaml.Controls.Frame ShellFrame;
 }
 

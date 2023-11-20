@@ -1,6 +1,8 @@
 #pragma once
 #include "MainWindow.g.h"
 
+#include <Windows.h>
+
 namespace winrt::App1::implementation {
 using Microsoft::UI::Xaml::RoutedEventArgs;
 using Microsoft::UI::Xaml::Window;
@@ -22,6 +24,8 @@ struct MainWindow : MainWindowT<MainWindow> {
 
   public:
     MainWindow();
+
+    uint64_t WindowHandle() const noexcept;
 
     void on_window_size_changed(IInspectable const& sender, WindowSizeChangedEventArgs const& e);
     void on_window_visibility_changed(IInspectable const& sender, WindowVisibilityChangedEventArgs const& e);

@@ -8,16 +8,22 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
+    <!-- https://github.com/Lewis-Marshall/WinUI3NavigationExample -->
     <!-- see https://learn.microsoft.com/en-us/uwp/api/windows.ui.xaml.controls.symbol -->
     <!-- see https://learn.microsoft.com/en-us/uwp/api/windows.ui.xaml.controls.appbarbutton -->
     <NavigationView x:Name="navigationView"
                     ItemInvoked="on_item_invoked" IsBackEnabled="{x:Bind ShellFrame.CanGoBack, Mode=OneWay}"
-                    BackRequested="on_back_requested" IsSettingsVisible="False">
+                    BackRequested="on_back_requested" IsSettingsVisible="True">
         <NavigationView.MenuItems>
             <NavigationViewItem Content="TestPage1" Tag="TestPage1" Icon="Document" />
         </NavigationView.MenuItems>
         <NavigationView.FooterMenuItems>
-            <NavigationViewItem Content="Support" Icon="Help" Tag="Support" />
+            <NavigationViewItem Content="Support" Tag="Support" >
+                <NavigationViewItem.Icon>
+                    <!-- see https://learn.microsoft.com/en-us/windows/apps/design/style/segoe-ui-symbol-font -->
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE897;"/>
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
         </NavigationView.FooterMenuItems>
         <!-- ... -->
         <Frame x:Name="ShellFrame" />
