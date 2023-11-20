@@ -8,7 +8,58 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d" Loaded="Page_Loaded" Unloaded="Page_Unloaded">
 
-    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Button x:Name="myButton" Click="myButton_Click">Click Me</Button>
+
+    <StackPanel
+        Orientation="Vertical"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Top">
+        <TextBlock
+            Text="TestPage1" 
+            FontFamily="Segoe UI"
+            FontSize="32" 
+            Padding="8"/>
+        <Rectangle
+            HorizontalAlignment="Stretch" 
+            Fill="{StaticResource SystemAccentColorDark2}" 
+            Height="1"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="OpenButton" Height="40" Click="on_button_clicked" >
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="Assets/StoreLogo.png" Width="24" Height="24" Margin="0,0,5,0" />
+                    <TextBlock Text="Open" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+        <ListView x:Name="repoListView" ItemsSource="{x:Bind ViewModel0.Repositories}" SelectionChanged="on_selection_changed">
+            <ListView.HeaderTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Margin="15,0,0,0" FontWeight="Bold" Text="Host"/>
+                        <TextBlock Grid.Column="1" Margin="15,0,0,0" FontWeight="Bold" Text="Owner"/>
+                        <TextBlock Grid.Column="2" Margin="15,0,0,0" FontWeight="Bold" Text="Name"/>
+                    </Grid>
+                </DataTemplate>
+            </ListView.HeaderTemplate>
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="local:RepositoryItem">
+                    <Grid Height="40">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="40"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="{x:Bind Host, Mode=OneWay}"/>
+                        <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="{x:Bind Owner, Mode=OneWay}"/>
+                        <TextBlock Grid.Column="2" VerticalAlignment="Center" Text="{x:Bind Name, Mode=OneWay}"/>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </StackPanel>
 </Page>

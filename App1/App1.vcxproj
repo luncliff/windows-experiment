@@ -141,6 +141,12 @@
     <ClInclude Include="MainWindow.xaml.h">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </ClInclude>
+    <ClInclude Include="RepositoryItem.h">
+      <DependentUpon>RepositoryItem.idl</DependentUpon>
+    </ClInclude>
+    <ClInclude Include="RepositoryViewModel.h">
+      <DependentUpon>RepositoryViewModel.idl</DependentUpon>
+    </ClInclude>
     <ClInclude Include="SettingsPage.xaml.h">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -178,6 +184,12 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </ClCompile>
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
+    <ClCompile Include="RepositoryItem.cpp">
+      <DependentUpon>RepositoryItem.idl</DependentUpon>
+    </ClCompile>
+    <ClCompile Include="RepositoryViewModel.cpp">
+      <DependentUpon>RepositoryViewModel.idl</DependentUpon>
+    </ClCompile>
     <ClCompile Include="SettingsPage.xaml.cpp">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -199,6 +211,12 @@
     <Midl Include="MainWindow.idl">
       <SubType>Code</SubType>
       <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Midl>
+    <Midl Include="RepositoryItem.idl">
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="RepositoryViewModel.idl" >
+      <SubType>Code</SubType>
     </Midl>
     <Midl Include="SettingsPage.idl">
       <DependentUpon>SettingsPage.xaml</DependentUpon>

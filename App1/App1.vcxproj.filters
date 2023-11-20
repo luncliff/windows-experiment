@@ -12,13 +12,16 @@
   <ItemGroup>
     <Midl Include="App.idl" />
     <Midl Include="MainWindow.idl" />
+    <Midl Include="RepositoryItem.idl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
+    <ClCompile Include="RepositoryItem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="RepositoryItem.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Assets">
