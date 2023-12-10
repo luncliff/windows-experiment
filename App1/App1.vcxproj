@@ -77,6 +77,36 @@
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnableManifest>true</VcpkgEnableManifest>
   </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <VcpkgInstalledDir>$(SolutionDir)externals</VcpkgInstalledDir>
+    <VcpkgTriplet>arm64-windows</VcpkgTriplet>
+    <VcpkgAdditionalInstallOptions>--recurse</VcpkgAdditionalInstallOptions>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <VcpkgInstalledDir>$(SolutionDir)externals</VcpkgInstalledDir>
+    <VcpkgTriplet>arm64-windows</VcpkgTriplet>
+    <VcpkgAdditionalInstallOptions>--recurse</VcpkgAdditionalInstallOptions>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <VcpkgInstalledDir>$(SolutionDir)externals</VcpkgInstalledDir>
+    <VcpkgTriplet>x86-windows</VcpkgTriplet>
+    <VcpkgAdditionalInstallOptions>--recurse</VcpkgAdditionalInstallOptions>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <VcpkgInstalledDir>$(SolutionDir)externals</VcpkgInstalledDir>
+    <VcpkgTriplet>x86-windows</VcpkgTriplet>
+    <VcpkgAdditionalInstallOptions>--recurse</VcpkgAdditionalInstallOptions>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <VcpkgInstalledDir>$(SolutionDir)externals</VcpkgInstalledDir>
+    <VcpkgTriplet>x64-windows</VcpkgTriplet>
+    <VcpkgAdditionalInstallOptions>--recurse</VcpkgAdditionalInstallOptions>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <VcpkgInstalledDir>$(SolutionDir)externals</VcpkgInstalledDir>
+    <VcpkgTriplet>x64-windows</VcpkgTriplet>
+    <VcpkgAdditionalInstallOptions>--recurse</VcpkgAdditionalInstallOptions>
+  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -105,6 +135,36 @@
       <ErrorReporting Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Send</ErrorReporting>
       <ErrorReporting Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Send</ErrorReporting>
     </ClCompile>
+    <PreLinkEvent>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(OutDir)"
+xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.pdb" "$(OutDir)"
+xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.dll" "$(OutDir)"
+xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.pdb" "$(OutDir)"</Command>
+    </PreLinkEvent>
+    <PreLinkEvent>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(OutDir)"
+xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.pdb" "$(OutDir)"
+xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.dll" "$(OutDir)"
+xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.pdb" "$(OutDir)"</Command>
+    </PreLinkEvent>
+    <PreLinkEvent>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(OutDir)"
+xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.pdb" "$(OutDir)"
+xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.dll" "$(OutDir)"
+xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.pdb" "$(OutDir)"</Command>
+    </PreLinkEvent>
+    <Link>
+      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">libprotobufd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <Link>
+      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">libprotobufd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <Link>
+      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">libprotobufd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
@@ -128,7 +188,22 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">$(VcpkgInstalledDir)\$(VcpkgTriplet)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(VcpkgInstalledDir)\$(VcpkgTriplet)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(VcpkgInstalledDir)\$(VcpkgTriplet)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">libprotobuf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">libprotobuf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Release|x64'">libprotobuf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreLinkEvent>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(OutDir)"</Command>
+    </PreLinkEvent>
+    <PreLinkEvent>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(OutDir)"</Command>
+    </PreLinkEvent>
+    <PreLinkEvent>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(OutDir)"</Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Manifest Include="app.manifest" />
@@ -215,7 +290,7 @@
     <Midl Include="RepositoryItem.idl">
       <SubType>Code</SubType>
     </Midl>
-    <Midl Include="RepositoryViewModel.idl" >
+    <Midl Include="RepositoryViewModel.idl">
       <SubType>Code</SubType>
     </Midl>
     <Midl Include="SettingsPage.idl">
