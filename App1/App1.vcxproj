@@ -136,22 +136,34 @@
       <ErrorReporting Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Send</ErrorReporting>
     </ClCompile>
     <PreLinkEvent>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(OutDir)"
-xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.pdb" "$(OutDir)"
-xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.dll" "$(OutDir)"
-xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.pdb" "$(OutDir)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(SolutionDir)App1 (Package)\bin\$(Platform)\$(Configuration)\AppX\"
+xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.pdb" "$(SolutionDir)App1 (Package)\bin\$(Platform)\$(Configuration)\AppX\"
+xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(OutDir)"
+xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.dll" "$(SolutionDir)App1 (Package)\bin\$(Platform)\$(Configuration)\AppX\"
+xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.pdb" "$(SolutionDir)App1 (Package)\bin\$(Platform)\$(Configuration)\AppX\"
+xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.dll" "$(OutDir)"
+      </Command>
     </PreLinkEvent>
     <PreLinkEvent>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(OutDir)"
-xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.pdb" "$(OutDir)"
-xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.dll" "$(OutDir)"
-xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.pdb" "$(OutDir)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(SolutionDir)App1 (Package)\bin\$(Platform)\$(Configuration)\AppX\"
+xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.pdb" "$(SolutionDir)App1 (Package)\bin\$(Platform)\$(Configuration)\AppX\"
+xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(OutDir)"
+xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.dll" "$(SolutionDir)App1 (Package)\bin\$(Platform)\$(Configuration)\AppX\"
+xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.pdb" "$(SolutionDir)App1 (Package)\bin\$(Platform)\$(Configuration)\AppX\"
+xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.dll" "$(OutDir)"
+      </Command>
     </PreLinkEvent>
     <PreLinkEvent>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(OutDir)"
-xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.pdb" "$(OutDir)"
-xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.dll" "$(OutDir)"
-xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.pdb" "$(OutDir)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(SolutionDir)App1 (Package)\bin\$(Platform)\$(Configuration)\AppX\"
+xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.pdb" "$(SolutionDir)App1 (Package)\bin\$(Platform)\$(Configuration)\AppX\"
+xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(OutDir)"
+xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.dll" "$(SolutionDir)App1 (Package)\bin\$(Platform)\$(Configuration)\AppX\"
+xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.pdb" "$(SolutionDir)App1 (Package)\bin\$(Platform)\$(Configuration)\AppX\"
+xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.dll" "$(OutDir)"
+      </Command>
     </PreLinkEvent>
     <Link>
       <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">libprotobufd.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -196,13 +208,13 @@ xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.pdb" "$(OutDir
       <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Release|x64'">libprotobuf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreLinkEvent>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(OutDir)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(OutDir)"</Command>
     </PreLinkEvent>
     <PreLinkEvent>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(OutDir)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(OutDir)"</Command>
     </PreLinkEvent>
     <PreLinkEvent>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">xcopy.exe /y /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(OutDir)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(OutDir)"</Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
