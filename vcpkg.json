@@ -1,12 +1,16 @@
 {
   "name": "windows-experiment",
-  "version": "0.2345.0",
+  "version": "0.2349.0",
   "description": "Personal Windows SDK experiments",
   "homepage": "https://github.com/luncliff/windows-experiment",
   "license": "CC0-1.0",
   "supports": "windows",
   "dependencies": [
-    "ms-gsl",
+    {
+      "name": "protobuf",
+      "host": true
+    },
+    "protobuf",
     "spdlog",
     "tinygltf",
     "directxtex",

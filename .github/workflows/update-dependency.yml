@@ -31,7 +31,7 @@ jobs:
 
       - uses: actions/cache@v3
         with:
-          key: "github-dependency-cache-0.2345.0"
+          key: "github-dependency-cache-0.2349.0"
           path: "${{ github.workspace }}/packages"
 
       - uses: lukka/run-vcpkg@v11.1
