@@ -1,12 +1,13 @@
-// Copyright (c) Microsoft Corporation and Contributors.
-// Licensed under the MIT License.
+namespace App1 {
 
-namespace App1
-{
-    [default_interface]
-    runtimeclass MainWindow : Microsoft.UI.Xaml.Window
-    {
-        MainWindow();
-        Int32 MyProperty;
-    }
+// https://learn.microsoft.com/en-us/uwp/midl-3/intro
+[default_interface] runtimeclass MainWindow : Microsoft.UI.Xaml.Window {
+    MainWindow();
+
+    UInt64 WindowHandle {
+        get;
+    };
+    Microsoft.UI.Xaml.Controls.Frame ShellFrame;
 }
+
+} // namespace App1

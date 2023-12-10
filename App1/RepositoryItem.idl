@@ -1,0 +1,15 @@
+namespace App1 {
+
+runtimeclass RepositoryItem : Microsoft.UI.Xaml.Data.INotifyPropertyChanged {
+    RepositoryItem();
+
+    String Host;
+    String Owner;
+    String Name;
+
+    Windows.Foundation.Uri ProjectUri {
+        get;
+    };
+}
+
+} // namespace App1

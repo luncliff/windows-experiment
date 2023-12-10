@@ -12,6 +12,7 @@ using namespace std::placeholders;
 using namespace Windows::Foundation;
 using namespace Microsoft::UI::Xaml::Controls;
 using namespace Microsoft::UI::Xaml::Navigation;
+using Microsoft::UI::Xaml::ApplicationTheme;
 
 App::App() {
     InitializeComponent();
@@ -21,6 +22,7 @@ App::App() {
     //auto handler = std::bind(&App::OnUnhandledException, this, _1, _2);
     UnhandledException({this, &App::OnUnhandledException});
 #endif
+    RequestedTheme(ApplicationTheme::Dark);
 }
 
 void App::OnUnhandledException(IInspectable const&, UnhandledExceptionEventArgs const& e) {
