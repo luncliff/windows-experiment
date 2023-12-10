@@ -1,4 +1,4 @@
-version: 0.2329.{build}
+version: 0.2349.{build}
 
 notifications:
   - provider: Email

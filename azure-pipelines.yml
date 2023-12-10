@@ -40,9 +40,9 @@ jobs:
       - powershell: New-Item -Type Directory -Force ${env:VCPKG_DEFAULT_BINARY_CACHE}
       - task: Cache@2
         inputs:
-          key: "2023-07-23 | vcpkg | x64"
+          key: "2023-12-10 | vcpkg | x64"
           restoreKeys: |
-            "2023-07-23 | vcpkg | x64"
+            "2023-12-10 | vcpkg | x64"
             "2023-07 | vcpkg | x64"
           path: $(vcpkg.default.binary.cache)
 

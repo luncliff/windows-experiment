@@ -24,7 +24,7 @@ jobs:
 
       - uses: actions/cache@v3
         with:
-          key: "github-dependency-cache-0.2345.0"
+          key: "github-dependency-cache-0.2349.0"
           path: "${{ github.workspace }}/packages"
 
       - uses: lukka/run-vcpkg@v11.1
@@ -72,7 +72,7 @@ jobs:
         with:
           name: outputs
           path: |
-            outputs/App1 (Package)_0.2345*/*.ps1
-            outputs/App1 (Package)_0.2345*/*.appxsym
-            outputs/App1 (Package)_0.2345*/*.msixbundle
+            outputs/App1 (Package)_0.2349*/*.ps1
+            outputs/App1 (Package)_0.2349*/*.appxsym
+            outputs/App1 (Package)_0.2349*/*.msixbundle
           if-no-files-found: error
