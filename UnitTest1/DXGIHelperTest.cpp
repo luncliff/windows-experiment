@@ -1,0 +1,77 @@
+#include <CppUnitTest.h>
+
+#include <winrt/Windows.Foundation.h>
+
+#include "dxgi_helper.hpp"
+#include "swapchain_owner.hpp"
+
+using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
+using Microsoft::VisualStudio::CppUnitTestFramework::TestClass;
+
+class DXGIHelperTest : public TestClass<DXGIHelperTest> {
+    dxgi_helper_t dxgi{};
+
+    TEST_METHOD(TestDXGIAdapter) {
+        Assert::IsNotNull(dxgi.get_factory());
+        Assert::IsNotNull(dxgi.get_adapter());
+
+        // Don't mix IDXGIAdapter1 and IDXGIAdapter
+        winrt::com_ptr<IDXGIAdapter> adapter = nullptr;
+        Assert::AreEqual<HRESULT>(dxgi.get_factory()->EnumAdapters(0, adapter.put()), S_OK);
+        Assert::IsFalse(dxgi.get_adapter() == adapter.get());
+    }
+
+    TEST_METHOD(TestD3D11DeviceFail) {
+        // IDXGIAdapter1 will be E_INVALIDARG
+        winrt::com_ptr<ID3D11Device> device = nullptr;
+        winrt::com_ptr<ID3D11DeviceContext> context = nullptr;
+        HRESULT hr = create_device(dxgi.get_adapter(), device.put(), context.put());
+        Assert::AreEqual<HRESULT>(hr, E_INVALIDARG);
+    }
+
+    TEST_METHOD(TestD3D11Device) {
+        winrt::com_ptr<ID3D11Device> device = nullptr;
+        winrt::com_ptr<ID3D11DeviceContext> context = nullptr;
+        HRESULT hr = create_device(nullptr, device.put(), context.put());
+        Assert::AreEqual<HRESULT>(hr, S_OK);
+    }
+};
+
+class SwapChainOwnerTest : public TestClass<SwapChainOwnerTest> {
+    dxgi_helper_t dxgi{};
+    winrt::com_ptr<ID3D11Device> device = nullptr;
+    winrt::com_ptr<ID3D11DeviceContext> context = nullptr;
+
+    TEST_METHOD(TestCreationFail) {
+        Assert::AreEqual<HRESULT>(create_device(nullptr, device.put(), context.put()), S_OK);
+        // E_INVALIDARG
+        Assert::ExpectException<winrt::hresult_error>([factory = dxgi.get_factory(), device = device]() {
+            DXGI_SWAP_CHAIN_DESC1 empty{};
+            swapchain_owner_t swapchain{factory, device.get(), empty};
+        });
+    }
+
+    TEST_METHOD(TestMethod1) {
+        Assert::AreEqual<HRESULT>(create_device(nullptr, device.put(), context.put()), S_OK);
+
+        DXGI_SWAP_CHAIN_DESC1 desc{};
+        desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        desc.Width = 300;
+        desc.Height = 300;
+        // the other fields will be updated in the ctor
+        swapchain_owner_t swapchain{dxgi.get_factory(), device.get(), desc};
+        Assert::IsNotNull(swapchain.get());
+
+        desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+        desc.Width = desc.Height = 256;
+        swapchain.resize(desc);
+
+        winrt::com_ptr<ID3D11Texture2D> buffer0 = nullptr;
+        swapchain.get(0, buffer0.put());
+        Assert::IsNotNull(buffer0.get());
+
+        winrt::com_ptr<ID3D11Texture2D> buffer1 = nullptr;
+        swapchain.get(1, buffer1.put());
+        Assert::IsNotNull(buffer1.get());
+    }
+};
