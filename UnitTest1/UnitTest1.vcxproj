@@ -219,6 +219,7 @@ xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.pdb" "$(OutDir)"
     <ClCompile Include="DXGIHelperTest.cpp" />
     <ClCompile Include="swapchain_owner.cpp" />
     <ClCompile Include="TestMain.cpp" />
+    <ClCompile Include="texture_renderer.cpp" />
     <ClCompile Include="UnitTest1.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -268,6 +269,7 @@ xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.pdb" "$(OutDir)"
   <ItemGroup>
     <ClInclude Include="dxgi_helper.hpp" />
     <ClInclude Include="swapchain_owner.hpp" />
+    <ClInclude Include="texture_renderer.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

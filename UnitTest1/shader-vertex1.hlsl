@@ -6,7 +6,7 @@ struct VertexShaderInput
 };
 struct PixelShdareInput
 {
-    float4 Position : POSITION;
+    float4 Position : SV_POSITION;
     float2 Texcoord : TEXCOORD0;
 };
 

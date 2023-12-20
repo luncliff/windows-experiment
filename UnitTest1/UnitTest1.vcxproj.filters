@@ -29,6 +29,9 @@
     <ClCompile Include="swapchain_owner.cpp">
       <Filter>Components</Filter>
     </ClCompile>
+    <ClCompile Include="texture_renderer.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader-pixel1.hlsl">
@@ -46,6 +49,9 @@
       <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="swapchain_owner.hpp">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="texture_renderer.hpp">
       <Filter>Components</Filter>
     </ClInclude>
   </ItemGroup>
