@@ -18,7 +18,7 @@ schedules:
 
 variables:
   - name: vcpkg.commit
-    value: "f6a5d4e8eb7476b8d7fc12a56dff300c1c986131" # tag 2023.06.20
+    value: "a34c873a9717a888f58dc05268dea15592c2f0ff" # tag 2024.03.25
   - name: vcpkg.feature.flags
     value: "registries,binarycaching,manifests"
   - name: vcpkg.default.binary.cache

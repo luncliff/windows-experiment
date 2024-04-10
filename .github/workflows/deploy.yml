@@ -24,7 +24,7 @@ jobs:
 
       - uses: actions/cache@v3
         with:
-          key: "github-dependency-cache-0.2349.0"
+          key: "github-dependency-cache-0.2415.0"
           path: "${{ github.workspace }}/packages"
 
       - uses: lukka/run-vcpkg@v11.1
@@ -54,14 +54,14 @@ jobs:
           $Version = $(./scripts/headver.ps1 -Build ${{ github.run_number }})
           Write-Output "version=$Version" >> $env:GITHUB_ENV
           ./scripts/update-appxmanifest.ps1 `
-            -ManifestPath "./App1 (Package)/Package.appxmanifest" `
+            -ManifestPath "./Package/Package.appxmanifest" `
             -Version $Version
         shell: pwsh
 
       - name: "Run publish.ps1"
         run: |
           ./scripts/publish.ps1 `
-            -WapProjectPath "App1 (Package)/App1 (Package).wapproj" `
+            -WapProjectPath "Package/Package.wapproj" `
             -Configuration Debug `
             -OutDir "${{ github.workspace }}/outputs"
           Write-Output "${{ steps.appxmanifest.outputs.version }}"
@@ -72,7 +72,7 @@ jobs:
         with:
           name: outputs
           path: |
-            outputs/App1 (Package)_0.2349*/*.ps1
-            outputs/App1 (Package)_0.2349*/*.appxsym
-            outputs/App1 (Package)_0.2349*/*.msixbundle
+            outputs/Package_0.2415*/*.ps1
+            outputs/Package_0.2415*/*.appxsym
+            outputs/Package_0.2415*/*.msixbundle
           if-no-files-found: error
