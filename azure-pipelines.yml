@@ -54,12 +54,12 @@ jobs:
           VCPKG_DEFAULT_TRIPLET: x64-windows
           VCPKG_MANIFEST_DIR: $(Build.SourcesDirectory)
 
-      - powershell: nuget restore App1.sln
+      - powershell: nuget restore windows-experiment.sln
         displayName: "Restore NuGet"
 
       - task: VSBuild@1
         inputs:
-          solution: App1.sln
+          solution: windows-experiment.sln
           platform: "x64" # x64|Win32
           configuration: "Debug" # Debug|Release
           clean: true

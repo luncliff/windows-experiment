@@ -43,7 +43,7 @@ jobs:
 
       - name: "Run NuGet Restore"
         run: |
-          nuget restore App1.sln
+          nuget restore windows-experiment.sln
         shell: pwsh
 
       - name: "Run build-wrapper"

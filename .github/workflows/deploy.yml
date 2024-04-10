@@ -43,12 +43,7 @@ jobs:
 
       - name: "Run NuGet Restore"
         run: |
-          nuget restore App1.sln
-        shell: pwsh
-
-      - name: "Run MSBuild"
-        run: |
-          MSBuild App1/App1.vcxproj /p:platform="x64" /p:configuration="Debug"
+          nuget restore windows-experiment.sln
         shell: pwsh
 
       - name: "Run appxmanifest.ps1"
@@ -63,10 +58,13 @@ jobs:
 
       - name: "Run publish.ps1"
         run: |
-          ./scripts/publish.ps1 `
-            -WapProjectPath "Package/Package.wapproj" `
-            -Configuration Debug `
-            -OutDir "${{ github.workspace }}/outputs"
+          MSBuild windows-experiment.sln `
+            /p:Platform=x64 `
+            /p:AppxBundlePlatforms=x64 `
+            /p:Configuration=Debug `
+            /p:UapAppxPackageBuildMode=SideloadOnly `
+            /p:AppxPackageDir="${{ github.workspace }}/outputs" `
+            /p:GenerateAppxPackageOnBuild=true
           Write-Output "${{ steps.appxmanifest.outputs.version }}"
           Get-ChildItem "${{ github.workspace }}/outputs"
         shell: pwsh
