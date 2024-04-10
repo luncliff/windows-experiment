@@ -9,7 +9,7 @@ on:
 
 jobs:
   build_and_upload:
-    runs-on: windows-latest
+    runs-on: [ self-hosted, Windows, CodeSign ]
 
     env:
       VCPKG_DOWNLOADS: "${{ github.workspace }}/packages"
@@ -30,7 +30,7 @@ jobs:
       - uses: lukka/run-vcpkg@v11.1
         with:
           vcpkgDirectory: "C:/vcpkg"
-          vcpkgGitCommitId: "8eb57355a4ffb410a2e94c07b4dca2dffbee8e50" # 2023.10.19
+          vcpkgGitCommitId: "a34c873a9717a888f58dc05268dea15592c2f0ff" # 2024.03.24
           vcpkgJsonGlob: "**/vcpkg.json"
           runVcpkgInstall: true
         env:
@@ -39,14 +39,17 @@ jobs:
 
       - name: "Run vcpkg integrate"
         run: vcpkg integrate install
+        shell: pwsh
 
       - name: "Run NuGet Restore"
         run: |
           nuget restore App1.sln
+        shell: pwsh
 
       - name: "Run MSBuild"
         run: |
           MSBuild App1/App1.vcxproj /p:platform="x64" /p:configuration="Debug"
+        shell: pwsh
 
       - name: "Run appxmanifest.ps1"
         id: appxmanifest

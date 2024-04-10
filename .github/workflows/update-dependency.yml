@@ -37,7 +37,7 @@ jobs:
       - uses: lukka/run-vcpkg@v11.1
         with:
           vcpkgDirectory: "C:/vcpkg"
-          vcpkgGitCommitId: "8eb57355a4ffb410a2e94c07b4dca2dffbee8e50" # 2023.10.19
+          vcpkgGitCommitId: "a34c873a9717a888f58dc05268dea15592c2f0ff" # 2024.03.24
           vcpkgJsonGlob: "**/vcpkg.json"
           runVcpkgInstall: true
         env:
