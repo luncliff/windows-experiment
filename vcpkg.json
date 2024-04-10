@@ -1,6 +1,6 @@
 {
   "name": "windows-experiment",
-  "version": "0.2349.0",
+  "version": "0.2415.0",
   "description": "Personal Windows SDK experiments",
   "homepage": "https://github.com/luncliff/windows-experiment",
   "license": "CC0-1.0",
@@ -12,7 +12,6 @@
     },
     "protobuf",
     "spdlog",
-    "tinygltf",
     "directxtex",
     {
       "name": "directxtex",

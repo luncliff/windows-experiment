@@ -23,21 +23,21 @@ jobs:
       VCPKG_DEFAULT_BINARY_CACHE: "${{ github.workspace }}/packages"
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: microsoft/setup-msbuild@v1.1
+      - uses: microsoft/setup-msbuild@v2
         with:
           msbuild-architecture: x64
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4.0.2
         with:
-          key: "github-dependency-cache-0.2349.0"
+          key: "github-dependency-cache-0.2415.0"
           path: "${{ github.workspace }}/packages"
 
-      - uses: lukka/run-vcpkg@v11.1
+      - uses: lukka/run-vcpkg@v11.5
         with:
           vcpkgDirectory: "C:/vcpkg"
-          vcpkgGitCommitId: "8eb57355a4ffb410a2e94c07b4dca2dffbee8e50" # 2023.10.19
+          vcpkgGitCommitId: "a34c873a9717a888f58dc05268dea15592c2f0ff" # 2024.03.24
           vcpkgJsonGlob: "**/vcpkg.json"
           runVcpkgInstall: true
         env:
@@ -49,7 +49,7 @@ jobs:
 
       - name: "Run NuGet Restore"
         run: |
-          nuget restore App1.sln
+          nuget restore windows-experiment.sln
 
       - name: "Run MSBuild"
         run: |

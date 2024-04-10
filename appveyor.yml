@@ -1,4 +1,4 @@
-version: 0.2349.{build}
+version: 0.2415.{build}
 
 notifications:
   - provider: Email
@@ -34,7 +34,7 @@ environment:
     VCPKG_FEATURE_FLAGS: registries,binarycaching,manifests
 
 install:
-  - ps: nuget restore App1.sln
+  - ps: nuget restore windows-experiment.sln
 
 before_build:
   - ps: New-Item -Type Directory -Force -Path "${env:VCPKG_DEFAULT_BINARY_CACHE}"

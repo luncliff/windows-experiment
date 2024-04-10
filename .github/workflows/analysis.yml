@@ -15,21 +15,21 @@ jobs:
       SONAR_USER_HOME: "${{ github.workspace }}/.sonar"
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: microsoft/setup-msbuild@v1.1
+      - uses: microsoft/setup-msbuild@v2
         with:
           msbuild-architecture: x64
       - uses: NuGet/setup-nuget@v1.2.0
 
-      - uses: SonarSource/sonarcloud-github-c-cpp@v1
+      - uses: SonarSource/sonarcloud-github-c-cpp@v2.0.2
 
-      - uses: lukka/run-vcpkg@v11.1
+      - uses: lukka/run-vcpkg@v11.5
         with:
           vcpkgDirectory: "C:/vcpkg"
-          vcpkgGitCommitId: "8eb57355a4ffb410a2e94c07b4dca2dffbee8e50" # 2023.10.19
+          vcpkgGitCommitId: "a34c873a9717a888f58dc05268dea15592c2f0ff" # 2024.03.24
           vcpkgJsonGlob: "**/vcpkg.json"
           runVcpkgInstall: true
         env:
@@ -39,16 +39,19 @@ jobs:
 
       - name: "Run vcpkg-integrate"
         run: vcpkg integrate install
+        shell: pwsh
 
       - name: "Run NuGet Restore"
         run: |
-          nuget restore App1.sln
+          nuget restore windows-experiment.sln
+        shell: pwsh
 
       - name: "Run build-wrapper"
         run: |
           build-wrapper-win-x86-64 --out-dir bw-output MSBuild App1/App1.vcxproj /t:rebuild /nodeReuse:false /p:platform="x64" /p:configuration="Debug" /p:BuildProjectReferences=false
+        shell: pwsh
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4.0.2
         with:
           key: "sonar-${{ runner.os }}"
           path: "${{ github.workspace }}/.sonar" # SONAR_USER_HOME
