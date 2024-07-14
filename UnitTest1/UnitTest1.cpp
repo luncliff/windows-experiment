@@ -3,6 +3,8 @@
 
 #include <functional>
 #include <spdlog/spdlog.h>
+#define USING_DIRECTX_HEADERS
+#include <directxtk12/ScreenGrab.h>
 
 #include "DeviceResources.h"
 #include "winrt_fmt_helper.hpp"
@@ -48,10 +50,15 @@ class DeviceResourcesTest : public TestClass<DeviceResourcesTest> {
             FAILED(hr))
             Assert::Fail(winrt::hresult_error{hr}.message().c_str());
 
-        winrt::com_ptr<IDXGISwapChain3> swapchain3 = nullptr;
-        Assert::AreEqual<HRESULT>(swapchain->QueryInterface(swapchain3.put()), S_OK);
+        winrt::com_ptr<IDXGISwapChain3> swapchain3 = swapchain.try_as<IDXGISwapChain3>();
         Assert::IsTrue(swapchain3.get());
         Assert::AreEqual<UINT>(swapchain3->GetCurrentBackBufferIndex(), 0);
+
+        DXGI_PRESENT_PARAMETERS params{};
+        Assert::AreEqual<HRESULT>(swapchain3->Present1(1, 0, &params), S_OK);
+        res.WaitForGpu();
+
+        Assert::AreEqual<UINT>(swapchain3->GetCurrentBackBufferIndex(), 1);
     }
 
     TEST_METHOD(TestSwapchain1Buffers) {
@@ -66,7 +73,9 @@ class DeviceResourcesTest : public TestClass<DeviceResourcesTest> {
             Assert::Fail(winrt::hresult_error{hr}.message().c_str());
 
         winrt::com_ptr<ID3D12Resource> resource = nullptr;
-        Assert::AreEqual(swapchain->GetBuffer(0, __uuidof(ID3D12Resource), resource.put_void()), S_OK);
+        resource = winrt::capture<ID3D12Resource>(swapchain, &IDXGISwapChain1::GetBuffer, 0);
+        Assert::IsTrue(resource.get());
+
         resource = nullptr;
         Assert::AreEqual(swapchain->GetBuffer(1, __uuidof(ID3D12Resource), resource.put_void()), S_OK);
     }
