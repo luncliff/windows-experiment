@@ -1,9 +1,11 @@
+// https://learn.microsoft.com/en-us/visualstudio/test/microsoft-visualstudio-testtools-cppunittestframework-api-reference?view=vs-2022
 #include <CppUnitTest.h>
 
-// https://learn.microsoft.com/en-us/visualstudio/test/microsoft-visualstudio-testtools-cppunittestframework-api-reference?view=vs-2022
 #include <functional>
+#include <spdlog/spdlog.h>
 
 #include "DeviceResources.h"
+#include "winrt_fmt_helper.hpp"
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using Microsoft::VisualStudio::CppUnitTestFramework::TestClass;
@@ -17,6 +19,56 @@ class DeviceResourcesTest : public TestClass<DeviceResourcesTest> {
     }
     TEST_METHOD_CLEANUP(Cleanup) {
         res.WaitForGpu();
+    }
+
+    DXGI_SWAP_CHAIN_DESC1 make_swapchain_desc() {
+        DXGI_SWAP_CHAIN_DESC1 desc{};
+        desc.Width = 512;
+        desc.Height = 512;
+        desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+        desc.SampleDesc.Count = 1;
+        desc.SampleDesc.Quality = 0;
+        desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+        desc.BufferCount = 2;
+        desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+        desc.Scaling = DXGI_SCALING_STRETCH;
+        desc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
+        return desc;
+    }
+
+    // https://learn.microsoft.com/en-us/windows/win32/api/dxgi1_2/nf-dxgi1_2-idxgifactory2-createswapchainforcomposition
+    TEST_METHOD(TestSwapchain3) {
+        winrt::com_ptr<IDXGIFactory4> factory = nullptr;
+        Assert::AreEqual(res.GetDXGIFactory()->QueryInterface(factory.put()), S_OK);
+
+        winrt::com_ptr<IDXGISwapChain1> swapchain = nullptr;
+        DXGI_SWAP_CHAIN_DESC1 desc = make_swapchain_desc();
+        if (HRESULT hr = factory->CreateSwapChainForComposition( //
+                res.GetCommandQueue(), &desc, nullptr, swapchain.put());
+            FAILED(hr))
+            Assert::Fail(winrt::hresult_error{hr}.message().c_str());
+
+        winrt::com_ptr<IDXGISwapChain3> swapchain3 = nullptr;
+        Assert::AreEqual<HRESULT>(swapchain->QueryInterface(swapchain3.put()), S_OK);
+        Assert::IsTrue(swapchain3.get());
+        Assert::AreEqual<UINT>(swapchain3->GetCurrentBackBufferIndex(), 0);
+    }
+
+    TEST_METHOD(TestSwapchain1Buffers) {
+        winrt::com_ptr<IDXGIFactory4> factory = nullptr;
+        Assert::AreEqual(res.GetDXGIFactory()->QueryInterface(factory.put()), S_OK);
+
+        winrt::com_ptr<IDXGISwapChain1> swapchain = nullptr;
+        DXGI_SWAP_CHAIN_DESC1 desc = make_swapchain_desc();
+        if (HRESULT hr = factory->CreateSwapChainForComposition( //
+                res.GetCommandQueue(), &desc, nullptr, swapchain.put());
+            FAILED(hr))
+            Assert::Fail(winrt::hresult_error{hr}.message().c_str());
+
+        winrt::com_ptr<ID3D12Resource> resource = nullptr;
+        Assert::AreEqual(swapchain->GetBuffer(0, __uuidof(ID3D12Resource), resource.put_void()), S_OK);
+        resource = nullptr;
+        Assert::AreEqual(swapchain->GetBuffer(1, __uuidof(ID3D12Resource), resource.put_void()), S_OK);
     }
 
     TEST_METHOD(TestInvalidHWND) {
