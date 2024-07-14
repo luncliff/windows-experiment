@@ -3,8 +3,8 @@
   IgnorableNamespaces="uap rescap">
   <Identity
     Name="0948ce78-4511-48ed-a5a6-9af03b74c88b"
-    Publisher="CN=DongHa Park, O=DongHa Park, L=Seongnam-si, S=Gyeonggi-do, C=KR"
-    Version="0.2415.0.0" />
+    Publisher="CN=PARK DongHa"
+    Version="0.2438.0.0" />
   <mp:PhoneIdentity
     PhoneProductId="0948ce78-4511-48ed-a5a6-9af03b74c88b"
     PhonePublisherId="00000000-0000-0000-0000-000000000000" />

@@ -24,13 +24,13 @@ jobs:
 
       - uses: actions/cache@v4.0.2
         with:
-          key: "github-dependency-cache-0.2415.0"
+          key: "github-dependency-cache-0.2438.0"
           path: "${{ github.workspace }}/packages"
 
       - uses: lukka/run-vcpkg@v11.5
         with:
           vcpkgDirectory: "C:/vcpkg"
-          vcpkgGitCommitId: "a34c873a9717a888f58dc05268dea15592c2f0ff" # 2024.03.24
+          vcpkgGitCommitId: "3508985146f1b1d248c67ead13f8f54be5b4f5da" # 2024.08.23
           vcpkgJsonGlob: "**/vcpkg.json"
           runVcpkgInstall: true
         env:
@@ -73,7 +73,7 @@ jobs:
         with:
           name: outputs
           path: |
-            outputs/Package_0.2415*/*.ps1
-            outputs/Package_0.2415*/*.appxsym
-            outputs/Package_0.2415*/*.msixbundle
+            outputs/Package_0.2438*/*.ps1
+            outputs/Package_0.2438*/*.appxsym
+            outputs/Package_0.2438*/*.msixbundle
           if-no-files-found: error

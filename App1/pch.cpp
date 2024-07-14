@@ -1,7 +1,6 @@
 #include "pch.h"
 
-#include <cstdio>
-#include <google/protobuf/arena.h>
+#include "winrt_fmt_helper.hpp"
 
 #define SPDLOG_USE_STDFORMAT
 #define SPDLOG_WCHAR_TO_UTF8_SUPPORT
@@ -9,17 +8,24 @@
 #include <spdlog/pattern_formatter.h>
 #include <spdlog/sinks/base_sink.h>
 #include <spdlog/sinks/msvc_sink.h>
+#include <spdlog/sinks/ostream_sink.h>
 #include <spdlog/sinks/stdout_sinks.h>
 #include <spdlog/spdlog.h>
 
-#define USING_DIRECTX_HEADERS
-#include <directxtk12/DirectXHelpers.h> // DirectXTK12
-#define D3DX12_NO_CHECK_FEATURE_SUPPORT_CLASS
-#include <directx/d3dx12.h> // DirectX Headers
-
-#include "winrt_fmt_helper.hpp"
+#include <cstdio>
+#include <iostream>
 
 namespace winrt::App1 {
+
+auto make_logger(const char* name, std::ostream& out) noexcept(false) {
+    using namespace spdlog::sinks;
+    std::vector<spdlog::sink_ptr> sinks{};
+#if defined(_DEBUG)
+    sinks.emplace_back(std::make_shared<msvc_sink_st>());
+#endif
+    sinks.emplace_back(std::make_shared<ostream_sink_st>(out, false));
+    return std::make_shared<spdlog::logger>(name, sinks.begin(), sinks.end());
+}
 
 auto make_logger(const char* name, FILE* fout) noexcept(false) {
     using namespace spdlog::sinks;

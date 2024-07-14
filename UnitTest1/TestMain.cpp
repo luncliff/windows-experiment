@@ -7,10 +7,9 @@
 #include <memory>
 #include <string_view>
 
-#define SPDLOG_USE_STDFORMAT
+#include "winrt_fmt_helper.hpp"
 #define SPDLOG_WCHAR_TO_UTF8_SUPPORT
 #define SPDLOG_WCHAR_FILENAMES
-#include <fmt/format.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/stdout_sinks.h>
 #include <spdlog/spdlog.h>

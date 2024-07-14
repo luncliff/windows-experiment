@@ -1,40 +1,33 @@
 {
   "name": "windows-experiment",
-  "version": "0.2415.0",
+  "version": "0.2438.0",
   "description": "Personal Windows SDK experiments",
   "homepage": "https://github.com/luncliff/windows-experiment",
   "license": "CC0-1.0",
   "supports": "windows",
   "dependencies": [
     {
-      "name": "protobuf",
-      "host": true
-    },
-    "protobuf",
-    "spdlog",
-    "directxtex",
-    {
       "name": "directxtex",
       "features": [
+        "dx12"
+      ]
+    },
+    {
+      "name": "directxtex",
+      "host": true,
+      "features": [
         "tools"
-      ],
-      "host": true
+      ]
     },
     "directxtk",
+    "directxtk12",
     {
-      "name": "directxtk",
+      "name": "directxtk12",
+      "host": true,
       "features": [
         "tools"
-      ],
-      "host": true
+      ]
     },
-    "directxmesh",
-    {
-      "name": "directxmesh",
-      "features": [
-        "tools"
-      ],
-      "host": true
-    }
+    "spdlog"
   ]
 }

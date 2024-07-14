@@ -3,7 +3,8 @@
 #include "App.xaml.h"
 #include "MainWindow.xaml.h"
 
-#include "winrt_fmt_helper.hpp"
+#include <source_location>
+#define SPDLOG_WCHAR_TO_UTF8_SUPPORT
 #include <spdlog/spdlog.h>
 
 namespace winrt::App1::implementation {
@@ -30,12 +31,12 @@ void App::OnUnhandledException(IInspectable const&, UnhandledExceptionEventArgs 
         // ...
         return;
     winrt::hstring txt = e.Message();
-    spdlog::critical("{}: {}", "App", txt);
+    spdlog::critical(L"App: {:s}", static_cast<std::wstring_view>(txt));
     __debugbreak();
 }
 
 void App::OnLaunched(LaunchActivatedEventArgs const&) {
-    spdlog::info("{}: {}", "App", __func__);
+    spdlog::info("App: {:s}", std::source_location::current().function_name());
     window = make<MainWindow>();
     window.Activate();
 }

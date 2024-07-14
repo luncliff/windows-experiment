@@ -62,8 +62,9 @@ struct fmt::formatter<winrt::hresult_error> {
 
     template <typename FormatContext>
     auto format(const winrt::hresult_error& ex, FormatContext& ctx) const -> decltype(ctx.out()) {
-        return fmt::format_to(ctx.out(), L"{:#08x} {}", static_cast<uint32_t>(ex.code()),
-                              static_cast<std::wstring_view>(ex.message()));
+        uint32_t c = static_cast<uint32_t>(ex.code());
+        std::wstring_view m = ex.message();
+        return fmt::format_to(ctx.out(), L"{:#08x} {}", c, m);
     }
 };
 

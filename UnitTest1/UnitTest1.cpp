@@ -1,13 +1,10 @@
 // https://learn.microsoft.com/en-us/visualstudio/test/microsoft-visualstudio-testtools-cppunittestframework-api-reference?view=vs-2022
 #include <CppUnitTest.h>
 
-#include <functional>
-#include <spdlog/spdlog.h>
-#define USING_DIRECTX_HEADERS
-#include <directxtk12/ScreenGrab.h>
-
 #include "DeviceResources.h"
-#include "winrt_fmt_helper.hpp"
+
+#include <directxtk12/ScreenGrab.h>
+#include <functional>
 
 using Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 using Microsoft::VisualStudio::CppUnitTestFramework::TestClass;
