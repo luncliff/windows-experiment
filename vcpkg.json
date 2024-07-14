@@ -6,35 +6,27 @@
   "license": "CC0-1.0",
   "supports": "windows",
   "dependencies": [
+    "directxtex",
+    {
+      "name": "directxtex",
+      "host": true,
+      "features": [
+        "tools"
+      ]
+    },
+    "directxtk12",
+    {
+      "name": "directxtk12",
+      "host": true,
+      "features": [
+        "tools"
+      ]
+    },
     {
       "name": "protobuf",
       "host": true
     },
     "protobuf",
-    "spdlog",
-    "directxtex",
-    {
-      "name": "directxtex",
-      "features": [
-        "tools"
-      ],
-      "host": true
-    },
-    "directxtk",
-    {
-      "name": "directxtk",
-      "features": [
-        "tools"
-      ],
-      "host": true
-    },
-    "directxmesh",
-    {
-      "name": "directxmesh",
-      "features": [
-        "tools"
-      ],
-      "host": true
-    }
+    "spdlog"
   ]
 }
