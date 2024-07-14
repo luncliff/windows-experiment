@@ -6,7 +6,12 @@
   "license": "CC0-1.0",
   "supports": "windows",
   "dependencies": [
-    "directxtex",
+    {
+      "name": "directxtex",
+      "features": [
+        "dx12"
+      ]
+    },
     {
       "name": "directxtex",
       "host": true,
