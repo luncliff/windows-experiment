@@ -1,8 +1,10 @@
 ﻿/**
  * @file DeviceResources.cpp
  * @brief A wrapper for the Direct3D 12 device and swapchain
+ * @see https://github.com/Microsoft/DirectML/blob/master/Samples/DirectMLSuperResolution/DeviceResources.cpp
+ * @see https://github.com/Microsoft/DirectX-Graphics-Samples/blob/master/Samples/Desktop/D3D12Raytracing/src/D3D12RaytracingHelloWorld/DeviceResources.cpp
  * @see https://github.com/Microsoft/DirectXTK12/wiki/DeviceResources
- *
+ * 
  * @copyright Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License.
  *
  * @note Changes
@@ -13,6 +15,10 @@
  *  - Update header includes
  *  - GetAdapter receives DXGI_GPU_PREFERENCE
  *  - Linker configuration for Debug build
+ *  - Move member functions to DeviceResources.cpp file
+ *  - Replace SetWindow to WindowSizeChanged, remove m_window
+ *  - Change RECT m_outputSize to SIZE m_outputSize
+ *  - Create CreateSizeDependentResources, organize common part to UpdateSwapChainResources
  */
 #include "pch.h"
 
@@ -47,9 +53,9 @@ DeviceResources::DeviceResources(DXGI_FORMAT backBufferFormat, DXGI_FORMAT depth
                                  D3D_FEATURE_LEVEL minFeatureLevel, unsigned int flags) noexcept(false)
     : m_backBufferIndex(0), m_fenceValues{}, m_rtvDescriptorSize(0), m_screenViewport{}, m_scissorRect{},
       m_backBufferFormat(backBufferFormat), m_depthBufferFormat(depthBufferFormat), m_backBufferCount(backBufferCount),
-      m_d3dMinFeatureLevel(minFeatureLevel), m_window(nullptr), m_d3dFeatureLevel(D3D_FEATURE_LEVEL_11_0),
-      m_dxgiFactoryFlags(0), m_outputSize{0, 0, 1, 1}, m_colorSpace(DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709),
-      m_options(flags), m_deviceNotify(nullptr) {
+      m_d3dMinFeatureLevel(minFeatureLevel), m_d3dFeatureLevel(D3D_FEATURE_LEVEL_11_0), m_dxgiFactoryFlags(0),
+      m_outputSize{0, 0}, m_colorSpace(DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709), m_options(flags),
+      m_deviceNotify(nullptr) {
     if (backBufferCount > MAX_BACK_BUFFER_COUNT) {
         throw std::out_of_range("backBufferCount too large");
     }
@@ -224,10 +230,9 @@ void DeviceResources::CreateDeviceResources() {
 }
 
 // These resources need to be recreated every time the window size is changed.
-void DeviceResources::CreateWindowSizeDependentResources() {
-    if (!m_window) {
-        throw std::exception("Call SetWindow with a valid Win32 window handle");
-    }
+void DeviceResources::CreateWindowSizeDependentResources(HWND window, int width, int height) {
+    if (!window)
+        throw std::invalid_argument("Call with a valid Win32 window handle");
 
     // Wait until all previous GPU work is complete.
     WaitForGpu();
@@ -239,8 +244,8 @@ void DeviceResources::CreateWindowSizeDependentResources() {
     }
 
     // Determine the render target size in pixels.
-    UINT backBufferWidth = std::max<UINT>(static_cast<UINT>(m_outputSize.right - m_outputSize.left), 1u);
-    UINT backBufferHeight = std::max<UINT>(static_cast<UINT>(m_outputSize.bottom - m_outputSize.top), 1u);
+    UINT backBufferWidth = std::max<UINT>(static_cast<UINT>(width), 1u);
+    UINT backBufferHeight = std::max<UINT>(static_cast<UINT>(height), 1u);
     DXGI_FORMAT backBufferFormat = NoSRGB(m_backBufferFormat);
 
     // If the swap chain already exists, resize it, otherwise create one.
@@ -285,19 +290,22 @@ void DeviceResources::CreateWindowSizeDependentResources() {
 
         // Create a swap chain for the window.
         winrt::com_ptr<IDXGISwapChain1> swapChain;
-        winrt::check_hresult(m_dxgiFactory->CreateSwapChainForHwnd(m_commandQueue.get(), m_window, &swapChainDesc,
+        winrt::check_hresult(m_dxgiFactory->CreateSwapChainForHwnd(m_commandQueue.get(), window, &swapChainDesc,
                                                                    &fsSwapChainDesc, nullptr, swapChain.put()));
 
         winrt::check_hresult(swapChain->QueryInterface(m_swapChain.put()));
 
         // This class does not support exclusive full-screen mode and prevents DXGI from responding to the ALT+ENTER
         // shortcut
-        winrt::check_hresult(m_dxgiFactory->MakeWindowAssociation(m_window, DXGI_MWA_NO_ALT_ENTER));
+        winrt::check_hresult(m_dxgiFactory->MakeWindowAssociation(window, DXGI_MWA_NO_ALT_ENTER));
     }
 
     // Handle color space settings for HDR
     UpdateColorSpace();
+    UpdateSwapChainResources(backBufferWidth, backBufferHeight);
+}
 
+void DeviceResources::UpdateSwapChainResources(UINT backBufferWidth, UINT backBufferHeight) {
     // Obtain the back buffers for this window which will be the final render targets
     // and create render target views for each of them.
     for (UINT n = 0; n < m_backBufferCount; n++) {
@@ -362,31 +370,95 @@ void DeviceResources::CreateWindowSizeDependentResources() {
     m_scissorRect.bottom = static_cast<LONG>(backBufferHeight);
 }
 
-// This method is called when the Win32 window is created (or re-created).
-void DeviceResources::SetWindow(HWND window, int width, int height) {
-    m_window = window;
+void DeviceResources::CreateSizeDependentResources(UINT width, UINT height) {
+    if (width == 0 || height == 0)
+        throw std::invalid_argument{__FUNCTION__};
+    if ((width == m_outputSize.cx) && (height == m_outputSize.cy))
+        return;
 
-    m_outputSize.left = m_outputSize.top = 0;
-    m_outputSize.right = width;
-    m_outputSize.bottom = height;
+    m_outputSize.cx = width;
+    m_outputSize.cy = height;
+
+    // Wait until all previous GPU work is complete.
+    WaitForGpu();
+
+    // Release resources that are tied to the swap chain and update fence values.
+    for (UINT n = 0; n < m_backBufferCount; n++) {
+        m_renderTargets[n] = nullptr;
+        m_fenceValues[n] = m_fenceValues[m_backBufferIndex];
+    }
+
+    // Determine the render target size in pixels.
+    UINT backBufferWidth = std::max<UINT>(width, 1u);
+    UINT backBufferHeight = std::max<UINT>(height, 1u);
+    DXGI_FORMAT backBufferFormat = NoSRGB(m_backBufferFormat);
+
+    // If the swap chain already exists, resize it, otherwise create one.
+    if (m_swapChain) {
+        // If the swap chain already exists, resize it.
+        HRESULT hr = m_swapChain->ResizeBuffers(m_backBufferCount, backBufferWidth, backBufferHeight, backBufferFormat,
+                                                (m_options & c_AllowTearing) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0u);
+
+        if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET) {
+#ifdef _DEBUG
+            char buff[64] = {};
+            sprintf_s(buff, "Device Lost on ResizeBuffers: Reason code 0x%08X\n",
+                      (hr == DXGI_ERROR_DEVICE_REMOVED) ? m_d3dDevice->GetDeviceRemovedReason() : hr);
+            OutputDebugStringA(buff);
+#endif
+            // If the device was removed for any reason, a new device and swap chain will need to be created.
+            HandleDeviceLost();
+
+            // Everything is set up now. Do not continue execution of this method. HandleDeviceLost will reenter this
+            // method and correctly set up the new device.
+            return;
+        } else {
+            winrt::check_hresult(hr);
+        }
+    } else {
+        // Create a descriptor for the swap chain.
+        DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
+        swapChainDesc.Width = backBufferWidth;
+        swapChainDesc.Height = backBufferHeight;
+        swapChainDesc.Format = backBufferFormat;
+        swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+        swapChainDesc.BufferCount = m_backBufferCount;
+        swapChainDesc.SampleDesc.Count = 1;
+        swapChainDesc.SampleDesc.Quality = 0;
+        swapChainDesc.Scaling = DXGI_SCALING_STRETCH;
+        swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+        swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
+        swapChainDesc.Flags = (m_options & c_AllowTearing) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0u;
+
+        winrt::com_ptr<IDXGISwapChain1> swapChain;
+        if (HRESULT hr = m_dxgiFactory->CreateSwapChainForComposition(m_commandQueue.get(), &swapChainDesc, nullptr,
+                                                                      swapChain.put());
+            FAILED(hr))
+            winrt::check_hresult(hr);
+
+        m_swapChain = swapChain.try_as<IDXGISwapChain3>();
+    }
+
+    // Handle color space settings for HDR
+    UpdateColorSpace();
+    UpdateSwapChainResources(backBufferWidth, backBufferHeight);
 }
 
 // This method is called when the Win32 window changes size.
-bool DeviceResources::WindowSizeChanged(int width, int height) {
-    RECT newRc;
-    newRc.left = newRc.top = 0;
-    newRc.right = width;
-    newRc.bottom = height;
-    if (newRc.left == m_outputSize.left && newRc.top == m_outputSize.top && newRc.right == m_outputSize.right &&
-        newRc.bottom == m_outputSize.bottom) {
+bool DeviceResources::WindowSizeChanged(HWND window, int width, int height) {
+    if (width == 0 || height == 0)
+        throw std::invalid_argument{__FUNCTION__};
+
+    if ((width == m_outputSize.cx) && (height == m_outputSize.cy)) {
         // Handle color space settings for HDR
         UpdateColorSpace();
 
         return false;
     }
 
-    m_outputSize = newRc;
-    CreateWindowSizeDependentResources();
+    m_outputSize.cx = width;
+    m_outputSize.cy = height;
+    CreateWindowSizeDependentResources(window, width, height);
     return true;
 }
 
@@ -422,7 +494,7 @@ void DeviceResources::HandleDeviceLost() {
 #endif
 
     CreateDeviceResources();
-    CreateWindowSizeDependentResources();
+    WaitForGpu();
 
     if (m_deviceNotify) {
         m_deviceNotify->OnDeviceRestored();
@@ -511,7 +583,7 @@ void DeviceResources::WaitForGpu() noexcept {
 }
 
 // Device Accessors.
-RECT DeviceResources::GetOutputSize() const {
+SIZE DeviceResources::GetOutputSize() const {
     return m_outputSize;
 }
 

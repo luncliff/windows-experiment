@@ -1,6 +1,8 @@
 ﻿/**
  * @file DeviceResources.h
  * @brief A wrapper for the Direct3D 12 device and swapchain
+ * @see https://github.com/Microsoft/DirectML/blob/master/Samples/DirectMLSuperResolution/DeviceResources.h
+ * @see https://github.com/Microsoft/DirectX-Graphics-Samples/blob/master/Samples/Desktop/D3D12Raytracing/src/D3D12RaytracingHelloWorld/DeviceResources.h
  * @see https://github.com/Microsoft/DirectXTK12/wiki/DeviceResources
  * 
  * @copyright Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License.
@@ -13,6 +15,8 @@
  *  - Update header includes 
  *  - GetAdapter receives DXGI_GPU_PREFERENCE
  *  - Move member functions to DeviceResources.cpp file
+ *  - Replace SetWindow to WindowSizeChanged
+ *  - Create CreateSizeDependentResources, organize common part to UpdateSwapChainResources
  */
 #pragma once
 #include <d3d12.h>
@@ -46,9 +50,9 @@ class DeviceResources final {
     ~DeviceResources();
 
     void CreateDeviceResources();
-    void CreateWindowSizeDependentResources();
-    void SetWindow(HWND window, int width, int height);
-    bool WindowSizeChanged(int width, int height);
+    void CreateSizeDependentResources(UINT width, UINT height);
+    void CreateWindowSizeDependentResources(HWND window, int width, int height);
+    bool WindowSizeChanged(HWND window, int width, int height);
     void HandleDeviceLost();
     void RegisterDeviceNotify(IDeviceNotify* deviceNotify);
     void Prepare(D3D12_RESOURCE_STATES beforeState = D3D12_RESOURCE_STATE_PRESENT);
@@ -56,7 +60,7 @@ class DeviceResources final {
     void WaitForGpu() noexcept;
 
     // Device Accessors.
-    RECT GetOutputSize() const;
+    SIZE GetOutputSize() const;
 
     // Direct3D Accessors.
     ID3D12Device* GetD3DDevice() const;
@@ -88,6 +92,7 @@ class DeviceResources final {
     // If no such adapter can be found, try WARP. Otherwise throw an exception.
     void GetAdapter(IDXGIAdapter1** ppAdapter, DXGI_GPU_PREFERENCE preference = DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE);
     void UpdateColorSpace();
+    void UpdateSwapChainResources(UINT backBufferWidth, UINT backBufferHeight);
 
     static const size_t MAX_BACK_BUFFER_COUNT = 3;
 
@@ -124,10 +129,9 @@ class DeviceResources final {
     D3D_FEATURE_LEVEL m_d3dMinFeatureLevel;
 
     // Cached device properties.
-    HWND m_window;
     D3D_FEATURE_LEVEL m_d3dFeatureLevel;
     DWORD m_dxgiFactoryFlags;
-    RECT m_outputSize;
+    SIZE m_outputSize;
 
     // HDR Support
     DXGI_COLOR_SPACE_TYPE m_colorSpace;
