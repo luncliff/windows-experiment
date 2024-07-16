@@ -39,7 +39,7 @@ class DeviceResourcesTest : public TestClass<DeviceResourcesTest> {
     }
 
     // https://learn.microsoft.com/en-us/windows/win32/api/dxgi1_2/nf-dxgi1_2-idxgifactory2-createswapchainforcomposition
-    TEST_METHOD(TestSwapchain3) {
+    TEST_METHOD(TestCreateSwapchain3) {
         winrt::com_ptr<IDXGIFactory4> factory = nullptr;
         Assert::AreEqual(res.GetDXGIFactory()->QueryInterface(factory.put()), S_OK);
 
@@ -81,9 +81,35 @@ class DeviceResourcesTest : public TestClass<DeviceResourcesTest> {
     }
 
     TEST_METHOD(TestInvalidHWND) {
-        HWND windows = nullptr;
-        res.SetWindow(windows, 0, 0);
-        Assert::ExpectException<std::exception>( // invalid argument
-            std::bind_front(&DX::DeviceResources::CreateWindowSizeDependentResources, &res));
+        HWND hwnd = nullptr;
+        try {
+            res.WindowSizeChanged(hwnd, 0, 0);
+            Assert::Fail(L"reached to unreachable code");
+        } catch (const std::exception&) {
+            // ...
+        }
+    }
+
+    TEST_METHOD(TestSizeDependentResources) {
+        res.CreateSizeDependentResources(512, 512);
+
+        winrt::com_ptr<IDXGISwapChain3> swapchain = {res.GetSwapChain(), winrt::take_ownership_from_abi};
+        Assert::IsNotNull(swapchain.get());
+        swapchain->AddRef();
+
+        DXGI_SWAP_CHAIN_DESC1 desc{};
+        swapchain->GetDesc1(&desc);
+        Assert::AreEqual<UINT32>(desc.Format, res.GetBackBufferFormat());
+        Assert::AreEqual<UINT>(desc.Width, 512);
+        Assert::AreEqual<UINT>(desc.Width, res.GetOutputSize().cx);
+        Assert::AreEqual<UINT>(desc.Height, 512);
+        Assert::AreEqual<UINT>(desc.Height, res.GetOutputSize().cy);
+
+        res.CreateSizeDependentResources(256, 512);
+        swapchain->GetDesc1(&desc);
+        Assert::AreEqual<UINT>(desc.Width, 256);
+        Assert::AreEqual<UINT>(desc.Width, res.GetOutputSize().cx);
+        Assert::AreEqual<UINT>(desc.Height, 512);
+        Assert::AreEqual<UINT>(desc.Height, res.GetOutputSize().cy);
     }
 };
