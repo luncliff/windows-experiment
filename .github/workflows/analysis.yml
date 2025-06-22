@@ -23,8 +23,7 @@ jobs:
         with:
           msbuild-architecture: x64
       - uses: NuGet/setup-nuget@v2.0.1
-
-      - uses: SonarSource/sonarcloud-github-c-cpp@v2.0.2
+      - uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v5
 
       - uses: lukka/run-vcpkg@v11.5
         with:
@@ -48,7 +47,8 @@ jobs:
 
       - name: "Run build-wrapper"
         run: |
-          build-wrapper-win-x86-64 --out-dir bw-output MSBuild App1/App1.vcxproj /t:rebuild /nodeReuse:false /p:platform="x64" /p:configuration="Debug" /p:BuildProjectReferences=false
+          build-wrapper-win-x86-64 --out-dir bw-output `
+            MSBuild App1/App1.vcxproj /t:rebuild /nodeReuse:false /p:platform="x64" /p:configuration="Debug" /p:BuildProjectReferences=false
         shell: pwsh
 
       - uses: actions/cache@v4.2.3
@@ -56,9 +56,9 @@ jobs:
           key: "sonar-${{ runner.os }}"
           path: "${{ github.workspace }}/.sonar" # SONAR_USER_HOME
 
-      - name: "Run sonar-scanner"
+      - uses: SonarSource/sonarqube-scan-action@v5.2.0
+        with: # --define sonar.verbose=true?
+          args: >
+            --define sonar.cfamily.build-wrapper-output="bw-output"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          sonar-scanner --define sonar.verbose=true --define sonar.cfamily.build-wrapper-output="bw-output"
