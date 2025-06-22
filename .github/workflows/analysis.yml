@@ -24,7 +24,7 @@ jobs:
           msbuild-architecture: x64
       - uses: NuGet/setup-nuget@v2.0.1
 
-      - uses: SonarSource/sonarcloud-github-c-cpp@v2.0.2
+      - uses: SonarSource/sonarcloud-github-c-cpp@v3.2.0
 
       - uses: lukka/run-vcpkg@v11.5
         with:
