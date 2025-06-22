@@ -51,7 +51,7 @@ jobs:
           build-wrapper-win-x86-64 --out-dir bw-output MSBuild App1/App1.vcxproj /t:rebuild /nodeReuse:false /p:platform="x64" /p:configuration="Debug" /p:BuildProjectReferences=false
         shell: pwsh
 
-      - uses: actions/cache@v4.0.2
+      - uses: actions/cache@v4.2.3
         with:
           key: "sonar-${{ runner.os }}"
           path: "${{ github.workspace }}/.sonar" # SONAR_USER_HOME
