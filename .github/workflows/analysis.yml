@@ -1,10 +1,25 @@
 #
 # References
+#   https://github.com/sonarsource-cfamily-examples/windows-cmake-gh-actions-sc
 #   https://github.com/sonarsource-cfamily-examples/windows-msbuild-gh-actions-sc
+#   https://devblogs.microsoft.com/cppblog/vcpkg-2023-06-20-and-2023-07-21-releases-github-dependency-graph-support-android-tested-triplets-xbox-triplet-improvements-and-more
+#   https://devblogs.microsoft.com/cppblog/vcpkg-integration-with-the-github-dependency-graph
 #
 name: Analysis
 
-on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+    branches-ignore:
+      - docs
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
 
 jobs:
   sonarcloud:
@@ -13,6 +28,8 @@ jobs:
 
     env:
       SONAR_USER_HOME: "${{ github.workspace }}/.sonar"
+      # VCPKG_DOWNLOADS: "${{ github.workspace }}/packages"
+      # VCPKG_DEFAULT_BINARY_CACHE: "${{ github.workspace }}/packages"
 
     steps:
       - uses: actions/checkout@v4
@@ -22,10 +39,13 @@ jobs:
       - uses: microsoft/setup-msbuild@v2
         with:
           msbuild-architecture: x64
-      - uses: NuGet/setup-nuget@v2.0.1
+      - uses: NuGet/setup-nuget@v2
+        with:
+           nuget-version: '6.x'
       - uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v5
 
       - uses: lukka/run-vcpkg@v11.5
+        if: ${{ github.ref_name != 'main' }}
         with:
           vcpkgDirectory: "C:/vcpkg"
           vcpkgGitCommitId: "ef7dbf94b9198bc58f45951adcf1f041fcbc5ea0" # 2025.06.13
@@ -34,7 +54,19 @@ jobs:
         env:
           VCPKG_FEATURE_FLAGS: "registries,binarycaching,manifests"
           VCPKG_DEFAULT_TRIPLET: "x64-windows"
-          # VCPKG_INSTALLED_DIR: ${{ github.workspace }}/externals
+          VCPKG_INSTALLED_DIR: ${{ github.workspace }}/externals
+
+      - uses: lukka/run-vcpkg@v11.5 # if branch is main, update the dependencygraph
+        if: ${{ github.ref_name == 'main' }}
+        with:
+          vcpkgDirectory: "C:/vcpkg"
+          vcpkgGitCommitId: "ef7dbf94b9198bc58f45951adcf1f041fcbc5ea0" # 2025.06.13
+          vcpkgJsonGlob: "**/vcpkg.json"
+          runVcpkgInstall: true
+        env:
+          VCPKG_FEATURE_FLAGS: "registries,binarycaching,manifests,dependencygraph"
+          VCPKG_DEFAULT_TRIPLET: "x64-windows"
+          VCPKG_INSTALLED_DIR: ${{ github.workspace }}/externals
 
       - name: "Run vcpkg-integrate"
         run: vcpkg integrate install
@@ -55,6 +87,12 @@ jobs:
         with:
           key: "sonar-${{ runner.os }}"
           path: "${{ github.workspace }}/.sonar" # SONAR_USER_HOME
+
+      - uses: actions/cache@v4.2.3
+        if: ${{ false }}
+        with:
+          key: "vcpkg-${{ runner.os }}"
+          path: "${{ github.workspace }}/packages"
 
       - uses: SonarSource/sonarqube-scan-action@v5.2.0
         with: # --define sonar.verbose=true?
