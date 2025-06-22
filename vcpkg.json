@@ -1,6 +1,7 @@
 {
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
   "name": "windows-experiment",
-  "version": "0.2438.0",
+  "version": "0.2525.0",
   "description": "Personal Windows SDK experiments",
   "homepage": "https://github.com/luncliff/windows-experiment",
   "license": "CC0-1.0",
