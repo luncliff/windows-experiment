@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="App1.SupportPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:App1"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <ScrollViewer>
+        <StackPanel
+            Orientation="Vertical" 
+            HorizontalAlignment="Stretch" 
+            VerticalAlignment="Top" 
+            Margin="16" >
+            
+            <TextBlock Text="Support" 
+                       FontSize="24" 
+                       FontWeight="Bold"
+                       Margin="0,0,0,16" />
+            
+            <TextBlock Text="Welcome to the Support page. Here you can find help and resources for using this application." 
+                       FontSize="14"
+                       TextWrapping="Wrap"
+                       Margin="0,0,0,16" />
+            
+            <TextBlock Text="Frequently Asked Questions" 
+                       FontSize="18" 
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,12" />
+            
+            <TextBlock Text="Q: How do I navigate between pages?" 
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,4" />
+            <TextBlock Text="A: Use the navigation menu on the left side of the application."
+                       Margin="0,0,0,12"
+                       TextWrapping="Wrap" />
+            
+            <TextBlock Text="Q: Where can I find application settings?" 
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,4" />
+            <TextBlock Text="A: Click on the Settings button at the bottom of the navigation menu."
+                       Margin="0,0,0,16"
+                       TextWrapping="Wrap" />
+            
+            <TextBlock Text="Contact Information" 
+                       FontSize="18" 
+                       FontWeight="SemiBold"
+                       Margin="0,0,0,12" />
+            
+            <HyperlinkButton Content="Email Support" 
+                           NavigateUri="mailto:support@example.com"
+                           Margin="0,0,0,8" />
+            
+            <HyperlinkButton Content="Visit Website" 
+                           NavigateUri="https://example.com"
+                           Margin="0,0,0,8" />
+            
+            <TextBlock Text="Application Version: 1.0.0" 
+                       FontSize="12"
+                       Foreground="Gray"
+                       Margin="0,16,0,0" />
+        </StackPanel>
+    </ScrollViewer>
+</Page>
