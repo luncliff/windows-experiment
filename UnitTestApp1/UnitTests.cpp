@@ -4,6 +4,7 @@
 
 #include "MainWindow.g.h"
 
+using namespace winrt::Microsoft::UI::Xaml::Controls;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 using winrt::UnitTestApp1::MainWindow;
