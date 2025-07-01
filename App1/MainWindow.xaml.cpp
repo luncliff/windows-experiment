@@ -4,6 +4,8 @@
 #if __has_include("MainWindow.g.cpp")
 #include "MainWindow.g.cpp"
 #endif
+#include "SettingsPage.xaml.h"
+
 #include <microsoft.ui.xaml.window.h>
 
 #include <spdlog/spdlog.h>
@@ -11,12 +13,9 @@
 namespace winrt::App1::implementation {
 
 using Microsoft::UI::Xaml::Controls::Button;
-using Windows::UI::Xaml::Interop::TypeKind;
-using Windows::UI::Xaml::Interop::TypeName;
 
 /// @see https://learn.microsoft.com/pl-pl/windows/apps/design/controls/navigationview
 MainWindow::MainWindow() {
-    InitializeComponent();
     ExtendsContentIntoTitleBar(true);
     // see https://learn.microsoft.com/en-us/windows/apps/develop/ui-input/retrieve-hwnd
     auto native = this->try_as<::IWindowNative>();
@@ -39,33 +38,23 @@ void MainWindow::on_window_visibility_changed(IInspectable const&, WindowVisibil
 }
 
 void MainWindow::on_item_invoked(NavigationView const&, NavigationViewItemInvokedEventArgs const& e) {
-    spdlog::info("{}: {}", "MainWindow", __func__);
-    // see XamlTypeInfo.g.cpp
+    // there are very limited types for params... read the document.
     // see https://learn.microsoft.com/en-us/uwp/api/windows.ui.xaml.controls.frame.navigate
     Frame frame = ShellFrame();
-    // there are very limited types for params... read the document above.
-    uintptr_t ptr = reinterpret_cast<uintptr_t>(this);
-    IInspectable params = winrt::box_value(ptr);
     if (e.IsSettingsInvoked()) {
-        TypeName name{L"App1.SettingsPage", TypeKind::Custom};
-        frame.Navigate(name, params);
+        frame.Navigate(xaml_typename<App1::SettingsPage>()); // same with App1.SettingsPage
         return;
     }
-    auto content = e.InvokedItem().as<winrt::hstring>();
-    if (content == L"TestPage1") {
-        TypeName name{L"App1.TestPage1", TypeKind::Custom};
-        frame.Navigate(name, params);
-        return;
-    }
-    if (content == L"Support") {
-        TypeName name{L"App1.SupportPage", TypeKind::Custom};
-        frame.Navigate(name, params);
-        return;
-    }
+    //auto content = e.InvokedItem().as<winrt::hstring>();
+    //if (content == L"TestPage1") {
+    //    return;
+    //}
+    //if (content == L"Support") {
+    //    return;
+    //}
 }
 
 void MainWindow::on_back_requested(NavigationView const&, NavigationViewBackRequestedEventArgs const&) {
-    spdlog::info("{}: {}", "MainWindow", __func__);
     Frame frame = ShellFrame();
     if (frame.CanGoBack())
         frame.GoBack();

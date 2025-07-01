@@ -8,7 +8,7 @@ using Microsoft::UI::Xaml::Navigation::NavigationEventArgs;
 struct SettingsPage : SettingsPageT<SettingsPage> {
     SettingsPage();
 
-    void OnNavigatedTo(const NavigationEventArgs& e);
+    void OnNavigatedTo(const NavigationEventArgs&);
     void OnNavigatedFrom(const NavigationEventArgs&);
 };
 } // namespace winrt::App1::implementation

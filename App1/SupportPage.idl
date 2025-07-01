@@ -1,7 +1,0 @@
-namespace App1 {
-
-[default_interface] runtimeclass SupportPage : Microsoft.UI.Xaml.Controls.Page {
-    SupportPage();
-}
-
-} // namespace App1
