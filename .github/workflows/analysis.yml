@@ -45,28 +45,10 @@ jobs:
       - uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v5
 
       - uses: lukka/run-vcpkg@v11.5
-        if: ${{ github.ref_name != 'main' }}
         with:
           vcpkgDirectory: "C:/vcpkg"
           vcpkgGitCommitId: "ef7dbf94b9198bc58f45951adcf1f041fcbc5ea0" # 2025.06.13
-          vcpkgJsonGlob: "**/vcpkg.json"
-          runVcpkgInstall: true
-        env:
-          VCPKG_FEATURE_FLAGS: "registries,binarycaching,manifests"
-          VCPKG_DEFAULT_TRIPLET: "x64-windows"
-          VCPKG_INSTALLED_DIR: ${{ github.workspace }}/externals
-
-      - uses: lukka/run-vcpkg@v11.5 # if branch is main, update the dependencygraph
-        if: ${{ github.ref_name == 'main' }}
-        with:
-          vcpkgDirectory: "C:/vcpkg"
-          vcpkgGitCommitId: "ef7dbf94b9198bc58f45951adcf1f041fcbc5ea0" # 2025.06.13
-          vcpkgJsonGlob: "**/vcpkg.json"
-          runVcpkgInstall: true
-        env:
-          VCPKG_FEATURE_FLAGS: "registries,binarycaching,manifests,dependencygraph"
-          VCPKG_DEFAULT_TRIPLET: "x64-windows"
-          VCPKG_INSTALLED_DIR: ${{ github.workspace }}/externals
+          runVcpkgInstall: false
 
       - name: "Run vcpkg-integrate"
         run: vcpkg integrate install
@@ -82,6 +64,8 @@ jobs:
           build-wrapper-win-x86-64 --out-dir bw-output `
             MSBuild App1/App1.vcxproj /t:rebuild /nodeReuse:false /p:platform="x64" /p:configuration="Debug" /p:BuildProjectReferences=false
         shell: pwsh
+        env:
+          VCPKG_FEATURE_FLAGS: "registries,binarycaching,manifests"
 
       - uses: actions/cache@v4.2.3
         with:
