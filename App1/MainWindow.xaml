@@ -14,17 +14,18 @@
     <NavigationView x:Name="navigationView"
                     ItemInvoked="on_item_invoked" IsBackEnabled="{x:Bind ShellFrame.CanGoBack, Mode=OneWay}"
                     BackRequested="on_back_requested" IsSettingsVisible="True">
+        <!--
         <NavigationView.MenuItems>
             <NavigationViewItem Content="TestPage1" Tag="TestPage1" Icon="Document" />
         </NavigationView.MenuItems>
         <NavigationView.FooterMenuItems>
             <NavigationViewItem Content="Support" Tag="Support" >
                 <NavigationViewItem.Icon>
-                    <!-- see https://learn.microsoft.com/en-us/windows/apps/design/style/segoe-ui-symbol-font -->
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE897;"/>
                 </NavigationViewItem.Icon>
             </NavigationViewItem>
         </NavigationView.FooterMenuItems>
+        -->
         <!-- ... -->
         <Frame x:Name="ShellFrame" />
     </NavigationView>

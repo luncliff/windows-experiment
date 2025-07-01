@@ -13,47 +13,5 @@
         HorizontalAlignment="Stretch" 
         VerticalAlignment="Top" 
         Margin="16" >
-        <TextBlock
-            Text="Settings" 
-            FontFamily="Segoe UI"
-            FontSize="32" 
-            Padding="8"/>
-        <Rectangle
-            HorizontalAlignment="Stretch" 
-            Fill="{StaticResource SystemAccentColorDark1}" 
-            Height="1"/>
-        <StackPanel 
-            Orientation="Horizontal" 
-            HorizontalAlignment="Stretch" 
-            Padding="0,10,0,10"
-            Spacing="8">
-            <TextBlock MinWidth="100" 
-                       MaxWidth="150" 
-                       VerticalAlignment="Center"
-                       Text="ApplicationTheme"/>
-            <DropDownButton Content="Dark">
-                <DropDownButton.Flyout>
-                    <MenuFlyout Placement="Bottom">
-                        <MenuFlyoutItem Text="Dark"/>
-                        <MenuFlyoutItem Text="Light"/>
-                    </MenuFlyout>
-                </DropDownButton.Flyout>
-            </DropDownButton>
-        </StackPanel>
-        <RelativePanel>
-            <TextBlock
-                RelativePanel.AlignLeftWithPanel="True"
-                RelativePanel.AlignVerticalCenterWithPanel="True"
-                MinWidth="100" 
-                MaxWidth="150" 
-                VerticalAlignment="Center"
-                Text="ToggleSwitch"/>
-            <ToggleSwitch 
-                RelativePanel.AlignRightWithPanel="True"
-                RelativePanel.AlignVerticalCenterWithPanel="True"
-                OffContent="Off"
-                OnContent="On"
-                IsOn="False" />
-        </RelativePanel>
     </StackPanel>
 </Page>

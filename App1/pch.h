@@ -1,11 +1,13 @@
 #pragma once
-// Windows headers
-#include <Windows.h>
+// clang-format off
+#include <windows.h>
+#include <unknwn.h>
+#include <hstring.h>
+#include <restrictederrorinfo.h>
+// clang-format on
 
-#include <d3d11_4.h>
-#include <d3d12.h>
-
-// WindowsApp SDK headers
+// Undefine GetCurrentTime macro to prevent
+// conflict with Storyboard::GetCurrentTime
 #undef GetCurrentTime
 #include <winrt/Microsoft.UI.Composition.h>
 #include <winrt/Microsoft.UI.Dispatching.h>
@@ -32,11 +34,6 @@
 #include <winrt/Windows.System.Threading.h>
 #include <winrt/Windows.System.h>
 #include <winrt/Windows.UI.Notifications.h>
-
-// MIDL headers
-#include <hstring.h>
-#include <restrictederrorinfo.h>
-#include <unknwn.h>
 
 // Standard C++
 #include <filesystem>
