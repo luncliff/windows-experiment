@@ -1,0 +1,13 @@
+import "BasicItem.idl";
+
+namespace App1 {
+
+runtimeclass BasicViewModel {
+  BasicViewModel();
+
+  IObservableVector<BasicItem> Items {
+    get;
+  };
+}
+
+} // namespace App1

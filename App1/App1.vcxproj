@@ -234,11 +234,33 @@ xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.dll" "$(Out
       <DependentUpon>SettingsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="BasicItem.h">
+      <SubType>Code</SubType>
+      <DependentUpon>BasicItem.idl</DependentUpon>
+    </ClInclude>
+    <ClInclude Include="BasicViewModel.h">
+      <SubType>Code</SubType>
+      <DependentUpon>BasicViewModel.idl</DependentUpon>
+    </ClInclude>
+    <ClInclude Include="TestPage1.xaml.h">
+      <DependentUpon>TestPage1.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="SupportPage.xaml.h">
+      <DependentUpon>SupportPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
     <Page Include="MainWindow.xaml" />
     <Page Include="SettingsPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="TestPage1.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="SupportPage.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
@@ -257,6 +279,22 @@ xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.dll" "$(Out
       <DependentUpon>SettingsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="TestPage1.xaml.cpp">
+      <DependentUpon>TestPage1.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="SupportPage.xaml.cpp">
+      <DependentUpon>SupportPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="BasicItem.cpp">
+      <SubType>Code</SubType>
+      <DependentUpon>BasicItem.idl</DependentUpon>
+    </ClCompile>
+    <ClCompile Include="BasicViewModel.cpp">
+      <SubType>Code</SubType>
+      <DependentUpon>BasicViewModel.idl</DependentUpon>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="MainWindow.idl">
@@ -265,6 +303,20 @@ xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.dll" "$(Out
     </Midl>
     <Midl Include="SettingsPage.idl">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="TestPage1.idl">
+      <DependentUpon>TestPage1.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="SupportPage.idl">
+      <DependentUpon>SupportPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="BasicItem.idl">
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="BasicViewModel.idl">
       <SubType>Code</SubType>
     </Midl>
   </ItemGroup>

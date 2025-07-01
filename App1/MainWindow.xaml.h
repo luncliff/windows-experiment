@@ -1,7 +1,7 @@
 #pragma once
 #include "MainWindow.g.h"
 
-#include <Windows.h>
+#include "BasicViewModel.g.h"
 
 namespace winrt::App1::implementation {
 using Microsoft::UI::Xaml::RoutedEventArgs;
@@ -20,7 +20,7 @@ using Windows::Foundation::IInspectable;
 /// @see http://aka.ms/winui-project-info
 struct MainWindow : MainWindowT<MainWindow> {
   private:
-    HWND hwnd = nullptr;
+    App1::BasicViewModel viewmodel0 = nullptr;
 
   public:
     MainWindow();
