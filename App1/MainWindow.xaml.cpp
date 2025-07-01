@@ -4,8 +4,12 @@
 #if __has_include("MainWindow.g.cpp")
 #include "MainWindow.g.cpp"
 #endif
+#include "BasicViewModel.h"
 #include "SettingsPage.xaml.h"
+#include "SupportPage.xaml.h"
+#include "TestPage1.xaml.h"
 
+#include <Windows.h>
 #include <microsoft.ui.xaml.window.h>
 
 #include <spdlog/spdlog.h>
@@ -17,14 +21,17 @@ using Microsoft::UI::Xaml::Controls::Button;
 /// @see https://learn.microsoft.com/pl-pl/windows/apps/design/controls/navigationview
 MainWindow::MainWindow() {
     ExtendsContentIntoTitleBar(true);
-    // see https://learn.microsoft.com/en-us/windows/apps/develop/ui-input/retrieve-hwnd
-    auto native = this->try_as<::IWindowNative>();
-    if (auto hr = native->get_WindowHandle(&hwnd); FAILED(hr))
-        winrt::throw_hresult(hr);
-    spdlog::info("{}: HWND {:p}", "MainWindow", static_cast<void*>(hwnd));
+    spdlog::info("HWND {:p}", reinterpret_cast<void*>(WindowHandle()));
+    // Create the shared ViewModels
+    viewmodel0 = winrt::make<implementation::BasicViewModel>();
 }
 
+/// @see https://learn.microsoft.com/en-us/windows/apps/develop/ui-input/retrieve-hwnd
 uint64_t MainWindow::WindowHandle() const noexcept {
+    auto native = this->try_as<::IWindowNative>();
+    HWND hwnd = nullptr;
+    if (auto hr = native->get_WindowHandle(&hwnd); FAILED(hr))
+        winrt::throw_hresult(hr);
     return reinterpret_cast<uint64_t>(hwnd);
 }
 
@@ -45,13 +52,21 @@ void MainWindow::on_item_invoked(NavigationView const&, NavigationViewItemInvoke
         frame.Navigate(xaml_typename<App1::SettingsPage>()); // same with App1.SettingsPage
         return;
     }
-    //auto content = e.InvokedItem().as<winrt::hstring>();
-    //if (content == L"TestPage1") {
-    //    return;
-    //}
-    //if (content == L"Support") {
-    //    return;
-    //}
+
+    auto item = e.InvokedItemContainer().as<NavigationViewItem>();
+    if (item == nullptr)
+        return;
+
+    IInspectable param = viewmodel0;
+    auto tag = unbox_value_or<winrt::hstring>(item.Tag(), L"");
+    if (tag == L"TestPage1") {
+        frame.Navigate(xaml_typename<App1::TestPage1>(), param);
+        return;
+    }
+    if (tag == L"SupportPage") {
+        frame.Navigate(xaml_typename<App1::SupportPage>(), param);
+        return;
+    }
 }
 
 void MainWindow::on_back_requested(NavigationView const&, NavigationViewBackRequestedEventArgs const&) {
