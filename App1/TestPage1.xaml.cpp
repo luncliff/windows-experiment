@@ -9,6 +9,7 @@
 #endif
 
 #include "BasicViewModel.h"
+#include "StepTimer.h"
 #include <microsoft.ui.xaml.media.dxinterop.h> // ISwapChainPanelNative for Microsoft namespace
 
 namespace winrt::App1::implementation {
@@ -16,6 +17,7 @@ namespace winrt::App1::implementation {
 TestPage1::TestPage1() {
     // Initialize page, resources ...
     resources.CreateDeviceResources();
+    DX::StepTimer timer{};
 }
 
 App1::BasicViewModel TestPage1::ViewModel() noexcept {

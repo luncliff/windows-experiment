@@ -102,9 +102,10 @@ class StepTimer final {
         m_qpcSecondCounter = 0;
     }
 
+    using UpdateProc = void (*)(void*);
+
     // Update timer state, calling the specified Update function the appropriate number of times.
-    template <typename TUpdate>
-    void Tick(const TUpdate& update) {
+    void Tick(UpdateProc update, void* udata) {
         // Query the current time.
         LARGE_INTEGER currentTime;
 
@@ -151,7 +152,7 @@ class StepTimer final {
                 m_leftOverTicks -= m_targetElapsedTicks;
                 m_frameCount++;
 
-                update();
+                update(udata);
             }
         } else {
             // Variable timestep update logic.
@@ -160,7 +161,7 @@ class StepTimer final {
             m_leftOverTicks = 0;
             m_frameCount++;
 
-            update();
+            update(udata);
         }
 
         // Track the current framerate.
