@@ -40,11 +40,9 @@ class DeviceResources {
     static constexpr UINT c_RequireTearingSupport = 0x2;
 
     DeviceResources(DXGI_FORMAT backBufferFormat, DXGI_FORMAT depthBufferFormat, UINT backBufferCount,
-                    D3D_FEATURE_LEVEL minFeatureLevel, UINT flags, UINT adapterIDoverride);
+                    D3D_FEATURE_LEVEL minFeatureLevel = D3D_FEATURE_LEVEL_12_0, UINT flags = 0) noexcept(false);
     ~DeviceResources() noexcept;
 
-    void InitializeDXGIAdapter();
-    void SetAdapterOverride(UINT adapterID) noexcept;
     void CreateDeviceResources();
     void CreateWindowSizeDependentResources();
     void SetWindow(HWND window, int width, int height) noexcept;
@@ -87,6 +85,7 @@ class DeviceResources {
 
   private:
     void MoveToNextFrame();
+    void InitializeDXGIAdapter();
     void InitializeAdapter(IDXGIAdapter1** ppAdapter);
 
     static constexpr size_t MAX_BACK_BUFFER_COUNT = 3;

@@ -26,11 +26,6 @@
 
 namespace DX {
 
-// Implementation of inline functions from header
-void DeviceResources::SetAdapterOverride(UINT adapterID) noexcept {
-    m_adapterIDoverride = adapterID;
-}
-
 RECT DeviceResources::GetOutputSize() const noexcept {
     return m_outputSize;
 }
@@ -153,9 +148,9 @@ DXGI_FORMAT NoSRGB(DXGI_FORMAT fmt) {
 
 // Constructor for DeviceResources.
 DeviceResources::DeviceResources(DXGI_FORMAT backBufferFormat, DXGI_FORMAT depthBufferFormat, UINT backBufferCount,
-                                 D3D_FEATURE_LEVEL minFeatureLevel, UINT flags, UINT adapterIDoverride)
+                                 D3D_FEATURE_LEVEL minFeatureLevel, UINT flags) noexcept(false)
     : m_backBufferFormat(backBufferFormat), m_depthBufferFormat(depthBufferFormat), m_backBufferCount(backBufferCount),
-      m_d3dMinFeatureLevel(minFeatureLevel), m_options(flags), m_adapterIDoverride(adapterIDoverride) {
+      m_d3dMinFeatureLevel(minFeatureLevel), m_options(flags) {
     if (backBufferCount > MAX_BACK_BUFFER_COUNT)
         throw winrt::hresult_out_of_bounds{};
     if (minFeatureLevel < D3D_FEATURE_LEVEL_11_0)
@@ -164,6 +159,8 @@ DeviceResources::DeviceResources(DXGI_FORMAT backBufferFormat, DXGI_FORMAT depth
     if (m_options & c_RequireTearingSupport) {
         m_options |= c_AllowTearing;
     }
+
+    InitializeDXGIAdapter();
 }
 
 // Destructor for DeviceResources.
