@@ -226,8 +226,7 @@ void DeviceResources::InitializeDXGIAdapter() {
     InitializeAdapter(m_adapter.put());
 }
 
-// Configures the Direct3D device, and stores handles to it and the device context.
-void DeviceResources::CreateDeviceResources() {
+void DeviceResources::CreateDeviceResources() noexcept(false) {
     // Create the DX12 API device object.
     winrt::check_hresult(
         D3D12CreateDevice(m_adapter.get(), m_d3dMinFeatureLevel, __uuidof(ID3D12Device), m_d3dDevice.put_void()));
@@ -314,12 +313,7 @@ void DeviceResources::CreateDeviceResources() {
         winrt::throw_last_error();
 }
 
-// These resources need to be recreated every time the window size is changed.
-void DeviceResources::CreateWindowSizeDependentResources() {
-    if (!m_window) {
-        throw winrt::hresult_error(E_HANDLE, L"Call SetWindow with a valid Win32 window handle.\n");
-    }
-
+void DeviceResources::CreateWindowSizeDependentResources(UINT width, UINT height) noexcept(false) {
     // Wait until all previous GPU work is complete.
     WaitForGpu();
 
@@ -328,6 +322,10 @@ void DeviceResources::CreateWindowSizeDependentResources() {
         m_renderTargets[n] = nullptr;
         m_fenceValues[n] = m_fenceValues[m_backBufferIndex];
     }
+
+    m_outputSize.left = m_outputSize.top = 0;
+    m_outputSize.right = width;
+    m_outputSize.bottom = height;
 
     // Determine the render target size in pixels.
     UINT backBufferWidth = max(m_outputSize.right - m_outputSize.left, 1);
@@ -357,36 +355,33 @@ void DeviceResources::CreateWindowSizeDependentResources() {
             winrt::check_hresult(hr);
         }
     } else {
-        // Create a descriptor for the swap chain.
-        DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
-        swapChainDesc.Width = backBufferWidth;
-        swapChainDesc.Height = backBufferHeight;
-        swapChainDesc.Format = backBufferFormat;
-        swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-        swapChainDesc.BufferCount = m_backBufferCount;
-        swapChainDesc.SampleDesc.Count = 1;
-        swapChainDesc.SampleDesc.Quality = 0;
-        swapChainDesc.Scaling = DXGI_SCALING_STRETCH;
-        swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-        swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
-        swapChainDesc.Flags = (m_options & c_AllowTearing) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
+        DXGI_SWAP_CHAIN_DESC1 desc{
+            .Width = backBufferWidth,
+            .Height = backBufferHeight,
+            .Format = backBufferFormat,
+            .Stereo = false,
+            .SampleDesc = {1, 0}, // count, quality
+            .BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
+            .BufferCount = m_backBufferCount,
+        };
+        // All Windows Store apps must use this SwapEffect.
+        desc.Scaling = DXGI_SCALING_STRETCH;
+        desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
+        desc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
 
-        DXGI_SWAP_CHAIN_FULLSCREEN_DESC fsSwapChainDesc = {0};
-        fsSwapChainDesc.Windowed = TRUE;
-
-        // Create a swap chain for the window.
         winrt::com_ptr<IDXGISwapChain1> swapChain;
-
-        winrt::check_hresult(m_dxgiFactory->CreateSwapChainForHwnd(m_commandQueue.get(), m_window, &swapChainDesc,
-                                                                   &fsSwapChainDesc, nullptr, swapChain.put()));
-
+        if (auto hr =
+                m_dxgiFactory->CreateSwapChainForComposition(m_commandQueue.get(), &desc, nullptr, swapChain.put());
+            FAILED(hr))
+            winrt::throw_hresult(hr);
         winrt::check_hresult(swapChain.try_as(m_swapChain));
-
+#if 0
         // With tearing support enabled we will handle ALT+Enter key presses in the
         // window message loop rather than let DXGI handle it by calling SetFullscreenState.
         if (IsTearingSupported()) {
             m_dxgiFactory->MakeWindowAssociation(m_window, DXGI_MWA_NO_ALT_ENTER);
         }
+#endif
     }
 
     // Obtain the back buffers for this window which will be the final render targets
@@ -452,39 +447,6 @@ void DeviceResources::CreateWindowSizeDependentResources() {
     m_scissorRect.bottom = backBufferHeight;
 }
 
-// This method is called when the Win32 window is created (or re-created).
-void DeviceResources::SetWindow(HWND window, int width, int height) noexcept {
-    m_window = window;
-
-    m_outputSize.left = m_outputSize.top = 0;
-    m_outputSize.right = width;
-    m_outputSize.bottom = height;
-}
-
-// This method is called when the Win32 window changes size.
-// It returns true if window size change was applied.
-bool DeviceResources::WindowSizeChanged(int width, int height, bool minimized) noexcept {
-    m_isWindowVisible = !minimized;
-
-    if (minimized || width == 0 || height == 0) {
-        return false;
-    }
-
-    RECT newRc;
-    newRc.left = newRc.top = 0;
-    newRc.right = width;
-    newRc.bottom = height;
-    if (newRc.left == m_outputSize.left && newRc.top == m_outputSize.top && newRc.right == m_outputSize.right &&
-        newRc.bottom == m_outputSize.bottom) {
-        return false;
-    }
-
-    m_outputSize = newRc;
-    CreateWindowSizeDependentResources();
-    return true;
-}
-
-// Recreate all device resources and set them back to the current state.
 void DeviceResources::HandleDeviceLost() {
     if (m_deviceNotify) {
         m_deviceNotify->OnDeviceLost();
@@ -519,14 +481,13 @@ void DeviceResources::HandleDeviceLost() {
 #endif
     InitializeDXGIAdapter();
     CreateDeviceResources();
-    CreateWindowSizeDependentResources();
+    CreateWindowSizeDependentResources(m_outputSize.right, m_outputSize.bottom);
 
     if (m_deviceNotify) {
         m_deviceNotify->OnDeviceRestored();
     }
 }
 
-// Prepare the command list and render target for rendering.
 void DeviceResources::Prepare(D3D12_RESOURCE_STATES beforeState) noexcept {
     // Reset command list and allocator.
     winrt::check_hresult(m_commandAllocators[m_backBufferIndex]->Reset());
@@ -540,8 +501,7 @@ void DeviceResources::Prepare(D3D12_RESOURCE_STATES beforeState) noexcept {
     }
 }
 
-// Present the contents of the swap chain to the screen.
-void DeviceResources::Present(D3D12_RESOURCE_STATES beforeState) {
+void DeviceResources::Present(D3D12_RESOURCE_STATES beforeState) noexcept(false) {
     if (beforeState != D3D12_RESOURCE_STATE_PRESENT) {
         // Transition the render target to the state that allows it to be presented to the display.
         D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
@@ -579,7 +539,6 @@ void DeviceResources::Present(D3D12_RESOURCE_STATES beforeState) {
     }
 }
 
-// Send the command list off to the GPU for processing.
 void DeviceResources::ExecuteCommandList() noexcept {
     winrt::check_hresult(m_commandList->Close());
     ID3D12CommandList* commandLists[] = {m_commandList.get()};
@@ -603,7 +562,6 @@ void DeviceResources::WaitForGpu() noexcept {
     }
 }
 
-// Prepare to render the next frame.
 void DeviceResources::MoveToNextFrame() {
     // Schedule a Signal command in the queue.
     const UINT64 currentFenceValue = m_fenceValues[m_backBufferIndex];
@@ -624,7 +582,7 @@ void DeviceResources::MoveToNextFrame() {
 
 // This method acquires the first high-performance hardware adapter that supports Direct3D 12.
 // If no such adapter can be found, try WARP. Otherwise throw an exception.
-void DeviceResources::InitializeAdapter(IDXGIAdapter1** ppAdapter) {
+void DeviceResources::InitializeAdapter(IDXGIAdapter1** ppAdapter, DXGI_GPU_PREFERENCE preference) noexcept(false) {
     if (ppAdapter == nullptr)
         throw winrt::hresult_invalid_argument{};
 
@@ -635,8 +593,8 @@ void DeviceResources::InitializeAdapter(IDXGIAdapter1** ppAdapter) {
         winrt::throw_hresult(hr);
 
     for (UINT adapterID = 0;
-         DXGI_ERROR_NOT_FOUND != factory6->EnumAdapterByGpuPreference(adapterID, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,
-                                                                      __uuidof(IDXGIAdapter1), adapter.put_void());
+         DXGI_ERROR_NOT_FOUND !=
+         factory6->EnumAdapterByGpuPreference(adapterID, preference, __uuidof(IDXGIAdapter1), adapter.put_void());
          ++adapterID) {
         if (m_adapterIDoverride != UINT_MAX && adapterID != m_adapterIDoverride) {
             continue;

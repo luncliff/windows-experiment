@@ -11,6 +11,7 @@
  *  - Run clang-format with the repository style
  *  - Include C++/WinRT headers and DirectX Agility SDK headers
  *  - Remove some member functions
+ *  - Remove HWND support and change IDXGISwapChain creation to use CreateSwapChainForComposition
  */
 #pragma once
 #include <winrt/windows.foundation.h>
@@ -43,15 +44,19 @@ class DeviceResources {
                     D3D_FEATURE_LEVEL minFeatureLevel = D3D_FEATURE_LEVEL_12_0, UINT flags = 0) noexcept(false);
     ~DeviceResources() noexcept;
 
-    void CreateDeviceResources();
-    void CreateWindowSizeDependentResources();
-    void SetWindow(HWND window, int width, int height) noexcept;
-    bool WindowSizeChanged(int width, int height, bool minimized) noexcept;
+    // Configures the Direct3D device, and stores handles to it and the device context.
+    void CreateDeviceResources() noexcept(false);
+    // These resources need to be recreated every time the window size is changed.
+    void CreateWindowSizeDependentResources(UINT width, UINT height) noexcept(false);
+    // Recreate all device resources and set them back to the current state.
     void HandleDeviceLost();
     void RegisterDeviceNotify(IDeviceNotify* deviceNotify) noexcept;
 
+    // Prepare the command list and render target for rendering.
     void Prepare(D3D12_RESOURCE_STATES beforeState = D3D12_RESOURCE_STATE_PRESENT) noexcept;
-    void Present(D3D12_RESOURCE_STATES beforeState = D3D12_RESOURCE_STATE_RENDER_TARGET);
+    // Present the contents of the swap chain to the screen.
+    void Present(D3D12_RESOURCE_STATES beforeState = D3D12_RESOURCE_STATE_RENDER_TARGET) noexcept(false);
+    // Send the command list off to the GPU for processing.
     void ExecuteCommandList() noexcept;
     void WaitForGpu() noexcept;
 
@@ -84,9 +89,11 @@ class DeviceResources {
     D3D12_CPU_DESCRIPTOR_HANDLE GetDepthStencilView() const noexcept;
 
   private:
+    // Prepare to render the next frame.
     void MoveToNextFrame();
     void InitializeDXGIAdapter();
-    void InitializeAdapter(IDXGIAdapter1** ppAdapter);
+    void InitializeAdapter(IDXGIAdapter1** ppAdapter,
+                           DXGI_GPU_PREFERENCE preference = DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE) noexcept(false);
 
     static constexpr size_t MAX_BACK_BUFFER_COUNT = 3;
 
@@ -125,7 +132,6 @@ class DeviceResources {
     D3D12_RECT m_scissorRect{};
 
     // Cached device properties.
-    HWND m_window = nullptr;
     D3D_FEATURE_LEVEL m_d3dFeatureLevel = D3D_FEATURE_LEVEL_11_0;
     RECT m_outputSize{0, 0, 1, 1};
     bool m_isWindowVisible = true;
