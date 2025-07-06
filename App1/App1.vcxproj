@@ -223,6 +223,7 @@ xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.dll" "$(Out
     <Manifest Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DeviceResources.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="App.xaml.h">
       <DependentUpon>App.xaml</DependentUpon>
@@ -242,6 +243,7 @@ xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.dll" "$(Out
       <SubType>Code</SubType>
       <DependentUpon>BasicViewModel.idl</DependentUpon>
     </ClInclude>
+    <ClInclude Include="StepTimer.h" />
     <ClInclude Include="TestPage1.xaml.h">
       <DependentUpon>TestPage1.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -265,6 +267,7 @@ xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.dll" "$(Out
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DeviceResources.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
