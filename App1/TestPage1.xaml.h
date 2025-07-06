@@ -7,6 +7,8 @@
 namespace winrt::App1::implementation {
 using Microsoft::UI::Xaml::RoutedEventArgs;
 using Microsoft::UI::Xaml::Navigation::NavigationEventArgs;
+using winrt::Microsoft::UI::Xaml::SizeChangedEventArgs;
+using winrt::Windows::Foundation::IInspectable;
 
 struct TestPage1 : TestPage1T<TestPage1> {
   private:
@@ -18,7 +20,9 @@ struct TestPage1 : TestPage1T<TestPage1> {
 
     void OnNavigatedTo(const NavigationEventArgs&);
     void OnNavigatedFrom(const NavigationEventArgs&);
-    void OnTestButtonClick(winrt::Windows::Foundation::IInspectable const& sender, RoutedEventArgs const& e);
+
+    void OnTestButtonClick(IInspectable const&, RoutedEventArgs const&);
+    void SwapChainPanel0_SizeChanged(IInspectable const&, SizeChangedEventArgs const&);
 
     App1::BasicViewModel ViewModel() noexcept;
 };

@@ -9,6 +9,7 @@
     mc:Ignorable="d">
 
     <SwapChainPanel x:Name="SwapChainPanel0"
+                    SizeChanged="SwapChainPanel0_SizeChanged"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     Width="1280" MinWidth="800"

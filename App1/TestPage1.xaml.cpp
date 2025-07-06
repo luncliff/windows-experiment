@@ -14,23 +14,28 @@
 namespace winrt::App1::implementation {
 
 TestPage1::TestPage1() {
-    // Initialize page
+    // Initialize page, resources ...
+    resources.CreateDeviceResources();
 }
 
 App1::BasicViewModel TestPage1::ViewModel() noexcept {
     return viewmodel0;
 }
 
+void TestPage1::SwapChainPanel0_SizeChanged(IInspectable const& sender, SizeChangedEventArgs const& e) {
+    // get the new size and update the resources
+    auto size = e.NewSize();
+    resources.CreateWindowSizeDependentResources(static_cast<UINT>(size.Width), static_cast<UINT>(size.Height));
+    // note the sender is SwapChainPanel
+    winrt::com_ptr<ISwapChainPanelNative> m_bridge = nullptr;
+    sender.as(m_bridge);
+    if (IDXGISwapChain* swapchain = resources.GetSwapChain(); swapchain != nullptr)
+        m_bridge->SetSwapChain(swapchain);
+}
+
 void TestPage1::OnNavigatedTo(const NavigationEventArgs& e) {
     if (e == nullptr)
         return;
-
-    IInspectable unknown = SwapChainPanel0();
-    winrt::com_ptr<ISwapChainPanelNative> m_bridge = nullptr;
-    unknown.as(m_bridge);
-
-    if (IDXGISwapChain* swapchain = resources.GetSwapChain(); swapchain != nullptr)
-        m_bridge->SetSwapChain(swapchain);
 
     // Get the ViewModel from the navigation parameter
     if (e.Parameter() != nullptr) {
