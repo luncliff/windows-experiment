@@ -1,3 +1,6 @@
+/**
+ * @see https://learn.microsoft.com/en-us/windows/win32/api/windows.ui.xaml.media.dxinterop/nn-windows-ui-xaml-media-dxinterop-iswapchainpanelnative
+ */
 #include "pch.h"
 
 #include "TestPage1.xaml.h"
@@ -6,6 +9,7 @@
 #endif
 
 #include "BasicViewModel.h"
+#include <microsoft.ui.xaml.media.dxinterop.h> // ISwapChainPanelNative for Microsoft namespace
 
 namespace winrt::App1::implementation {
 
@@ -20,6 +24,13 @@ App1::BasicViewModel TestPage1::ViewModel() noexcept {
 void TestPage1::OnNavigatedTo(const NavigationEventArgs& e) {
     if (e == nullptr)
         return;
+
+    IInspectable unknown = SwapChainPanel0();
+    winrt::com_ptr<ISwapChainPanelNative> m_bridge = nullptr;
+    unknown.as(m_bridge);
+
+    if (IDXGISwapChain* swapchain = resources.GetSwapChain(); swapchain != nullptr)
+        m_bridge->SetSwapChain(swapchain);
 
     // Get the ViewModel from the navigation parameter
     if (e.Parameter() != nullptr) {

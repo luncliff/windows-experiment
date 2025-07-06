@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BasicViewModel.g.h"
+#include "DeviceResources.h"
 #include "TestPage1.g.h"
 
 namespace winrt::App1::implementation {
@@ -9,6 +10,7 @@ using Microsoft::UI::Xaml::Navigation::NavigationEventArgs;
 
 struct TestPage1 : TestPage1T<TestPage1> {
   private:
+    DX::DeviceResources resources{DXGI_FORMAT_B8G8R8A8_UNORM, DXGI_FORMAT_D24_UNORM_S8_UINT, 2};
     App1::BasicViewModel viewmodel0{nullptr};
 
   public:
