@@ -1,6 +1,6 @@
 
 
-Use the [readme.md](../readme.md) for build/test instructions.
+Use the [README.md](../README.md) for build/test instructions.
 
 ## Coding Convention
 
@@ -29,6 +29,8 @@ For Windows platform.
 - https://github.com/microsoft/Windows-universal-samples
 
 ### DirectX, DXGI(DirectX Graphics Infrastructure)
+
+Start search from the [DirectX Landing Page](https://devblogs.microsoft.com/directx/landing-page/)
 
 - [DirectX graphics and gaming](https://learn.microsoft.com/en-us/windows/win32/directx)
 - [Direct3D 12 programming guide](https://learn.microsoft.com/en-us/windows/win32/direct3d12/directx-12-programming-guide)
