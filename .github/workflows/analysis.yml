@@ -62,7 +62,7 @@ jobs:
       - name: "Run build-wrapper"
         run: |
           build-wrapper-win-x86-64 --out-dir bw-output `
-            MSBuild App1/App1.vcxproj /t:rebuild /nodeReuse:false /p:platform="x64" /p:configuration="Debug" /p:BuildProjectReferences=false
+            MSBuild windows-experiment.sln /t:App1 /nodeReuse:false /p:platform="x64" /p:configuration="Debug" /p:BuildProjectReferences=false
         shell: pwsh
         env:
           VCPKG_FEATURE_FLAGS: "registries,binarycaching,manifests"
