@@ -9,7 +9,7 @@
     mc:Ignorable="d">
 
     <SwapChainPanel x:Name="SwapChainPanel0"
-                    SizeChanged="SwapChainPanel0_SizeChanged"
+                    SizeChanged="panel0_size_changed"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     Width="1280" MinWidth="800"
@@ -30,7 +30,7 @@
                    Margin="0,0,0,16" />
 
             <Button Content="Test Button" 
-                Click="OnTestButtonClick"
+                Click="on_test_button_click"
                 HorizontalAlignment="Left"
                 Margin="0,0,0,8" />
 
