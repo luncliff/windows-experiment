@@ -27,6 +27,7 @@
     <ClCompile Include="SupportPage.xaml.cpp" />
     <ClCompile Include="BasicItem.cpp" />
     <ClCompile Include="BasicViewModel.cpp" />
+    <ClCompile Include="DeviceResources.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -37,6 +38,8 @@
     <ClInclude Include="SupportPage.xaml.h" />
     <ClInclude Include="BasicItem.h" />
     <ClInclude Include="BasicViewModel.h" />
+    <ClInclude Include="DeviceResources.h" />
+    <ClInclude Include="StepTimer.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Assets">

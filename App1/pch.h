@@ -6,6 +6,8 @@
 #include <restrictederrorinfo.h>
 // clang-format on
 
+#include <WinPixEventRuntime/pix3.h>
+
 // Undefine GetCurrentTime macro to prevent
 // conflict with Storyboard::GetCurrentTime
 #undef GetCurrentTime
