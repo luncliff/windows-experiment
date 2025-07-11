@@ -8,6 +8,10 @@ runtimeclass BasicViewModel {
   IObservableVector<BasicItem> Items {
     get;
   };
+
+  Windows.Foundation.IAsyncAction CreateLogFolderAsync();
+  Windows.Storage.StorageFolder GetLogFolder();
+  String GetLogFolderPath();
 }
 
 } // namespace App1
