@@ -1,7 +1,11 @@
+import "BasicViewModel.idl";
+
 namespace App1 {
 
 [default_interface] runtimeclass SettingsPage : Microsoft.UI.Xaml.Controls.Page {
     SettingsPage();
+
+    BasicViewModel ViewModel();
 }
 
 } // namespace App1
