@@ -1,6 +1,5 @@
 #include "pch.h"
 
-#define SPDLOG_USE_STDFORMAT
 #define SPDLOG_WCHAR_TO_UTF8_SUPPORT
 #define SPDLOG_WCHAR_FILENAMES
 #include <spdlog/pattern_formatter.h>
