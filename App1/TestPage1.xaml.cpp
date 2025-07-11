@@ -8,6 +8,8 @@
 #include "TestPage1.g.cpp"
 #endif
 
+#include <WinPixEventRuntime/pix3.h>
+
 #include "BasicViewModel.h"
 #include "StepTimer.h"
 
@@ -16,6 +18,11 @@ namespace winrt::App1::implementation {
 TestPage1::TestPage1() noexcept(false) {
     // Initialize page, resources ...
     resources.CreateDeviceResources();
+
+    // Initialize timer0 and set up the event handler
+    timer0 = DispatcherTimer();
+    timer0.Interval(TimeSpan{std::chrono::seconds{1}}); // 1 second interval
+    timer0.Tick({this, &TestPage1::on_timer_tick});
 }
 
 App1::BasicViewModel TestPage1::ViewModel() noexcept {
@@ -60,9 +67,15 @@ void TestPage1::OnNavigatedTo(const NavigationEventArgs& e) {
         return;
     }
     StatusTextBlock().Text(L"ViewModel loaded");
+
+    // Start the timer when navigating to the page
+    timer0.Start();
 }
 
 void TestPage1::OnNavigatedFrom(const NavigationEventArgs&) {
+    // Stop the timer when navigating away
+    timer0.Stop();
+
     // the page will be destroyed soon. remove the connection
     resources.RegisterDeviceNotify(nullptr);
     OnDeviceLost();
@@ -78,11 +91,19 @@ void TestPage1::on_test_button_click(IInspectable const&, RoutedEventArgs const&
     } else {
         StatusTextBlock().Text(L"TestPage1 is working correctly, but no ViewModel available.");
     }
-    // todo: add PIX capture
-    // todo: add basic rendering logic
+}
+
+// todo: perform rendering on each timer tick
+void TestPage1::on_timer_tick(IInspectable const&, IInspectable const&) {
+    ID3D12CommandQueue* command_queue = resources.GetCommandQueue();
+    PIXScopedEvent(command_queue, PIX_COLOR_DEFAULT, L"on_timer_tick");
     resources.Prepare();
-    // ...
-    resources.Present();
+    // ...Rendering logic here...
+    {
+        PIXBeginEvent(command_queue, PIX_COLOR_DEFAULT, L"Present");
+        resources.Present();
+        PIXEndEvent(command_queue);
+    }
 }
 
 } // namespace winrt::App1::implementation

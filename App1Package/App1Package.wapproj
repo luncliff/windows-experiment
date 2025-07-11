@@ -34,20 +34,29 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <EntryPointProjectUniqueName>..\App1\App1.vcxproj</EntryPointProjectUniqueName>
-    <PackageCertificateThumbprint>F9DE40048155824A585552195D8D305926BA9056</PackageCertificateThumbprint>
     <PackageCertificateKeyFile>App1Package_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+    <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <GenerateTestArtifacts>True</GenerateTestArtifacts>
+    <AppxBundlePlatforms>x64</AppxBundlePlatforms>
+    <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <DefaultLanguage>ko-kr</DefaultLanguage>
+    <AppxBundle>Always</AppxBundle>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <DefaultLanguage>ko-kr</DefaultLanguage>
+    <AppxBundle>Always</AppxBundle>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <DefaultLanguage>ko-kr</DefaultLanguage>
+    <AppxBundle>Always</AppxBundle>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <DefaultLanguage>ko-kr</DefaultLanguage>
+    <AppxBundle>Always</AppxBundle>
   </PropertyGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -78,6 +87,27 @@
     <Content Include="Images\Square44x44Logo.targetsize-48.png" />
     <Content Include="Images\StoreLogo.scale-200.png" />
     <Content Include="Images\Wide310x150Logo.scale-200.png" />
+  </ItemGroup>
+  
+  <!-- vcpkg dependencies packaging -->
+  <ItemGroup>
+    <!-- Release binaries (needed for both Debug and Release) -->
+    <AppxPackagePayload Include="$(SolutionDir)packages\$(VcpkgTriplet)\bin\*.dll">
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
+    </AppxPackagePayload>
+    
+    <!-- Debug binaries (only for Debug configuration) -->
+    <AppxPackagePayload Include="$(SolutionDir)packages\$(VcpkgTriplet)\debug\bin\*.dll" Condition="'$(Configuration)'=='Debug'">
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
+    </AppxPackagePayload>
+    <AppxPackagePayload Include="$(SolutionDir)packages\$(VcpkgTriplet)\debug\bin\*.pdb" Condition="'$(Configuration)'=='Debug'">
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
+    </AppxPackagePayload>
+    
+    <!-- WinPixEventRuntime DLLs -->
+    <AppxPackagePayload Include="$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\bin\$(Platform)\*.dll">
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
+    </AppxPackagePayload>
   </ItemGroup>
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
 </Project>

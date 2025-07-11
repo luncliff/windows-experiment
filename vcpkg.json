@@ -7,29 +7,7 @@
   "license": "CC0-1.0",
   "supports": "windows",
   "dependencies": [
-    "directx12-agility",
-    {
-      "name": "directxtex",
-      "features": [
-        "dx12"
-      ]
-    },
-    {
-      "name": "directxtex",
-      "host": true,
-      "features": [
-        "tools"
-      ]
-    },
-    "directxtk",
-    "directxtk12",
-    {
-      "name": "directxtk12",
-      "host": true,
-      "features": [
-        "tools"
-      ]
-    },
+    "opencl",
     "spdlog"
   ]
 }
