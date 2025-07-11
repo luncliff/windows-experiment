@@ -126,30 +126,6 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">$(VcpkgInstalledDir)\$(VcpkgTriplet)\include;$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(VcpkgInstalledDir)\$(VcpkgTriplet)\include;$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
-    <PreLinkEvent>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(SolutionDir)App1Package\bin\$(Platform)\$(Configuration)\AppX\"
-xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.pdb" "$(SolutionDir)App1Package\bin\$(Platform)\$(Configuration)\AppX\"
-xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(OutDir)"
-xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.dll" "$(SolutionDir)App1Package\bin\$(Platform)\$(Configuration)\AppX\"
-xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.pdb" "$(SolutionDir)App1Package\bin\$(Platform)\$(Configuration)\AppX\"
-xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.dll" "$(OutDir)"
-xcopy.exe /y /d /I "$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\bin\$(Platform)\*.dll" "$(SolutionDir)App1Package\bin\$(Platform)\$(Configuration)\AppX\"
-xcopy.exe /y /d /I "$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\bin\$(Platform)\*.dll" "$(OutDir)"
-      </Command>
-    </PreLinkEvent>
-    <PreLinkEvent>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
-xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(SolutionDir)App1Package\bin\$(Platform)\$(Configuration)\AppX\"
-xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.pdb" "$(SolutionDir)App1Package\bin\$(Platform)\$(Configuration)\AppX\"
-xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(OutDir)"
-xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.dll" "$(SolutionDir)App1Package\bin\$(Platform)\$(Configuration)\AppX\"
-xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.pdb" "$(SolutionDir)App1Package\bin\$(Platform)\$(Configuration)\AppX\"
-xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.dll" "$(OutDir)"
-xcopy.exe /y /d /I "$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\bin\$(Platform)\*.dll" "$(SolutionDir)App1Package\bin\$(Platform)\$(Configuration)\AppX\"
-xcopy.exe /y /d /I "$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\bin\$(Platform)\*.dll" "$(OutDir)"
-      </Command>
-    </PreLinkEvent>
     <Link>
       <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -183,20 +159,6 @@ xcopy.exe /y /d /I "$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\bin\
       <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PreLinkEvent>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(OutDir)"
-xcopy.exe /y /d /I "$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\bin\$(Platform)\*.dll" "$(SolutionDir)App1Package\bin\$(Platform)\$(Configuration)\AppX\"
-xcopy.exe /y /d /I "$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\bin\$(Platform)\*.dll" "$(OutDir)"
-      </Command>
-    </PreLinkEvent>
-    <PreLinkEvent>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
-xcopy.exe /y /d /I "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll" "$(OutDir)"
-xcopy.exe /y /d /I "$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\bin\$(Platform)\*.dll" "$(SolutionDir)App1Package\bin\$(Platform)\$(Configuration)\AppX\"
-xcopy.exe /y /d /I "$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\bin\$(Platform)\*.dll" "$(OutDir)"
-      </Command>
-    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Manifest Include="app.manifest" />
@@ -305,6 +267,36 @@ xcopy.exe /y /d /I "$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\bin\
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  
+  <!-- vcpkg dependencies for local debugging -->
+  <ItemGroup>
+    <!-- Release binaries -->
+    <Content Include="$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\*.dll">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>
+    
+    <!-- Debug binaries (only for Debug configuration) -->
+    <Content Include="$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.dll" Condition="'$(Configuration)'=='Debug'">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(VcpkgInstalledDir)\$(VcpkgTriplet)\debug\bin\*.pdb" Condition="'$(Configuration)'=='Debug'">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>
+    
+    <!-- WinPixEventRuntime -->
+    <Content Include="$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\bin\$(Platform)\*.dll">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>
+  </ItemGroup>
+
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\Microsoft.WindowsAppSDK.1.7.250606001\build\native\Microsoft.WindowsAppSDK.targets" Condition="Exists('..\packages\Microsoft.WindowsAppSDK.1.7.250606001\build\native\Microsoft.WindowsAppSDK.targets')" />

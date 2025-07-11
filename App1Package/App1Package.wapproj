@@ -88,5 +88,26 @@
     <Content Include="Images\StoreLogo.scale-200.png" />
     <Content Include="Images\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
+  
+  <!-- vcpkg dependencies packaging -->
+  <ItemGroup>
+    <!-- Release binaries (needed for both Debug and Release) -->
+    <AppxPackagePayload Include="$(SolutionDir)packages\$(VcpkgTriplet)\bin\*.dll">
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
+    </AppxPackagePayload>
+    
+    <!-- Debug binaries (only for Debug configuration) -->
+    <AppxPackagePayload Include="$(SolutionDir)packages\$(VcpkgTriplet)\debug\bin\*.dll" Condition="'$(Configuration)'=='Debug'">
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
+    </AppxPackagePayload>
+    <AppxPackagePayload Include="$(SolutionDir)packages\$(VcpkgTriplet)\debug\bin\*.pdb" Condition="'$(Configuration)'=='Debug'">
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
+    </AppxPackagePayload>
+    
+    <!-- WinPixEventRuntime DLLs -->
+    <AppxPackagePayload Include="$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\bin\$(Platform)\*.dll">
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
+    </AppxPackagePayload>
+  </ItemGroup>
   <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
 </Project>
