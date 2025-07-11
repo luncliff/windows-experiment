@@ -8,6 +8,8 @@
 #include "TestPage1.g.cpp"
 #endif
 
+#include <WinPixEventRuntime/pix3.h>
+
 #include "BasicViewModel.h"
 #include "StepTimer.h"
 
@@ -93,14 +95,14 @@ void TestPage1::on_test_button_click(IInspectable const&, RoutedEventArgs const&
 
 // todo: perform rendering on each timer tick
 void TestPage1::on_timer_tick(IInspectable const&, IInspectable const&) {
-    {
-        PIXScopedEvent(PIX_COLOR_DEFAULT, L"Prepare");
-        resources.Prepare();
-    }
+    ID3D12CommandQueue* command_queue = resources.GetCommandQueue();
+    PIXScopedEvent(command_queue, PIX_COLOR_DEFAULT, L"on_timer_tick");
+    resources.Prepare();
     // ...Rendering logic here...
     {
-        PIXScopedEvent(PIX_COLOR_DEFAULT, L"Present");
+        PIXBeginEvent(command_queue, PIX_COLOR_DEFAULT, L"Present");
         resources.Present();
+        PIXEndEvent(command_queue);
     }
 }
 
