@@ -16,11 +16,11 @@ namespace winrt::App1::implementation {
 TestPage1::TestPage1() noexcept(false) {
     // Initialize page, resources ...
     resources.CreateDeviceResources();
-    
+
     // Initialize timer0 and set up the event handler
     timer0 = DispatcherTimer();
     timer0.Interval(TimeSpan{std::chrono::seconds{1}}); // 1 second interval
-    timer0.Tick({ this, &TestPage1::on_timer_tick });
+    timer0.Tick({this, &TestPage1::on_timer_tick});
 }
 
 App1::BasicViewModel TestPage1::ViewModel() noexcept {
@@ -65,7 +65,7 @@ void TestPage1::OnNavigatedTo(const NavigationEventArgs& e) {
         return;
     }
     StatusTextBlock().Text(L"ViewModel loaded");
-    
+
     // Start the timer when navigating to the page
     timer0.Start();
 }
@@ -73,7 +73,7 @@ void TestPage1::OnNavigatedTo(const NavigationEventArgs& e) {
 void TestPage1::OnNavigatedFrom(const NavigationEventArgs&) {
     // Stop the timer when navigating away
     timer0.Stop();
-    
+
     // the page will be destroyed soon. remove the connection
     resources.RegisterDeviceNotify(nullptr);
     OnDeviceLost();
@@ -91,11 +91,17 @@ void TestPage1::on_test_button_click(IInspectable const&, RoutedEventArgs const&
     }
 }
 
+// todo: perform rendering on each timer tick
 void TestPage1::on_timer_tick(IInspectable const&, IInspectable const&) {
-    // Perform rendering on each timer tick
-    resources.Prepare();
-    // Rendering logic here
-    resources.Present();
+    {
+        PIXScopedEvent(PIX_COLOR_DEFAULT, L"Prepare");
+        resources.Prepare();
+    }
+    // ...Rendering logic here...
+    {
+        PIXScopedEvent(PIX_COLOR_DEFAULT, L"Present");
+        resources.Present();
+    }
 }
 
 } // namespace winrt::App1::implementation
