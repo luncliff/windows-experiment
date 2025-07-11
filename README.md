@@ -27,8 +27,7 @@ nuget restore windows-experiment.sln
 Build the solution file, or [App1](./App1/App1.vcxproj) VC++ project.
 
 ```ps1
-MSBuild windows-experiment.sln /p:platform="x64" /p:configuration="Debug" /p:VcpkgEnableManifest=true
-MSBuild App1/App1.vcxproj /p:platform="x64" /p:configuration="Debug"
+MSBuild windows-experiment.sln /t:App1 /p:platform="x64" /p:configuration="Debug" /p:VcpkgEnableManifest=true /Verbosity:Detailed
 ```
 
 ### Test
@@ -39,6 +38,12 @@ Need a CLI command to run MSTest on WinUI 3 project. See [UnitTestApp1](./UnitTe
 - https://devblogs.microsoft.com/dotnet/introducing-mstest-34/
 
 ...
+
+### Deploy
+
+```ps1
+MSBuild windows-experiment.sln /t:App1Package /p:platform="x64" /p:configuration="Debug" /Verbosity:Minimal
+```
 
 ## References
 
