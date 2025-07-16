@@ -53,3 +53,7 @@ DWORD get_module_path(WCHAR* path, UINT capacity) noexcept(false);
 std::filesystem::path get_module_path() noexcept(false);
 
 } // namespace winrt::App1
+
+#define DISABLE_XAML_GENERATED_MAIN
+#define SPDLOG_USE_STDFORMAT
+#define SPDLOG_WCHAR_TO_UTF8_SUPPORT

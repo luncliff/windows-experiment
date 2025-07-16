@@ -17,13 +17,11 @@ using Microsoft::UI::Xaml::ApplicationTheme;
 
 App::App() {
     InitializeComponent();
-    set_log_stream("App");
-
+    RequestedTheme(ApplicationTheme::Light);
 #if defined _DEBUG && !defined DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION
     //auto handler = std::bind(&App::OnUnhandledException, this, _1, _2);
     UnhandledException({this, &App::OnUnhandledException});
 #endif
-    RequestedTheme(ApplicationTheme::Dark);
 }
 
 void App::OnUnhandledException(IInspectable const&, UnhandledExceptionEventArgs const& e) {
@@ -42,3 +40,19 @@ void App::OnLaunched(LaunchActivatedEventArgs const&) {
 }
 
 } // namespace winrt::App1::implementation
+
+/// @see DISABLE_XAML_GENERATED_MAIN
+int WINAPI wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
+    winrt::init_apartment(winrt::apartment_type::multi_threaded);
+
+    // setup the logger and print the current executable's path
+    winrt::App1::set_log_stream("App");
+    auto exe = winrt::App1::get_module_path();
+    spdlog::debug(L"{}", exe.native());
+
+    winrt::Microsoft::UI::Xaml::Application::Start([](auto&&) {
+        // ... start the application lifecycle ...
+        winrt::make<winrt::App1::implementation::App>();
+    });
+    return S_OK;
+}
