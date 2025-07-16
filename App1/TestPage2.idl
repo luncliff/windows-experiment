@@ -1,0 +1,19 @@
+namespace App1 {
+
+[default_interface] runtimeclass TestPage2 : Microsoft.UI.Xaml.Controls.Page,
+    Microsoft.UI.Xaml.Data.INotifyPropertyChanged {
+
+    TestPage2();
+
+    Double BoxHeight {
+        get;
+    };
+    String StatusText {
+        get;
+    };
+    String CurrentAspectRatio {
+        get;
+    };
+}
+
+} // namespace App1
