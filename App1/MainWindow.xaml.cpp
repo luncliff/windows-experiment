@@ -8,10 +8,9 @@
 #include "SettingsPage.xaml.h"
 #include "SupportPage.xaml.h"
 #include "TestPage1.xaml.h"
+#include "TestPage2.xaml.h"
 
-#include <Windows.h>
 #include <microsoft.ui.xaml.window.h>
-
 #include <spdlog/spdlog.h>
 
 namespace winrt::App1::implementation {
@@ -61,6 +60,10 @@ void MainWindow::on_item_invoked(NavigationView const&, NavigationViewItemInvoke
     auto tag = unbox_value_or<winrt::hstring>(item.Tag(), L"");
     if (tag == L"TestPage1") {
         frame.Navigate(xaml_typename<App1::TestPage1>(), param);
+        return;
+    }
+    if (tag == L"TestPage2") {
+        frame.Navigate(xaml_typename<App1::TestPage2>(), param);
         return;
     }
     if (tag == L"SupportPage") {
