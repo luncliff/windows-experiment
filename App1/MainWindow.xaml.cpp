@@ -49,7 +49,9 @@ void MainWindow::on_item_invoked(NavigationView const&, NavigationViewItemInvoke
     // see https://learn.microsoft.com/en-us/uwp/api/windows.ui.xaml.controls.frame.navigate
     Frame frame = ShellFrame();
     if (e.IsSettingsInvoked()) {
-        frame.Navigate(xaml_typename<App1::SettingsPage>()); // same with App1.SettingsPage
+        // Pass the ViewModel to SettingsPage, just like we do for other pages
+        IInspectable param = viewmodel0;
+        frame.Navigate(xaml_typename<App1::SettingsPage>(), param); // same with App1.SettingsPage
         return;
     }
 

@@ -13,5 +13,34 @@
         HorizontalAlignment="Stretch" 
         VerticalAlignment="Top" 
         Margin="16" >
+        
+        <TextBlock Text="Application Settings" 
+                   FontSize="24" 
+                   FontWeight="SemiBold" 
+                   Margin="0,0,0,16" />
+        
+        <TextBlock Text="Log Folder Location" 
+                   FontWeight="SemiBold" 
+                   Margin="0,8,0,4" />
+        
+        <Grid Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock x:Name="LogPathTextBlock" 
+                       FontFamily="Cascadia Mono"
+                       Text="Loading..." 
+                       TextWrapping="Wrap" 
+                       VerticalAlignment="Center" />
+            
+            <Button x:Name="OpenLogFolderButton" 
+                    Grid.Column="1" 
+                    Click="on_open_log_folder_click" 
+                    ToolTipService.ToolTip="Open Log Folder">
+                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
+            </Button>
+        </Grid>
     </StackPanel>
 </Page>

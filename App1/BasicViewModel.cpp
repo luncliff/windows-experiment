@@ -6,8 +6,12 @@
 #endif
 #include "BasicItem.h"
 
+#define SPDLOG_WCHAR_TO_UTF8_SUPPORT
+#include <spdlog/spdlog.h>
+
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Foundation::Collections;
+using namespace winrt::Windows::Storage;
 
 namespace winrt::App1::implementation {
 
@@ -18,6 +22,26 @@ BasicViewModel::BasicViewModel() {
 
 IObservableVector<App1::BasicItem> BasicViewModel::Items() {
     return m_items;
+}
+
+StorageFolder BasicViewModel::GetLogFolder() {
+    return m_log_folder;
+}
+
+winrt::hstring BasicViewModel::GetLogFolderPath() {
+    if (m_log_folder == nullptr)
+        throw std::runtime_error("Log folder not initialized");
+    return m_log_folder.Path();
+}
+
+IAsyncAction BasicViewModel::CreateLogFolderAsync() {
+    try {
+        StorageFolder appdata = ApplicationData::Current().LocalFolder();
+        m_log_folder = co_await appdata.CreateFolderAsync(L"logs", CreationCollisionOption::OpenIfExists);
+        spdlog::info(L"Log folder created: {}", static_cast<std::wstring_view>(GetLogFolderPath()));
+    } catch (const winrt::hresult_error& ex) {
+        spdlog::error(L"Failed to create logs folder: {}", static_cast<std::wstring_view>(ex.message()));
+    }
 }
 
 void BasicViewModel::InitializeItems() {
