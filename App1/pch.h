@@ -53,4 +53,17 @@ DWORD get_module_path(WCHAR* path, UINT capacity) noexcept(false);
 
 std::filesystem::path get_module_path() noexcept(false);
 
+using Microsoft::UI::Dispatching::DispatcherQueue;
+
+struct resume_on_ui final : public std::suspend_always {
+    Microsoft::UI::Dispatching::DispatcherQueue queue;
+
+  public:
+    resume_on_ui(Microsoft::UI::Dispatching::DispatcherQueue queue) noexcept : queue{queue} {
+    }
+    void await_suspend(std::coroutine_handle<void> handle) const noexcept {
+        queue.TryEnqueue(handle);
+    }
+};
+
 } // namespace winrt::App1

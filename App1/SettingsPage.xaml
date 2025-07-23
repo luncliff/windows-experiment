@@ -30,6 +30,7 @@
             </Grid.ColumnDefinitions>
             
             <TextBlock x:Name="LogPathTextBlock" 
+                       FontFamily="Cascadia Mono"
                        Text="Loading..." 
                        TextWrapping="Wrap" 
                        VerticalAlignment="Center" />

@@ -27,14 +27,14 @@ fire_and_forget SettingsPage::OnNavigatedTo(const NavigationEventArgs& e) {
         throw std::runtime_error("SettingsPage requires a ViewModel");
 
     viewmodel0 = arg0.try_as<App1::BasicViewModel>();
-    co_await viewmodel0.CreateLogFolderAsync();
+    CreateLogFolderAsync();
 }
 
-IAsyncAction SettingsPage::CreateLogFolderAsync() {
-    LogPathTextBlock().Text(L"Creating log folder...");
-
+fire_and_forget SettingsPage::CreateLogFolderAsync() {
+    using Microsoft::UI::Dispatching::DispatcherQueue;
+    auto foreground = DispatcherQueue::GetForCurrentThread();
     co_await viewmodel0.CreateLogFolderAsync();
-    co_await winrt::resume_foreground(Dispatcher());
+    co_await resume_on_ui{foreground};
     UpdateLogFolderPath();
 }
 
@@ -43,12 +43,8 @@ void SettingsPage::UpdateLogFolderPath() {
     LogPathTextBlock().Text(viewmodel0.GetLogFolderPath());
 }
 
-void SettingsPage::OnNavigatedFrom(const NavigationEventArgs& e) {
-    IInspectable arg0 = e.Parameter();
-    if (arg0 == nullptr)
-        throw winrt::hresult_invalid_argument(L"TestPage1 requires a ViewModel");
-
-    viewmodel0 = arg0.try_as<App1::BasicViewModel>();
+void SettingsPage::OnNavigatedFrom(const NavigationEventArgs&) {
+    viewmodel0 = nullptr; // leaving. no more ViewModel access
 }
 
 void SettingsPage::on_open_log_folder_click(IInspectable const&, RoutedEventArgs const&) {

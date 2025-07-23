@@ -20,7 +20,7 @@ struct SettingsPage : SettingsPageT<SettingsPage> {
     fire_and_forget OnNavigatedTo(const NavigationEventArgs&);
     void OnNavigatedFrom(const NavigationEventArgs&);
 
-    IAsyncAction CreateLogFolderAsync();
+    fire_and_forget CreateLogFolderAsync();
     App1::BasicViewModel ViewModel() noexcept;
 
     void on_open_log_folder_click(IInspectable const&, RoutedEventArgs const&);
