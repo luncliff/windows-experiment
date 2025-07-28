@@ -184,6 +184,10 @@
       <SubType>Code</SubType>
       <DependentUpon>BasicViewModel.idl</DependentUpon>
     </ClInclude>
+    <ClInclude Include="SettingsViewModel.h">
+      <SubType>Code</SubType>
+      <DependentUpon>SettingsViewModel.idl</DependentUpon>
+    </ClInclude>
     <ClInclude Include="StepTimer.h" />
     <ClInclude Include="TestPage1.xaml.h">
       <DependentUpon>TestPage1.xaml</DependentUpon>
@@ -239,6 +243,10 @@
       <SubType>Code</SubType>
       <DependentUpon>BasicViewModel.idl</DependentUpon>
     </ClCompile>
+    <ClCompile Include="SettingsViewModel.cpp">
+      <SubType>Code</SubType>
+      <DependentUpon>SettingsViewModel.idl</DependentUpon>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="MainWindow.idl">
@@ -261,6 +269,9 @@
       <SubType>Code</SubType>
     </Midl>
     <Midl Include="BasicViewModel.idl">
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="SettingsViewModel.idl">
       <SubType>Code</SubType>
     </Midl>
   </ItemGroup>
