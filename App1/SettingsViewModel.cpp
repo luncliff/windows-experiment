@@ -8,14 +8,10 @@
 #define SPDLOG_WCHAR_TO_UTF8_SUPPORT
 #include <spdlog/spdlog.h>
 
-using namespace winrt::Windows::Foundation;
-using namespace winrt::Windows::Foundation::Collections;
-using namespace winrt::Windows::Storage;
+namespace winrt::App1::implementation {
 using namespace winrt::Microsoft::UI::Xaml::Data;
 
-namespace winrt::App1::implementation {
-
-SettingsViewModel::SettingsViewModel() {
+SettingsViewModel::SettingsViewModel() noexcept {
     LoadSettings();
 }
 
@@ -28,11 +24,11 @@ uint32_t SettingsViewModel::Counter() const noexcept {
 }
 
 void SettingsViewModel::Counter(uint32_t value) noexcept {
-    if (counter != value) {
-        counter = value;
-        SaveSettings();
-        RaisePropertyChanged(L"Counter");
-    }
+    if (counter == value)
+        return;
+    counter = value;
+    SaveSettings();
+    RaisePropertyChanged(L"Counter");
 }
 
 void SettingsViewModel::ResetToDefault() noexcept {

@@ -35,12 +35,10 @@ App::~App() noexcept {
 }
 
 void App::OnUnhandledException(IInspectable const&, UnhandledExceptionEventArgs const& e) {
-    if (IsDebuggerPresent() == false)
-        // ...
-        return;
     winrt::hstring txt = e.Message();
+    if (IsDebuggerPresent())
+        __debugbreak();
     spdlog::critical(L"App: {:s}", static_cast<std::wstring_view>(txt));
-    __debugbreak();
 }
 
 void App::OnLaunched(LaunchActivatedEventArgs const&) {

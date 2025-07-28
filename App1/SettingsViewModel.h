@@ -22,25 +22,26 @@ using Windows::Storage::StorageFolder;
 struct SettingsViewModel : SettingsViewModelT<SettingsViewModel> {
   private:
     uint32_t counter = 0;
-
     winrt::event<PropertyChangedEventHandler> m_propertyChanged;
 
-    void SaveSettings() noexcept;
-    void LoadSettings() noexcept;
-    ApplicationDataContainer GetLocalSettings() noexcept(false);
-    void RaisePropertyChanged(winrt::hstring const& propertyName);
-
   public:
-    SettingsViewModel();
+    SettingsViewModel() noexcept;
 
     uint32_t Counter() const noexcept;
     void Counter(uint32_t value) noexcept;
-
     void ResetToDefault() noexcept;
 
     // INotifyPropertyChanged implementation
-    winrt::event_token PropertyChanged(PropertyChangedEventHandler const& handler);
-    void PropertyChanged(winrt::event_token const& token) noexcept;
+    winrt::event_token PropertyChanged(PropertyChangedEventHandler const&);
+    void PropertyChanged(winrt::event_token const&) noexcept;
+
+  private:
+    void SaveSettings() noexcept;
+    void LoadSettings() noexcept;
+
+    /// @note Declare getters in the SettingsViewModel.idl file, and limit the direct access to the ApplicationDataContainer
+    ApplicationDataContainer GetLocalSettings() noexcept(false);
+    void RaisePropertyChanged(winrt::hstring const& propertyName);
 };
 
 } // namespace winrt::App1::implementation
