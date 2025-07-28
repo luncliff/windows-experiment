@@ -19,11 +19,46 @@ namespace winrt::App1::implementation {
 using Microsoft::UI::Xaml::Controls::Button;
 
 /// @see https://learn.microsoft.com/pl-pl/windows/apps/design/controls/navigationview
-MainWindow::MainWindow() {
+MainWindow::MainWindow() noexcept(false) {
     ExtendsContentIntoTitleBar(true);
     spdlog::info("HWND {:p}", reinterpret_cast<void*>(WindowHandle()));
     // Create the shared ViewModels
     viewmodel0 = winrt::make<implementation::BasicViewModel>();
+}
+
+MainWindow::~MainWindow() noexcept {
+    clear_settings_event();
+}
+
+void MainWindow::clear_settings_event() noexcept {
+    // Disconnect from SettingsViewModel property changes
+    auto viewmodel = Settings();
+    if (viewmodel == nullptr)
+        return;
+    if (settings_changed_token) {
+        viewmodel.PropertyChanged(settings_changed_token);
+        settings_changed_token = {};
+    }
+}
+
+App1::SettingsViewModel MainWindow::Settings() const noexcept {
+    return viewmodel1;
+}
+
+void MainWindow::Settings(App1::SettingsViewModel viewmodel) noexcept(false) {
+    if (viewmodel == nullptr)
+        throw winrt::hresult_invalid_argument(L"SettingsViewModel cannot be null");
+
+    clear_settings_event();
+    viewmodel1 = viewmodel;
+    // Connect to new SettingsViewModel property changes
+    settings_changed_token = viewmodel1.PropertyChanged({this, &MainWindow::on_settings_changed});
+}
+
+void MainWindow::on_settings_changed(IInspectable const&, PropertyChangedEventArgs const& e) {
+    if (e.PropertyName() == L"Counter") {
+        // ... nothing to do for now ...
+    }
 }
 
 /// @see https://learn.microsoft.com/en-us/windows/apps/develop/ui-input/retrieve-hwnd
@@ -49,9 +84,8 @@ void MainWindow::on_item_invoked(NavigationView const&, NavigationViewItemInvoke
     // see https://learn.microsoft.com/en-us/uwp/api/windows.ui.xaml.controls.frame.navigate
     Frame frame = ShellFrame();
     if (e.IsSettingsInvoked()) {
-        // Pass the ViewModel to SettingsPage, just like we do for other pages
-        IInspectable param = viewmodel0;
-        frame.Navigate(xaml_typename<App1::SettingsPage>(), param); // same with App1.SettingsPage
+        // SettingsPage will use the SettingsViewModel
+        frame.Navigate(xaml_typename<App1::SettingsPage>(), Settings());
         return;
     }
 
