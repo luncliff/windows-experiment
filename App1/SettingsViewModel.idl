@@ -1,0 +1,16 @@
+
+namespace App1 {
+
+/// @see https://learn.microsoft.com/en-us/windows/apps/design/app-settings/guidelines-for-app-settings
+/// @see https://learn.microsoft.com/en-us/windows/apps/design/app-settings/store-and-retrieve-app-data
+runtimeclass SettingsViewModel : Microsoft.UI.Xaml.Data.INotifyPropertyChanged {
+    SettingsViewModel();
+
+    UInt32 Counter {
+        get;
+        set;
+    };
+    void ResetToDefault();
+}
+
+} // namespace App1

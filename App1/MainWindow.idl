@@ -1,8 +1,15 @@
+import "SettingsViewModel.idl";
+
 namespace App1 {
 
 // https://learn.microsoft.com/en-us/uwp/midl-3/intro
 [default_interface] runtimeclass MainWindow : Microsoft.UI.Xaml.Window {
     MainWindow();
+
+    SettingsViewModel Settings {
+        get;
+        set;
+    };
 
     UInt64 WindowHandle {
         get;
