@@ -1,29 +1,34 @@
 #pragma once
 
-#include "BasicViewModel.h"
 #include "SettingsPage.g.h"
+#include "SettingsViewModel.g.h"
 
 namespace winrt::App1::implementation {
 using Microsoft::UI::Xaml::RoutedEventArgs;
+using Microsoft::UI::Xaml::Data::PropertyChangedEventHandler;
+using Microsoft::UI::Xaml::Data::PropertyChangedEventArgs;
 using Microsoft::UI::Xaml::Navigation::NavigationEventArgs;
 using Windows::Foundation::IInspectable;
 
 struct SettingsPage : SettingsPageT<SettingsPage> {
   private:
-    App1::BasicViewModel viewmodel0{nullptr};
+    App1::SettingsViewModel viewmodel0{nullptr};
+    winrt::event_token property_changed_token{};
 
-    void UpdateLogFolderPath();
+    void UpdateCounterDisplay();
+    void on_settings_property_changed(IInspectable const& sender, PropertyChangedEventArgs const& e);
 
   public:
-    SettingsPage();
+    SettingsPage() noexcept = default;
 
-    fire_and_forget OnNavigatedTo(const NavigationEventArgs&);
+    void OnNavigatedTo(const NavigationEventArgs&);
     void OnNavigatedFrom(const NavigationEventArgs&);
 
-    fire_and_forget CreateLogFolderAsync();
-    App1::BasicViewModel ViewModel() noexcept;
-
-    void on_open_log_folder_click(IInspectable const&, RoutedEventArgs const&);
+    App1::SettingsViewModel ViewModel() noexcept;
+    
+    void on_increment_counter_click(IInspectable const&, RoutedEventArgs const&);
+    void on_decrement_counter_click(IInspectable const&, RoutedEventArgs const&);
+    void on_reset_counter_click(IInspectable const&, RoutedEventArgs const&);
 };
 } // namespace winrt::App1::implementation
 

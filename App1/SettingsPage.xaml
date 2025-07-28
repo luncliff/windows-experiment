@@ -13,34 +13,51 @@
         HorizontalAlignment="Stretch" 
         VerticalAlignment="Top" 
         Margin="16" >
-        
+
         <TextBlock Text="Application Settings" 
                    FontSize="24" 
                    FontWeight="SemiBold" 
                    Margin="0,0,0,16" />
-        
-        <TextBlock Text="Log Folder Location" 
+
+        <!-- Counter Setting -->
+        <TextBlock Text="Counter Value" 
                    FontWeight="SemiBold" 
                    Margin="0,8,0,4" />
         
         <Grid Margin="0,0,0,16">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             
-            <TextBlock x:Name="LogPathTextBlock" 
-                       FontFamily="Cascadia Mono"
-                       Text="Loading..." 
-                       TextWrapping="Wrap" 
+            <Button x:Name="DecrementButton" 
+                    Grid.Column="0" 
+                    Click="on_decrement_counter_click" 
+                    Margin="0,0,8,0"
+                    Content="-" 
+                    Width="40" />
+            
+            <TextBlock x:Name="CounterTextBlock" 
+                       Grid.Column="1"
+                       Text="0" 
+                       FontSize="18"
+                       TextAlignment="Center"
                        VerticalAlignment="Center" />
             
-            <Button x:Name="OpenLogFolderButton" 
-                    Grid.Column="1" 
-                    Click="on_open_log_folder_click" 
-                    ToolTipService.ToolTip="Open Log Folder">
-                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
-            </Button>
+            <Button x:Name="IncrementButton" 
+                    Grid.Column="2" 
+                    Click="on_increment_counter_click" 
+                    Margin="8,0,0,0"
+                    Content="+" 
+                    Width="40" />
         </Grid>
+        
+        <Button x:Name="ResetCounterButton" 
+                Click="on_reset_counter_click" 
+                Content="Reset to Default" 
+                HorizontalAlignment="Left"
+                Margin="0,0,0,24" />
+
     </StackPanel>
 </Page>
