@@ -42,7 +42,7 @@ jobs:
       - uses: NuGet/setup-nuget@v2
         with:
            nuget-version: '6.x'
-      - uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v5
+      - uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v6
 
       - uses: lukka/run-vcpkg@v11.5
         with:
@@ -78,7 +78,7 @@ jobs:
           key: "vcpkg-${{ runner.os }}"
           path: "${{ github.workspace }}/packages"
 
-      - uses: SonarSource/sonarqube-scan-action@v5.2.0
+      - uses: SonarSource/sonarqube-scan-action@v6
         with: # --define sonar.verbose=true?
           args: >
             --define sonar.cfamily.build-wrapper-output="bw-output"
