@@ -67,12 +67,12 @@ jobs:
         env:
           VCPKG_FEATURE_FLAGS: "registries,binarycaching,manifests"
 
-      - uses: actions/cache@v4.2.3
+      - uses: actions/cache@v4.3.0
         with:
           key: "sonar-${{ runner.os }}"
           path: "${{ github.workspace }}/.sonar" # SONAR_USER_HOME
 
-      - uses: actions/cache@v4.2.3
+      - uses: actions/cache@v4.3.0
         if: ${{ false }}
         with:
           key: "vcpkg-${{ runner.os }}"
