@@ -4,26 +4,21 @@
 #if __has_include("MainWindow.g.cpp")
 #include "MainWindow.g.cpp"
 #endif
-#include "BasicViewModel.h"
 #include "SettingsPage.xaml.h"
 #include "SupportPage.xaml.h"
 #include "TestPage1.xaml.h"
 
-#include <Windows.h>
 #include <microsoft.ui.xaml.window.h>
-
 #include <spdlog/spdlog.h>
 
 namespace winrt::App1::implementation {
-
-using Microsoft::UI::Xaml::Controls::Button;
 
 /// @see https://learn.microsoft.com/pl-pl/windows/apps/design/controls/navigationview
 MainWindow::MainWindow() noexcept(false) {
     ExtendsContentIntoTitleBar(true);
     spdlog::info("HWND {:p}", reinterpret_cast<void*>(WindowHandle()));
     // Create the shared ViewModels
-    viewmodel0 = winrt::make<implementation::BasicViewModel>();
+    viewmodel0 = Shared1::BasicViewModel{};
 }
 
 MainWindow::~MainWindow() noexcept {

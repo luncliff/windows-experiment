@@ -1,14 +1,14 @@
 #pragma once
-
-#include "BasicViewModel.g.h"
 #include "SupportPage.g.h"
+
+#include <winrt/Shared1.h> // generated file from Shared1 project
 
 namespace winrt::App1::implementation {
 using Microsoft::UI::Xaml::Navigation::NavigationEventArgs;
 
 struct SupportPage : SupportPageT<SupportPage> {
   private:
-    App1::BasicViewModel viewmodel0{nullptr};
+    Shared1::BasicViewModel viewmodel0{nullptr};
 
   public:
     SupportPage();
@@ -16,7 +16,7 @@ struct SupportPage : SupportPageT<SupportPage> {
     void OnNavigatedTo(const NavigationEventArgs&);
     void OnNavigatedFrom(const NavigationEventArgs&);
 
-    App1::BasicViewModel ViewModel() noexcept;
+    Shared1::BasicViewModel ViewModel() noexcept;
 };
 } // namespace winrt::App1::implementation
 

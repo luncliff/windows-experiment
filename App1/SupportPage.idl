@@ -2,6 +2,10 @@ namespace App1 {
 
 [default_interface] runtimeclass SupportPage : Microsoft.UI.Xaml.Controls.Page {
     SupportPage();
+
+    Shared1.BasicViewModel ViewModel {
+        get;
+    };
 }
 
 } // namespace App1

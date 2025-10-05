@@ -7,7 +7,7 @@
 
 using namespace winrt::Microsoft::UI::Xaml::Data;
 
-namespace winrt::App1::implementation {
+namespace winrt::Shared1::implementation {
 
 BasicItem::BasicItem() {
     // Default constructor
@@ -44,4 +44,4 @@ void BasicItem::RaisePropertyChanged(hstring const& propertyName) {
     m_propertyChanged(*this, PropertyChangedEventArgs(propertyName));
 }
 
-} // namespace winrt::App1::implementation
+} // namespace winrt::Shared1::implementation

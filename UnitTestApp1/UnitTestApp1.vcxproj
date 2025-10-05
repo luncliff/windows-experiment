@@ -82,7 +82,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);DISABLE_XAML_GENERATED_MAIN</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(VCInstallDir)Auxiliary\VS\UnitTest\include\UWP</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(VCInstallDir)Auxiliary\VS\UnitTest\include\UWP;$(SolutionDir)Shared1</AdditionalIncludeDirectories>
       <WarningLevel>Level4</WarningLevel>
       <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
     </ClCompile>
@@ -161,6 +161,11 @@
     <Image Include="Assets\StoreLogo.png" />
     <Image Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Shared1\Shared1.vcxproj">
+      <Project>{A1B2C3D4-E5F6-7890-ABCD-123456789ABC}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <!--
     Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
     Tools extension to be activated for this project even if the Windows App SDK Nuget
@@ -170,8 +175,7 @@
     <ProjectCapability Include="Msix" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\App1\packages.config" />
-    <None Include="packages.config" />
+    <None Include="..\packages.config" />
   </ItemGroup>
   <!--
     Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution

@@ -5,15 +5,13 @@
 #include "SupportPage.g.cpp"
 #endif
 
-#include "BasicViewModel.h"
-
 namespace winrt::App1::implementation {
 
 SupportPage::SupportPage() {
     // Initialize support page
 }
 
-App1::BasicViewModel SupportPage::ViewModel() noexcept {
+Shared1::BasicViewModel SupportPage::ViewModel() noexcept {
     return viewmodel0;
 }
 
@@ -23,7 +21,7 @@ void SupportPage::OnNavigatedTo(const NavigationEventArgs& e) {
 
     // Get the ViewModel from the navigation parameter
     if (e.Parameter() != nullptr) {
-        viewmodel0 = e.Parameter().try_as<App1::BasicViewModel>();
+        viewmodel0 = e.Parameter().try_as<Shared1::BasicViewModel>();
         // ViewModel is available for future use in the support page
     }
 }

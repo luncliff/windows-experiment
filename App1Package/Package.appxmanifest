@@ -11,7 +11,7 @@
   <Identity
     Name="490dbcac-9d4a-454c-818a-1dac63f6cd45"
     Publisher="CN=PARK DongHa"
-    Version="0.2527.0.0" />
+    Version="0.2540.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="490dbcac-9d4a-454c-818a-1dac63f6cd45" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
