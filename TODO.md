@@ -1,0 +1,69 @@
+# TODO (Forward-Looking) – Shared2 & Beyond
+
+Scope: Items here are intentionally deferred until after Shared1 static library integration and validation.
+
+## 1. Shared2 (Planned WinRT / DLL Component)
+
+Objectives:
+- Provide projected (WinRT) surfaces for stable ViewModel & service APIs.
+- Encapsulate legacy COM interop behind modern async-friendly wrappers.
+- Consolidate DirectX device management and interop helpers.
+
+High-Level Tasks:
+1. Define candidate IDL surfaces (minimal initial set):
+   - `ISettingsService` (async load/save, property get/set)
+   - `IBasicItemsProvider` (observable list projection?)
+   - `IGraphicsDeviceService` (device acquisition, device lost notifications)
+2. Draft IDL namespace strategy (stay under `App1` root to minimize friction)
+3. Introduce component project `Shared2` (DLL / WinRT component) with PCH + manifest.
+4. Implement adapter layer from Shared1 internal logic to projected types.
+5. Introduce COM wrapper(s) required for DX interop (document per-wrapper rationale).
+6. Migrate selective logging to use structured `LoggingFields` where beneficial.
+7. Evaluate channel taxonomy post-migration (merge/split decisions recorded in `developer-concerns.md`).
+8. Provide unit & integration tests (projection behavior, property notifications through WinRT boundary).
+9. Add performance profiling hooks (PIX markers, optional event counters) gated by build flag.
+10. Documentation: Update `work-note.md` with finalized Shared2 decisions.
+
+## 2. DirectX / Graphics Consolidation
+- Inventory current `DX` namespace utilities (responsibilities, dependencies).
+- Decide extraction scope: which pieces move to Shared2 vs remain internal to App1.
+- Implement abstraction boundary (factory or service pattern) that shields UI from device recreation details.
+- Add test harness for device lost simulation (skip gracefully if unsupported environment).
+
+## 3. Logging Enhancements
+- Evaluate log volume per channel (heuristic counters in debug builds).
+- Add log file size monitoring + rotation policy prototype.
+- Introduce optional Telemetry channel (privacy & policy review prerequisite).
+- Structured logging: adopt `LoggingFields` for settings persistence and device creation events.
+
+## 4. Performance & Diagnostics
+- Add lightweight timing helper (RAII scope logger) integrated with adapter.
+- Conditional compilation flags for high-frequency DX diagnostics.
+- Explore integration with ETW consumer tooling (trace session guidelines doc).
+
+## 5. Reliability / Resilience
+- Introduce retry/backoff for settings persistence failures.
+- Add watchdog for graphics device resets (log escalation to Warning/Error).
+- Unit test harness for simulated failure injection (mock adapter? optional test-only hooks).
+
+## 6. Documentation Roadmap
+- Create `graphics-design.md` once DirectX migration starts.
+- Create `logging-rotation-design.md` for size governance strategy.
+- Expand README with a dedicated "Architecture Overview" after Shared2 surfaces stabilize.
+
+## 7. Open Questions (Not Blocking Shared1)
+- Do we require any cross-language consumption (e.g., C#, Python) soon? Influences urgency of Shared2.
+- Minimum OS build for future DX feature usage? (May raise from 22000 if advanced features adopted.)
+- Should telemetry opt-in status be persisted with settings service? (If yes, design data contract early.)
+
+## 8. References
+- WinUI Controls: https://learn.microsoft.com/en-us/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls?view=windows-app-sdk-1.7
+- SwapChainPanel Interop (`ISwapChainPanelNative`): https://learn.microsoft.com/en-us/windows/windows-app-sdk/api/win32/microsoft.ui.xaml.media.dxinterop/nn-microsoft-ui-xaml-media-dxinterop-iswapchainpanelnative
+- LoggingChannel: https://learn.microsoft.com/en-us/uwp/api/windows.foundation.diagnostics.loggingchannel
+- LoggingSession: https://learn.microsoft.com/en-us/uwp/api/windows.foundation.diagnostics.loggingsession
+- C++/WinRT: https://learn.microsoft.com/en-us/windows/uwp/cpp-and-winrt-apis/
+- DirectX 12 Programming Guide: https://learn.microsoft.com/en-us/windows/win32/direct3d12/directx-12-programming-guide
+- Direct3D/Swap Chain Samples: https://github.com/microsoft/DirectX-Graphics-Samples
+- MVVM Patterns (C++/WinRT community): (assorted blog/sample links – curate later)
+
+(End of forward-looking TODO list)
