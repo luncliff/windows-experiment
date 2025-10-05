@@ -125,6 +125,7 @@
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="BasicItem.h" />
+    <ClInclude Include="BasicViewModel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -134,9 +135,14 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="BasicItem.cpp" />
+    <ClCompile Include="BasicViewModel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="BasicItem.idl" />
+    <Midl Include="BasicViewModel.idl" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

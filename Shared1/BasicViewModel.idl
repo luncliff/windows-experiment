@@ -1,0 +1,17 @@
+import "BasicItem.idl";
+
+namespace Shared1 {
+
+runtimeclass BasicViewModel {
+  BasicViewModel();
+
+  Windows.Foundation.Collections.IObservableVector<BasicItem> Items {
+    get;
+  };
+
+  Windows.Foundation.IAsyncAction CreateLogFolderAsync();
+  Windows.Storage.StorageFolder GetLogFolder();
+  String GetLogFolderPath();
+}
+
+} // namespace Shared1

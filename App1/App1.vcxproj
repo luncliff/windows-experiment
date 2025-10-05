@@ -276,7 +276,7 @@
     </Midl>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="..\packages.config" />
   </ItemGroup>
   <!-- vcpkg dependencies for local debugging -->
   <ItemGroup>
