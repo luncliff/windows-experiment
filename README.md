@@ -24,7 +24,8 @@ vcpkg integrate install
 We have to restore packages in [packages.config](./App1/packages.config).
 
 ```ps1
-nuget restore windows-experiment.sln
+# nuget restore windows-experiment.sln
+nuget restore packages.config -SolutionDirectory .
 ```
 
 ### Build

@@ -105,7 +105,7 @@
     </AppxPackagePayload>
     
     <!-- WinPixEventRuntime DLLs -->
-    <AppxPackagePayload Include="$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\bin\$(Platform)\*.dll">
+    <AppxPackagePayload Include="..\packages\WinPixEventRuntime.1.0.240308001\bin\$(Platform)\*.dll">
       <TargetPath>%(Filename)%(Extension)</TargetPath>
     </AppxPackagePayload>
   </ItemGroup>

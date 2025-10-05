@@ -25,7 +25,9 @@ jobs:
   sonarcloud:
     name: SonarCloud
     runs-on: windows-latest
-
+    defaults:
+      run:
+        shell: pwsh
     env:
       SONAR_USER_HOME: "${{ github.workspace }}/.sonar"
       # VCPKG_DOWNLOADS: "${{ github.workspace }}/packages"
@@ -50,22 +52,23 @@ jobs:
           vcpkgGitCommitId: "ef7dbf94b9198bc58f45951adcf1f041fcbc5ea0" # 2025.06.13
           runVcpkgInstall: false
 
-      - name: "Run vcpkg-integrate"
-        run: vcpkg integrate install
-        shell: pwsh
-
-      - name: "Run NuGet Restore"
+      - name: "Run vcpkg, NuGet Restore"
         run: |
-          nuget restore windows-experiment.sln
-        shell: pwsh
+          vcpkg integrate install
+          # nuget restore windows-experiment.sln
+          nuget restore packages.config -SolutionDirectory .
 
-      - name: "Run build-wrapper"
+      - name: "Run build-wrapper(x64/Debug)"
         run: |
           build-wrapper-win-x86-64 --out-dir bw-output `
-            MSBuild windows-experiment.sln /t:App1 /nodeReuse:false /p:platform="x64" /p:configuration="Debug" /p:BuildProjectReferences=false
-        shell: pwsh
+            MSBuild windows-experiment.sln /nodeReuse:false /p:platform="x64" /p:configuration="Debug" /p:BuildProjectReferences=false
         env:
           VCPKG_FEATURE_FLAGS: "registries,binarycaching,manifests"
+
+      - name: "Run VSTest(x64/Debug)"
+        run: |
+          vstest.console.exe /framework:frameworkuap10 UnitTestApp1.build.appxrecipe
+        working-directory: x64/Debug/UnitTestApp1
 
       - uses: actions/cache@v4.3.0
         with:
