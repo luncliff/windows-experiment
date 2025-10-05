@@ -38,18 +38,22 @@ MSBuild windows-experiment.sln /p:platform="x64" /p:configuration="Debug" /p:Vcp
 
 ### :construction: Test
 
-Need a CLI command to run MSTest on WinUI 3 project. See [UnitTestApp1](./UnitTestApp1/UnitTestApp1.vcxproj) project.
+Need a vstest.console.exe CLI command to run tests on WinUI 3 project.
+Our test project is [UnitTestApp1](./UnitTestApp1/UnitTestApp1.vcxproj).
 
-- https://learn.microsoft.com/en-us/visualstudio/test/microsoft-visualstudio-testtools-cppunittestframework-api-reference?view=vs-2022
-- https://github.com/microsoft/testfx (need research to use)
-- https://devblogs.microsoft.com/dotnet/introducing-mstest-34/ (It's for dotnet. Not C++/WinRT)
+- [Test apps built with the Windows App SDK and WinUI](https://learn.microsoft.com/en-us/windows/apps/winui/winui3/testing/)
+  - [Unit tests for Windows UI Library (WinUI) apps in Visual Studio](https://learn.microsoft.com/en-us/windows/apps/winui/winui3/testing/create-winui-unit-test-project)
+- [Microsoft.VisualStudio.TestTools.CppUnitTestFramework API reference](https://learn.microsoft.com/en-us/visualstudio/test/microsoft-visualstudio-testtools-cppunittestframework-api-reference?view=vs-2022)
+- [VSTest.Console.exe command-line options](https://learn.microsoft.com/en-us/visualstudio/test/vstest-console-options?view=vs-2022#uwp-example) for UWP example
 
 ```ps1
 # Full build of the projects
 MSBuild windows-experiment.sln /t:UnitTestApp1 /p:platform="x64" /p:configuration="Debug" /p:VcpkgEnableManifest=true /Verbosity:Minimal
 
-# Run tests with MSTest
-
+# After full build, Run tests with /framework option and appxrecipe file
+Push-Location x64/Debug/UnitTestApp1
+    vstest.console.exe /framework:frameworkuap10 UnitTestApp1.build.appxrecipe
+Pop-Location
 ```
 
 ### :construction: Deploy
@@ -91,3 +95,9 @@ C++/WinRT & MVVM
 
 Future / Extended
 - Potential Telemetry Channel (deferred): evaluate after core logging adapter integration.
+
+### Future Works
+
+The followings are for research for future use.
+- https://github.com/microsoft/testfx
+- https://devblogs.microsoft.com/dotnet/introducing-mstest-34/ (It's for dotnet. Not C++/WinRT)
