@@ -70,7 +70,9 @@ jobs:
       - name: "Run VSTest(x64/Debug)" # https://github.com/sonarsource-cfamily-examples/windows-msbuild-vscoverage-gh-actions-sc
         run: |
           vstest.console.exe /framework:frameworkuap10 UnitTestApp1.build.appxrecipe `
-            /EnableCodeCoverage /Collect:"Code Coverage;Format=Xml" "/ResultsDirectory:${{ github.workspace }}/x64"
+            /EnableCodeCoverage /Collect:"Code Coverage;Format=Xml" `
+            /ResultsDirectory:"${{ github.workspace }}/x64" `
+            /Settings:"${{ github.workspace }}/test.runsettings"
         working-directory: x64/Debug/UnitTestApp1
 
       - uses: actions/cache@v4.3.0
