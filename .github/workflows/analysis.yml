@@ -61,15 +61,16 @@ jobs:
 
       - name: "Run build-wrapper(x64/Debug)"
         run: |
-          build-wrapper-win-x86-64 --out-dir bw-output `
+          build-wrapper-win-x86-64 --out-dir "bw-output" `
             MSBuild windows-experiment.sln "/t:Shared1;App1;UnitTestApp1" /p:platform="x64" /p:configuration="Debug" `
               /nodeReuse:false /p:BuildProjectReferences=false
         env:
           VCPKG_FEATURE_FLAGS: "registries,binarycaching,manifests"
 
-      - name: "Run VSTest(x64/Debug)"
+      - name: "Run VSTest(x64/Debug)" # see https://github.com/sonarsource-cfamily-examples/windows-msbuild-vscoverage-gh-actions-sc
         run: |
-          vstest.console.exe /framework:frameworkuap10 UnitTestApp1.build.appxrecipe
+          vstest.console.exe /framework:frameworkuap10 UnitTestApp1.build.appxrecipe `
+            /EnableCodeCoverage /Collect:"Code Coverage;Format=Xml" "/ResultsDirectory:${{ github.workspace }}/x64"
         working-directory: x64/Debug/UnitTestApp1
 
       - uses: actions/cache@v4.3.0
@@ -88,3 +89,4 @@ jobs:
           args: >
             --define "sonar.token=${{ secrets.SONAR_TOKEN }}"
             --define "sonar.cfamily.build-wrapper-output=bw-output"
+            --define "sonar.cfamily.vscoveragexml.reportsPath=x64/*.xml"
