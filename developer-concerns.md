@@ -22,51 +22,84 @@ Decision Recording Rules:
 - Only finalized decisions migrate to `work-note.md`.
 - Experiments & rejected options stay here for historical trace.
 
-## 2. Null Logger / Adapter Pattern
+## 2. ILoggingChannel Implementations & Null Object
 
-Goal: Zero-branch consumer code in Shared1 when optional `LoggingChannel` not provided.
+Goal: Consume `Windows::Foundation::Diagnostics::ILoggingChannel` directly so Shared1 code remains agnostic about whether the channel is the system `LoggingChannel` or a custom in-process implementation (null, stream redirection, test instrumentation).
 
-Patterns Considered:
-A. Interface Class (pure virtual) + two implementations
-   Pros: Polymorphic substitution. Cons: vtable overhead, ABI noise if later projected.
-B. Template Policy (e.g., `template<typename Logger>` with `Logger` providing `info/warn/error`)
-   Pros: Zero runtime overhead. Cons: Template bloat, couples call sites to template generic forms.
-C. Lightweight Value Adapter wrapping `LoggingChannel` (holds nullable handle; methods no-op if null)
-   Pros: Single type, branch is localized inside adapter, simple to inline. Cons: Branch per call.
-D. Null Object + Free Functions (global `inline` null instance; overloads accept adapter ref)
-   Pros: Simple injection, free functions allow ADL flexibility. Cons: Slight scattering of API surface.
+Why pivot from adapter concept? The WinRT API already defines an interface (`ILoggingChannel`). Implementing small in-process types deriving from `winrt::implements<..., ILoggingChannel>` avoids inventing an additional abstraction while enabling polymorphism and a canonical null object.
 
-Preliminary Choice: Hybrid C + D
-- Define `struct logging_adapter { Windows::Foundation::Diagnostics::LoggingChannel m_channel; /* ... */ };`
-- Provide free functions `log_info(logging_adapter&, std::wstring_view)` etc.
-- Null variant: default constructed `logging_adapter{}` with empty `m_channel` → functions early return.
-- Rationale: Minimizes templates while centralizing null check logic.
+Planned Implementations (non-projected, internal C++ classes):
+| Type | Purpose | Notes |
+|------|---------|-------|
+| SystemLoggingChannel (alias) | Wrap existing `LoggingChannel` | Provided by platform; implicitly convertible to `ILoggingChannel` |
+| NullLoggingChannel | Null object – no-op `LogMessage` | All other interface methods return defaults / benign values |
+| StreamLoggingChannel | Redirects `LogMessage(hstring)` to `std::wostream` (e.g. `std::wcout`) | For tests & local diagnostics without session |
+| FilteringLoggingChannel (future) | Conditional forwarding based on severity/keywords | Defer until need arises |
 
-Edge Cases:
-- Channel closed mid-operation: Windows API will return failure; adapter can ignore error for non-critical info-level logs.
-- High-frequency property changes: Add optional `should_log_debug()` guard or call-site sampling later.
+Key Interface Method (primary usage):
+`void ILoggingChannel::LogMessage(hstring const& message) const;`
+Reference: https://learn.microsoft.com/en-us/uwp/api/windows.foundation.diagnostics.iloggingchannel.logmessage
 
-## 3. Adapter API Sketch
-
+Usage Pattern in Shared1:
 ```cpp
-// In Shared1 pch.h (tentative)
-namespace winrt::App1 {
-  struct logging_adapter {
-    Windows::Foundation::Diagnostics::LoggingChannel channel{}; // empty means disabled
-    logging_adapter() = default;
-    explicit logging_adapter(Windows::Foundation::Diagnostics::LoggingChannel c) noexcept : channel(std::move(c)) {}
-  };
-
-  void log_info(logging_adapter const& lg, std::wstring_view msg) noexcept;
-  void log_warn(logging_adapter const& lg, std::wstring_view msg) noexcept;
-  void log_error(logging_adapter const& lg, std::wstring_view msg) noexcept;
+void some_operation(Windows::Foundation::Diagnostics::ILoggingChannel const& ch) {
+   ch.LogMessage(L"operation started");
+   // ... work ...
+   ch.LogMessage(L"operation finished");
 }
 ```
 
-Implementation Notes:
-- Use `LoggingLevel::Information / Warning / Error` (Critical reserved for unrecoverable conditions).
-- Avoid allocation: pass `std::wstring_view` or narrow `std::string_view` then widen only if necessary (TBD based on call sites).
-- Potential extension: overload with `std::u16string_view` if UTF-16 sources are common.
+Construction / Injection:
+- App code supplies either a real `LoggingChannel` or a custom implementation (e.g., `StreamLoggingChannel`) wherever logic objects are created.
+- For absence of logging, pass a shared static `NullLoggingChannel` instance.
+
+Sketch: Null + Stream Implementations
+```cpp
+struct NullLoggingChannel final : winrt::implements<NullLoggingChannel, Windows::Foundation::Diagnostics::ILoggingChannel> {
+   void LogMessage(winrt::hstring const&) const noexcept {}
+   void LogMessage(winrt::hstring const&, Windows::Foundation::Diagnostics::LoggingLevel) const noexcept {}
+   // Other interface members (if any) return default/benign values.
+};
+
+struct StreamLoggingChannel final : winrt::implements<StreamLoggingChannel, Windows::Foundation::Diagnostics::ILoggingChannel> {
+   std::wostream* out{};
+   explicit StreamLoggingChannel(std::wostream& os) noexcept : out(&os) {}
+   void LogMessage(winrt::hstring const& msg) const noexcept {
+      if (out) (*out) << msg.c_str() << L'\n';
+   }
+   void LogMessage(winrt::hstring const& msg, Windows::Foundation::Diagnostics::LoggingLevel) const noexcept {
+      LogMessage(msg);
+   }
+};
+```
+
+Advantages:
+- Removes need for custom adapter/wrapper naming.
+- Naturally composes with any future WinRT projections (`Shared2`) since interface already part of metadata.
+- Null object fully type-compatible (no `std::optional` or pointer null checks).
+
+Edge Cases:
+- Real `LoggingChannel` may throw if underlying session closed; Shared1 will treat logging as best-effort (catch & swallow non-critical exceptions if they appear—TBD after instrumentation).
+- Performance: Additional virtual indirection per call is acceptable at current expected log frequency; revisit if hotspots emerge (possible inline fast path for `LoggingChannel`).
+
+Testing Approach:
+- Unit tests can inject `StreamLoggingChannel` capturing output into `std::wstringstream` and assert on contents, or `NullLoggingChannel` to ensure no side-effects.
+
+## 3. ILoggingChannel Consumption Guidelines
+
+1. Accept parameters as `ILoggingChannel const&` (never raw pointer) to enforce non-null semantic (Null object supplies behavior). 
+2. Store as `Windows::Foundation::Diagnostics::ILoggingChannel` (value) inside objects; it's a projected interface smart pointer (reference-counted) and cheap to copy.
+3. Do not cache `LoggingChannel` separately; rely solely on the interface type.
+4. Severity filtering (future) handled by a decorated implementation; core code only calls `LogMessage` (non-severity overload) unless level adds value.
+5. Avoid formatting allocations: prefer composing `std::wstring` using small buffers or streaming when necessary; micro-opt premature—defer.
+
+Deferred Considerations:
+- Introduce `LoggingFields` variants only when structured key-value data appears.
+- Add severity-based overload usages after first set of warnings/errors are defined.
+
+References:
+- ILoggingChannel: https://learn.microsoft.com/en-us/uwp/api/windows.foundation.diagnostics.iloggingchannel
+- ILoggingChannel::LogMessage: https://learn.microsoft.com/en-us/uwp/api/windows.foundation.diagnostics.iloggingchannel.logmessage
 
 ## 4. Future Shared2 Projection Thoughts
 

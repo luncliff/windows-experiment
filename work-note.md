@@ -140,6 +140,10 @@ Components:
   - `App1.DX`
   - `App1.Persistence`
   (Extend cautiously; avoid per-class channels.)
+- Shared1 will consume `Windows::Foundation::Diagnostics::ILoggingChannel` directly, enabling injection of:
+  - Real platform `LoggingChannel` instances
+  - `NullLoggingChannel` (no-op implementation) for silent mode
+  - `StreamLoggingChannel` (redirects messages to `std::wostream`, e.g., `std::wcout` or test buffer)
 
 Guidelines:
 - Channel acquisition: App1 constructs channels and passes references (or wrappers) to Shared1 constructors/factories.
@@ -157,16 +161,16 @@ Open Questions:
 These clarifications refine scope for the immediate Shared1 implementation phase.
 
 1. Application-Owned Channels & Optional Logging
-  - All `LoggingChannel` instances are created, owned, and lifetime-managed by the application (`App1`) or the test harness (`UnitTestApp1`).
-  - Shared1 code never globally discovers channels; it only consumes references explicitly passed (constructor parameter, factory arg, or setter).
-  - If no channel is supplied, components must remain fully functional and simply produce no log output.
-  - To avoid pervasive `nullptr` checks, Shared1 will introduce a Null Object pattern implementation (a lightweight channel shim) that satisfies the same interface shape used internally.
-  - The null object definition will live in Shared1's `pch.h/.cpp` for now (central, low-friction include). Detailed design notes are tracked in `developer-concerns.md` (see below) instead of expanding this document.
+  - All channel instances (system or custom) are created and lifetime-managed by `App1` or test harness.
+  - Shared1 receives `ILoggingChannel` (interface) values; no global lookup.
+  - Null Object: `NullLoggingChannel` implements `ILoggingChannel` with no-op `LogMessage` methods.
+  - Stream redirection: `StreamLoggingChannel` implements `ILoggingChannel` writing to an injected `std::wostream` (diagnostics/tests).
+  - Definitions will initially live in Shared1 (likely `pch.cpp` or dedicated logging source) until stabilized.
 
 2. Null Object Pattern (Preview)
-  - Intent: Provide a trivial, zero-cost-at-call-site stand‑in that matches the minimal surface Shared1 expects (e.g., `log_info(std::wstring_view)`, `log_error(...)`).
-  - We will NOT wrap `LoggingChannel` everywhere yet; instead, internal helpers may template or overload on a light-weight adapter concept.
-  - Exact API sketch and tradeoffs (inheritance vs free functions with function refs) moved to `developer-concerns.md` to keep the work-note concise.
+  - Implemented via `NullLoggingChannel` deriving from `winrt::implements<..., ILoggingChannel>`.
+  - Eliminates conditional branches in consumer code (interface always callable).
+  - Detailed sketches & alternative options documented in `developer-concerns.md`.
 
 3. Logging Channel Separation (Deferral)
   - Current practical set remains: `App1.Core`, `App1.ViewModel`, `App1.DX`, `App1.Persistence` (Telemetry TBD).
@@ -184,8 +188,8 @@ These clarifications refine scope for the immediate Shared1 implementation phase
   - `TODO.md`: Forward-looking task tracking for future Shared2 (projection, COM interop, DX consolidation) — intentionally excluded from near-term execution scope.
 
 6. Test Impact
-  - Unit tests may inject either a real `LoggingChannel` or the null logger adapter; both paths should compile & execute without branching differences.
-  - No tests will parse the produced log file yet; only construction/injection behavior and (later) optional lightweight event count hooks.
+  - Unit tests inject `NullLoggingChannel` or `StreamLoggingChannel` to verify logging interaction without requiring a real session.
+  - No log file parsing yet; tests may optionally capture stream output for simple assertions.
 
 7. Out-of-Scope Confirmation (for this immediate sprint)
   - Implementing channel rotation, size governance, or telemetry uplink.
@@ -195,6 +199,55 @@ These clarifications refine scope for the immediate Shared1 implementation phase
 References Added (see README too):
 - SwapChainPanel interop: `ISwapChainPanelNative` (DX interop) – https://learn.microsoft.com/en-us/windows/windows-app-sdk/api/win32/microsoft.ui.xaml.media.dxinterop/nn-microsoft-ui-xaml-media-dxinterop-iswapchainpanelnative
 - WinUI Controls overview – https://learn.microsoft.com/en-us/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls?view=windows-app-sdk-1.7
+
+## 12. Shared1 Implementation Plan (2025-10-05)
+
+### Baseline Verification
+✅ **Build Test Completed**: `MSBuild windows-experiment.sln /p:platform="x64" /p:configuration="Debug" /p:VcpkgEnableManifest=true /Verbosity:Minimal` succeeded with warnings only (no errors).
+
+### Implementation Sequence
+1. **Project Structure Setup**
+   - Create `Shared1` static library project (.vcxproj) matching existing configurations (Debug/Release x64/ARM64)
+   - Add to solution and configure project references in App1 and UnitTestApp1
+   - Create minimal PCH structure with logging adapter null object
+
+2. **Logging Infrastructure** 
+   - Implement `logging_adapter` struct in Shared1 pch.h/pch.cpp per developer-concerns.md design
+   - Add free functions: `log_info()`, `log_warn()`, `log_error()` with null-object behavior
+   - Test compilation without breaking existing code
+
+3. **Class Migration Priority**
+   a. **BasicItem**: Pure data model, minimal XAML dependencies
+   b. **BasicViewModel**: Moderate complexity, demonstrates PropertyChanged pattern
+   c. **DeviceResources**: Complex DirectX utilities, validates DirectX build integration
+
+4. **Migration Process per Class**
+   - Copy .h/.cpp files to Shared1 with flat structure
+   - Remove dependency on .idl (convert to plain C++ classes)
+   - Update namespace references and logging calls to use adapter
+   - Remove original files from App1 project
+   - Update App1 to reference Shared1 types
+
+5. **Testing Integration**
+   - Add BasicViewModel unit tests to UnitTests.cpp
+   - Verify PropertyChanged event behavior
+   - Test logging adapter injection (real vs null)
+
+6. **Validation**
+   - Full solution build after each migration
+   - Run existing tests to ensure no regression
+   - Final test execution via vstest.console.exe
+
+### Risk Mitigation
+- **Incremental approach**: One class at a time with build verification
+- **Rollback plan**: Keep original files until migration validated
+- **Dependency tracking**: Update includes systematically to avoid linker errors
+
+### Success Criteria
+- All projects build without errors
+- Existing functionality preserved (UI navigation, settings persistence)
+- New tests pass with both real and null logging adapters
+- Clear separation achieved: App1 (UI/binding), Shared1 (logic/models), UnitTestApp1 (validation)
 
 - Introduce keyword constants (bitmask) for filtering? (Add when first filtering use case appears.)
 
