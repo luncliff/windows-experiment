@@ -73,9 +73,9 @@ jobs:
       - uses: microsoft/vstest-action@v1.0.0
         with:
           otherConsoleOptions: /framework:frameworkuap10
-          testAssembly: UnitTestApp1.build.appxrecipe
+          testAssembly: UnitTest*.appxrecipe # UnitTestApp1.build.appxrecipe
           platform: x64
-          searchFolder: x64/Debug/UnitTestApp1
+          searchFolder: ./x64/Debug/UnitTestApp1/
           codeCoverageEnabled: true
 
       - uses: actions/cache@v4.3.0
