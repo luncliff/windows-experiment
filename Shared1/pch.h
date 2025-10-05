@@ -9,7 +9,7 @@
 #include <restrictederrorinfo.h>
 // clang-format on
 
-// Core WinRT includes (minimal set for shared logic)
+#undef GetCurrentTime
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Foundation.Diagnostics.h>
@@ -23,7 +23,6 @@
 #include <directx/d3dx12.h>
 #endif
 // clang-format off
-#include <Windows.h>
 #include <d3d12.h>
 #include <dxgi1_6.h>
 // clang-format on
