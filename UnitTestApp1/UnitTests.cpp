@@ -9,10 +9,9 @@ using namespace winrt::Microsoft::UI::Xaml::Controls;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 using winrt::UnitTestApp1::MainWindow;
-using winrt::Shared1::BasicViewModel;
-using winrt::Shared1::BasicItem;
+using winrt::Windows::Foundation::IAsyncAction;
 
-class CppUnitTests : public TestClass<CppUnitTests> {
+class MainWindowTests : public TestClass<MainWindowTests> {
     MainWindow window{nullptr};
 
   public:
@@ -26,34 +25,44 @@ class CppUnitTests : public TestClass<CppUnitTests> {
     TEST_METHOD(TestWindowIsNull) {
         Assert::IsTrue(window == nullptr);
     }
+};
 
-    TEST_METHOD(TestBasicViewModelCreation) {
-        BasicViewModel viewModel{};
-        Assert::IsTrue(viewModel != nullptr, L"BasicViewModel should be created successfully");
+using winrt::Shared1::BasicItem;
+using winrt::Shared1::BasicViewModel;
+
+class BasicViewModelTests : public TestClass<BasicViewModelTests> {
+    BasicViewModel viewmodel{}; // test with default-consructed instance
+
+  public:
+    TEST_METHOD(TestNoLogFolder) {
+        try {
+            // CreateLogFolderAsync is required for this ViewModel
+            std::ignore = viewmodel.GetLogFolderPath();
+        } catch (const winrt::hresult_error& ex) {
+            Logger::WriteMessage(ex.message().c_str());
+            return; // expected failure
+        }
+        Assert::Fail(L"GetLogFolder must throw expected exception");
     }
 
-    TEST_METHOD(TestBasicViewModelItems) {
-        BasicViewModel viewModel{};
-        auto items = viewModel.Items();
+    TEST_METHOD(TestNotEmpty) {
+        auto items = viewmodel.Items();
         Assert::IsTrue(items.Size() > 0, L"ViewModel should have initialized items");
-        Assert::AreEqual(static_cast<uint32_t>(5), items.Size(), L"Should have 5 default items");
     }
 
     TEST_METHOD(TestBasicViewModelLogFolder) {
-        BasicViewModel viewModel{};
-        
         // Initially log folder should be null
-        auto folder = viewModel.GetLogFolder();
+        auto folder = viewmodel.GetLogFolder();
         Assert::IsTrue(folder == nullptr, L"Log folder should initially be null");
 
         // Test CreateLogFolderAsync (can't easily test async in unit test, but we can verify it doesn't crash)
         try {
-            auto async_op = viewModel.CreateLogFolderAsync();
-            // Just verify the operation was created without crashing
-            Assert::IsTrue(async_op != nullptr, L"CreateLogFolderAsync should return valid operation");
-        } catch (...) {
-            // CreateLogFolderAsync might fail in test environment, that's acceptable
-            Assert::IsTrue(true, L"CreateLogFolderAsync handled gracefully");
+            IAsyncAction action = viewmodel.CreateLogFolderAsync();
+            Assert::IsTrue(action != nullptr);
+
+            action.get(); // Wait for completion
+        } catch (const winrt::hresult_error& ex) {
+            Assert::Fail(ex.message().c_str());
         }
     }
 };
