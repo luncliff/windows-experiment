@@ -89,4 +89,4 @@ jobs:
           args: >
             --define "sonar.token=${{ secrets.SONAR_TOKEN }}"
             --define "sonar.cfamily.build-wrapper-output=bw-output"
-            --define "sonar.cfamily.vscoveragexml.reportsPath=x64/*.xml"
+            --define "sonar.cfamily.vscoveragexml.reportsPath=x64/*/*.xml"
