@@ -8,17 +8,17 @@
     <CppWinRTOptimized>true</CppWinRTOptimized>
     <CppWinRTRootNamespaceAutoMerge>true</CppWinRTRootNamespaceAutoMerge>
     <CppWinRTGenerateWindowsMetadata>true</CppWinRTGenerateWindowsMetadata>
-    <MinimalCoreWin>false</MinimalCoreWin>
+    <MinimalCoreWin>true</MinimalCoreWin>
     <ProjectGuid>{A1B2C3D4-E5F6-7890-ABCD-123456789ABC}</ProjectGuid>
     <ProjectName>Shared1</ProjectName>
     <RootNamespace>Shared1</RootNamespace>
     <TargetName>$(RootNamespace)</TargetName>
-    <DefaultLanguage>en-US</DefaultLanguage>
+    <DefaultLanguage>ko-KR</DefaultLanguage>
     <MinimumVisualStudioVersion>16.0</MinimumVisualStudioVersion>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>10.0.22000.0</WindowsTargetPlatformMinVersion>
+    <UseWinUI>true</UseWinUI>
     <CppWinRTProjectLanguage>C++/WinRT</CppWinRTProjectLanguage>
-    <UseWinUI>false</UseWinUI>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <ItemGroup Label="ProjectConfigurations">
