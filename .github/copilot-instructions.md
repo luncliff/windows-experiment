@@ -18,7 +18,7 @@ Always prefer search existing code and web posts, before creating new one.
 
 The followings are mostly examples, references to help developers.
 
-### C++/WinRT
+### C++/WinRT & WinUI 3
 
 For Windows platform.
 
