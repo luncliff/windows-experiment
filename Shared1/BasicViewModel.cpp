@@ -30,7 +30,7 @@ StorageFolder BasicViewModel::GetLogFolder() {
 
 winrt::hstring BasicViewModel::GetLogFolderPath() {
     if (m_log_folder == nullptr)
-        throw std::runtime_error("Log folder not initialized");
+        throw winrt::hresult_error{E_FAIL, L"call CreateLogFolderAsync before this function"};
     return m_log_folder.Path();
 }
 

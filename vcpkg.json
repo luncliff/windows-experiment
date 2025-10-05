@@ -1,13 +1,20 @@
 {
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
   "name": "windows-experiment",
-  "version": "0.2525.0",
+  "version": "0.2540.0",
   "description": "Personal Windows SDK experiments",
   "homepage": "https://github.com/luncliff/windows-experiment",
   "license": "CC0-1.0",
   "supports": "windows",
   "dependencies": [
-    "opencl",
+    {
+      "name": "opencl",
+      "version>=": "v2024.10.24"
+    },
+    {
+      "name": "opencl-headers",
+      "version>=": "v2024.10.24"
+    },
     "spdlog"
   ]
 }

@@ -1,9 +1,9 @@
 #
 # References
-#   https://github.com/sonarsource-cfamily-examples/windows-cmake-gh-actions-sc
-#   https://github.com/sonarsource-cfamily-examples/windows-msbuild-gh-actions-sc
-#   https://devblogs.microsoft.com/cppblog/vcpkg-2023-06-20-and-2023-07-21-releases-github-dependency-graph-support-android-tested-triplets-xbox-triplet-improvements-and-more
-#   https://devblogs.microsoft.com/cppblog/vcpkg-integration-with-the-github-dependency-graph
+# - https://github.com/sonarsource-cfamily-examples/windows-msbuild-gh-actions-sc
+# - https://github.com/sonarsource-cfamily-examples/windows-msbuild-vscoverage-gh-actions-sc
+# - https://docs.sonarsource.com/sonarqube-server/2025.1/analyzing-source-code/test-coverage/c-family-test-coverage
+# - https://docs.sonarsource.com/sonarqube-server/analyzing-source-code/analysis-parameters
 #
 name: Analysis
 
@@ -61,15 +61,18 @@ jobs:
 
       - name: "Run build-wrapper(x64/Debug)"
         run: |
-          build-wrapper-win-x86-64 --out-dir bw-output `
+          build-wrapper-win-x86-64 --out-dir "bw-output" `
             MSBuild windows-experiment.sln "/t:Shared1;App1;UnitTestApp1" /p:platform="x64" /p:configuration="Debug" `
               /nodeReuse:false /p:BuildProjectReferences=false
         env:
           VCPKG_FEATURE_FLAGS: "registries,binarycaching,manifests"
 
-      - name: "Run VSTest(x64/Debug)"
+      - name: "Run VSTest(x64/Debug)" # https://github.com/sonarsource-cfamily-examples/windows-msbuild-vscoverage-gh-actions-sc
         run: |
-          vstest.console.exe /framework:frameworkuap10 UnitTestApp1.build.appxrecipe
+          vstest.console.exe /framework:frameworkuap10 UnitTestApp1.build.appxrecipe `
+            /EnableCodeCoverage /Collect:"Code Coverage;Format=Xml" `
+            /ResultsDirectory:"${{ github.workspace }}/x64" `
+            /Settings:"${{ github.workspace }}/test.runsettings"
         working-directory: x64/Debug/UnitTestApp1
 
       - uses: actions/cache@v4.3.0
@@ -84,7 +87,8 @@ jobs:
           path: "${{ github.workspace }}/packages"
 
       - uses: SonarSource/sonarqube-scan-action@v6
-        with: # --define sonar.verbose=true?
+        with: # todo: separate sonar.links.ci for triggers
           args: >
             --define "sonar.token=${{ secrets.SONAR_TOKEN }}"
             --define "sonar.cfamily.build-wrapper-output=bw-output"
+            --define "sonar.cfamily.vscoveragexml.reportsPath=x64/*/*.xml"
