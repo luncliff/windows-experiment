@@ -1,0 +1,17 @@
+import "SettingsViewModel.idl";
+
+namespace App1 {
+
+[default_interface] runtimeclass ViewModelProvider {
+    ViewModelProvider();
+
+    Shared1.BasicViewModel Basic {
+        get;
+    };
+    SettingsViewModel Settings {
+        get;
+        set;
+    };
+}
+
+} // namespace App1

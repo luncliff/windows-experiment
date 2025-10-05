@@ -1,4 +1,4 @@
-import "SettingsViewModel.idl";
+import "ViewModelProvider.idl";
 
 namespace App1 {
 
@@ -7,6 +7,9 @@ namespace App1 {
     MainWindow();
 
     SettingsViewModel Settings {
+        get;
+    };
+    ViewModelProvider Provider {
         get;
         set;
     };

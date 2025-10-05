@@ -17,8 +17,6 @@ namespace winrt::App1::implementation {
 MainWindow::MainWindow() noexcept(false) {
     ExtendsContentIntoTitleBar(true);
     spdlog::info("HWND {:p}", reinterpret_cast<void*>(WindowHandle()));
-    // Create the shared ViewModels
-    viewmodel0 = Shared1::BasicViewModel{};
 }
 
 MainWindow::~MainWindow() noexcept {
@@ -36,18 +34,24 @@ void MainWindow::clear_settings_event() noexcept {
     }
 }
 
-App1::SettingsViewModel MainWindow::Settings() const noexcept {
-    return viewmodel1;
+App1::ViewModelProvider MainWindow::Provider() const noexcept {
+    return provider;
 }
 
-void MainWindow::Settings(App1::SettingsViewModel viewmodel) noexcept(false) {
-    if (viewmodel == nullptr)
-        throw winrt::hresult_invalid_argument(L"SettingsViewModel cannot be null");
+void MainWindow::Provider(App1::ViewModelProvider value) noexcept(false) {
+    if (value == nullptr)
+        throw winrt::hresult_invalid_argument(L"ViewModelProvider cannot be null");
+    provider = value;
+    auto settings = provider.Settings();
+    if (settings != nullptr)
+        settings_changed_token = provider.Settings().PropertyChanged({this, &MainWindow::on_settings_changed});
+}
 
-    clear_settings_event();
-    viewmodel1 = viewmodel;
-    // Connect to new SettingsViewModel property changes
-    settings_changed_token = viewmodel1.PropertyChanged({this, &MainWindow::on_settings_changed});
+App1::SettingsViewModel MainWindow::Settings() const noexcept {
+    auto p = Provider();
+    if (p == nullptr)
+        return nullptr;
+    return p.Settings();
 }
 
 void MainWindow::on_settings_changed(IInspectable const&, PropertyChangedEventArgs const& e) {
@@ -88,14 +92,13 @@ void MainWindow::on_item_invoked(NavigationView const&, NavigationViewItemInvoke
     if (item == nullptr)
         return;
 
-    IInspectable param = viewmodel0;
     auto tag = unbox_value_or<winrt::hstring>(item.Tag(), L"");
     if (tag == L"TestPage1") {
-        frame.Navigate(xaml_typename<App1::TestPage1>(), param);
+        frame.Navigate(xaml_typename<App1::TestPage1>(), Provider().Basic());
         return;
     }
     if (tag == L"SupportPage") {
-        frame.Navigate(xaml_typename<App1::SupportPage>(), param);
+        frame.Navigate(xaml_typename<App1::SupportPage>(), Provider().Basic());
         return;
     }
 }

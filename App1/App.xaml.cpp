@@ -21,6 +21,7 @@ App::App() noexcept(false) {
 #if defined _DEBUG && !defined DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION
     UnhandledException({this, &App::OnUnhandledException});
 #endif
+    provider.Settings(winrt::make<implementation::SettingsViewModel>());
 }
 
 App::~App() noexcept {
@@ -36,12 +37,11 @@ void App::OnUnhandledException(IInspectable const&, UnhandledExceptionEventArgs 
 
 void App::OnLaunched(LaunchActivatedEventArgs const&) {
     spdlog::info("App: {:s}", std::source_location::current().function_name());
-    settings = winrt::make<implementation::SettingsViewModel>();
     // note: the App will be the first which receives the events
-    settings_changed_token = settings.PropertyChanged({this, &App::on_settings_changed});
-    auto impl = winrt::make<implementation::MainWindow>();
-    impl.Settings(settings);
-    window = impl;
+    settings_changed_token = provider.Settings().PropertyChanged({this, &App::on_settings_changed});
+    auto w = winrt::make<implementation::MainWindow>();
+    w.Provider(provider);
+    window = w;
     window.Activate();
 }
 
@@ -51,7 +51,7 @@ void App::on_settings_changed(IInspectable const&, PropertyChangedEventArgs cons
 }
 
 void App::clear_settings_event() noexcept {
-    auto viewmodel = settings;
+    auto viewmodel = provider.Settings();
     if (viewmodel == nullptr)
         return;
     if (settings_changed_token) {
