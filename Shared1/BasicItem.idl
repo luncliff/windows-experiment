@@ -1,0 +1,12 @@
+namespace Shared1 {
+
+runtimeclass BasicItem : Windows.UI.Xaml.Data.INotifyPropertyChanged {
+    BasicItem();
+
+    String Name;
+    Windows.Foundation.Uri WebLink {
+        get;
+    };
+}
+
+} // namespace Shared1

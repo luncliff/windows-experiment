@@ -268,6 +268,90 @@ References Added (see README too):
 7. Define readiness criteria & checklist for starting Shared2 (add to notes section).
 8. Add logging category constants in `LoggingChannels.h` (strings only, no heavy logic).
 
+## 12.1 Shared1 Implementation Plan (October 2025)
+
+### Build Verification Status
+✓ Baseline build confirmed working (MSBuild commands from README.md)
+✓ NuGet packages restored successfully
+✓ Both App1 and UnitTestApp1 compile to .exe without errors
+Note: Non-critical MSB3106 warnings about AI.Foundation.winmd path format (known issue with WindowsAppSDK 1.7)
+
+### Phase 1: Project Scaffolding
+1. **Create Shared1.vcxproj**
+   - Static library (ConfigurationType=StaticLibrary)
+   - Match App1 configurations: Debug/Release x64/ARM64
+   - PlatformToolset=v143, C++20, Unicode
+   - Include vcpkg manifest support (VcpkgEnableManifest=true)
+   - Reference same NuGet packages as App1 for consistency
+
+2. **Add to Solution**
+   - Insert Shared1 project into windows-experiment.sln
+   - Add project dependencies: App1 → Shared1, UnitTestApp1 → Shared1
+   - Verify all configuration/platform combinations build
+
+3. **Create PCH Structure**
+   - Shared1/pch.h: Core WinRT includes + ILoggingChannel implementations
+   - Shared1/pch.cpp: Implementation of NullLoggingChannel & StreamLoggingChannel
+   - Avoid heavy XAML includes in PCH (keep minimal for shared logic)
+
+### Phase 2: Core Logic Migration
+4. **BasicItem Migration**
+   - Copy BasicItem.h/.cpp to Shared1 (remove projected WinRT portions)
+   - Remove IDL dependency; create plain C++ class with PropertyChanged helper
+   - Add ILoggingChannel parameter for constructor (optional, defaults to null)
+
+5. **BasicViewModel Migration** 
+   - Copy BasicViewModel.h/.cpp to Shared1
+   - Replace spdlog calls with ILoggingChannel::LogMessage usage
+   - Remove async/WinRT collection projections; use STL containers
+   - Add factory method accepting ILoggingChannel
+
+6. **DeviceResources Migration**
+   - Copy DeviceResources.h/.cpp to Shared1
+   - Keep DX namespace but add logging integration
+   - No breaking changes to public API initially
+
+### Phase 3: Integration & Testing
+7. **Update App1 References**
+   - Add #include paths to Shared1 headers
+   - Remove BasicItem.*, BasicViewModel.*, DeviceResources.* from App1.vcxproj
+   - Create thin WinRT wrapper classes in App1 if needed for XAML binding
+   - Remove corresponding .idl files
+
+8. **Create Tests**
+   - Add BasicViewModel tests in UnitTests.cpp
+   - Test PropertyChanged events using StreamLoggingChannel
+   - Test null logging behavior with NullLoggingChannel
+   - Verify container operations work without WinRT projections
+
+9. **Build Verification**
+   - Incremental builds after each migration step
+   - Full solution build test
+   - Unit test execution verification
+
+### Migration Sequence (Build-Test-Fix Cycle)
+```
+Step 1: Scaffold Shared1 + PCH → Build test → Fix issues
+Step 2: Migrate BasicItem → Build test → Fix issues  
+Step 3: Migrate BasicViewModel → Build test → Fix issues
+Step 4: Migrate DeviceResources → Build test → Fix issues
+Step 5: Update App1 references → Build test → Fix issues
+Step 6: Add tests → Test execution → Fix issues
+```
+
+### Risk Mitigation
+- Keep original files until full migration verified
+- Maintain backup of working baseline before each step
+- Use incremental approach (one class per step)
+- Verify build success before moving to next component
+
+### Validation Criteria  
+- [ ] Shared1.lib builds successfully in all configurations
+- [ ] App1 links with Shared1 and launches normally
+- [ ] UnitTestApp1 links with Shared1 and runs existing tests
+- [ ] New BasicViewModel tests pass
+- [ ] No regression in existing functionality
+
 ## 13. Items Requiring Validation
 - Flat folder structure for Shared1 (confirm no subdirectories).
 - Initial channel set: Core, ViewModel, DX, Persistence (add Telemetry?).
