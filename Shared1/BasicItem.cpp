@@ -5,9 +5,9 @@
 #include "BasicItem.g.cpp"
 #endif
 
-using namespace winrt::Windows::UI::Xaml::Data;
+using namespace winrt::Microsoft::UI::Xaml::Data;
 
-namespace winrt::Shared1::implementation {
+namespace winrt::App1::implementation {
 
 BasicItem::BasicItem() {
     // Default constructor
@@ -44,4 +44,4 @@ void BasicItem::RaisePropertyChanged(hstring const& propertyName) {
     m_propertyChanged(*this, PropertyChangedEventArgs(propertyName));
 }
 
-} // namespace winrt::Shared1::implementation
+} // namespace winrt::App1::implementation

@@ -2,13 +2,13 @@
 
 #include "BasicItem.g.h"
 
-namespace winrt::Shared1::implementation {
+namespace winrt::App1::implementation {
 
 struct BasicItem : BasicItemT<BasicItem> {
   private:
     hstring m_name{};
     Windows::Foundation::Uri m_webLink{nullptr};
-    winrt::event<Windows::UI::Xaml::Data::PropertyChangedEventHandler> m_propertyChanged;
+    winrt::event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> m_propertyChanged;
 
     void RaisePropertyChanged(hstring const& propertyName);
 
@@ -21,14 +21,14 @@ struct BasicItem : BasicItemT<BasicItem> {
 
     Windows::Foundation::Uri WebLink();
 
-    winrt::event_token PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& handler);
+    winrt::event_token PropertyChanged(Microsoft::UI::Xaml::Data::PropertyChangedEventHandler const& handler);
     void PropertyChanged(winrt::event_token const& token) noexcept;
 };
 
-} // namespace winrt::Shared1::implementation
+} // namespace winrt::App1::implementation
 
-namespace winrt::Shared1::factory_implementation {
+namespace winrt::App1::factory_implementation {
 
 struct BasicItem : BasicItemT<BasicItem, implementation::BasicItem> {};
 
-} // namespace winrt::Shared1::factory_implementation
+} // namespace winrt::App1::factory_implementation

@@ -17,6 +17,17 @@
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.ApplicationModel.h>
 
+#if __has_include(<d3dx12/d3dx12.h>) // DirectX Agility SDK from NuGet
+#include <d3dx12/d3dx12.h>
+#elif __has_include(<directx/d3dx12.h>) // DirectX Agility SDK from vcpkg
+#include <directx/d3dx12.h>
+#endif
+// clang-format off
+#include <Windows.h>
+#include <d3d12.h>
+#include <dxgi1_6.h>
+// clang-format on
+
 // Standard C++
 #include <filesystem>
 #include <string_view>
@@ -26,6 +37,9 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <stdexcept>
+#include <format>
+#include <chrono>
 
 namespace winrt::App1 {
 

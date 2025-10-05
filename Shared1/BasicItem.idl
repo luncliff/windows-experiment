@@ -1,6 +1,6 @@
-namespace Shared1 {
+namespace App1 {
 
-runtimeclass BasicItem : Windows.UI.Xaml.Data.INotifyPropertyChanged {
+runtimeclass BasicItem : Microsoft.UI.Xaml.Data.INotifyPropertyChanged {
     BasicItem();
 
     String Name;
@@ -9,4 +9,4 @@ runtimeclass BasicItem : Windows.UI.Xaml.Data.INotifyPropertyChanged {
     };
 }
 
-} // namespace Shared1
+} // namespace App1

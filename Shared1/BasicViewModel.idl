@@ -1,11 +1,11 @@
 import "BasicItem.idl";
 
-namespace Shared1 {
+namespace App1 {
 
 runtimeclass BasicViewModel {
   BasicViewModel();
 
-  Windows.Foundation.Collections.IObservableVector<BasicItem> Items {
+  IObservableVector<BasicItem> Items {
     get;
   };
 
@@ -14,4 +14,4 @@ runtimeclass BasicViewModel {
   String GetLogFolderPath();
 }
 
-} // namespace Shared1
+} // namespace App1
