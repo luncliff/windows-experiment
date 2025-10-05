@@ -1,16 +1,16 @@
 #include "pch.h"
 
 #include <CppUnitTest.h>
+#include <winrt/App1.h> // generated file from Shared1 project
 
 #include "MainWindow.g.h"
-#include <winrt/Shared1.h>
 
 using namespace winrt::Microsoft::UI::Xaml::Controls;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 using winrt::UnitTestApp1::MainWindow;
-using winrt::Shared1::BasicViewModel;
-using winrt::Shared1::BasicItem;
+using winrt::App1::BasicViewModel;
+using winrt::App1::BasicItem;
 
 class CppUnitTests : public TestClass<CppUnitTests> {
     MainWindow window{nullptr};
@@ -28,19 +28,19 @@ class CppUnitTests : public TestClass<CppUnitTests> {
     }
 
     TEST_METHOD(TestBasicViewModelCreation) {
-        BasicViewModel viewModel = winrt::Shared1::BasicViewModel();
+        BasicViewModel viewModel{};
         Assert::IsTrue(viewModel != nullptr, L"BasicViewModel should be created successfully");
     }
 
     TEST_METHOD(TestBasicViewModelItems) {
-        BasicViewModel viewModel = winrt::Shared1::BasicViewModel();
+        BasicViewModel viewModel{};
         auto items = viewModel.Items();
         Assert::IsTrue(items.Size() > 0, L"ViewModel should have initialized items");
         Assert::AreEqual(static_cast<uint32_t>(5), items.Size(), L"Should have 5 default items");
     }
 
     TEST_METHOD(TestBasicViewModelLogFolder) {
-        BasicViewModel viewModel = winrt::Shared1::BasicViewModel();
+        BasicViewModel viewModel{};
         
         // Initially log folder should be null
         auto folder = viewModel.GetLogFolder();

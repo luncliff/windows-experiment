@@ -1,9 +1,8 @@
 #pragma once
-
-#include "BasicViewModel.g.h"
-#include "DeviceResources.h"
 #include "TestPage1.g.h"
+#include "BasicViewModel.g.h"
 
+#include <DeviceResources.h>
 #include <microsoft.ui.xaml.media.dxinterop.h> // ISwapChainPanelNative for Microsoft namespace
 
 namespace winrt::App1::implementation {

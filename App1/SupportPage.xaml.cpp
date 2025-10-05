@@ -5,8 +5,6 @@
 #include "SupportPage.g.cpp"
 #endif
 
-#include "BasicViewModel.h"
-
 namespace winrt::App1::implementation {
 
 SupportPage::SupportPage() {

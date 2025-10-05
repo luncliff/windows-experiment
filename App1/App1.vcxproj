@@ -106,6 +106,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
       <WarningLevel>Level4</WarningLevel>
       <AdditionalOptions>%(AdditionalOptions) /bigobj /utf-8</AdditionalOptions>
     </ClCompile>
@@ -113,18 +115,14 @@
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions);WIN32_LEAN_AND_MEAN;SPDLOG_USE_STD_FORMAT</PreprocessorDefinitions>
-      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">stdcpp20</LanguageStandard>
-      <LanguageStandard_C Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">stdc17</LanguageStandard_C>
       <EnableModules Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</EnableModules>
       <BuildStlModules Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</BuildStlModules>
-      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp20</LanguageStandard>
-      <LanguageStandard_C Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdc17</LanguageStandard_C>
       <EnableModules Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</EnableModules>
       <BuildStlModules Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</BuildStlModules>
       <ErrorReporting Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">Send</ErrorReporting>
       <ErrorReporting Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Send</ErrorReporting>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">$(VcpkgInstalledDir)\$(VcpkgTriplet)\include;$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(VcpkgInstalledDir)\$(VcpkgTriplet)\include;$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">$(VcpkgInstalledDir)\$(VcpkgTriplet)\include;$(SolutionDir)Shared1;$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(VcpkgInstalledDir)\$(VcpkgTriplet)\include;$(SolutionDir)Shared1;$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">%(AdditionalDependencies)</AdditionalDependencies>
@@ -138,18 +136,14 @@
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions);WIN32_LEAN_AND_MEAN;SPDLOG_USE_STD_FORMAT</PreprocessorDefinitions>
-      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">stdcpp20</LanguageStandard>
-      <LanguageStandard_C Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">stdc17</LanguageStandard_C>
       <EnableModules Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</EnableModules>
       <BuildStlModules Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</BuildStlModules>
-      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdcpp20</LanguageStandard>
-      <LanguageStandard_C Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdc17</LanguageStandard_C>
       <EnableModules Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</EnableModules>
       <BuildStlModules Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</BuildStlModules>
       <ErrorReporting Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">Send</ErrorReporting>
       <ErrorReporting Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Send</ErrorReporting>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">$(VcpkgInstalledDir)\$(VcpkgTriplet)\include;$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(VcpkgInstalledDir)\$(VcpkgTriplet)\include;$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">$(VcpkgInstalledDir)\$(VcpkgTriplet)\include;$(SolutionDir)Shared1;$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(VcpkgInstalledDir)\$(VcpkgTriplet)\include;$(SolutionDir)Shared1;$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -164,7 +158,6 @@
     <Manifest Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DeviceResources.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="App.xaml.h">
       <DependentUpon>App.xaml</DependentUpon>
@@ -175,14 +168,6 @@
     <ClInclude Include="SettingsPage.xaml.h">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
       <SubType>Code</SubType>
-    </ClInclude>
-    <ClInclude Include="BasicItem.h">
-      <SubType>Code</SubType>
-      <DependentUpon>BasicItem.idl</DependentUpon>
-    </ClInclude>
-    <ClInclude Include="BasicViewModel.h">
-      <SubType>Code</SubType>
-      <DependentUpon>BasicViewModel.idl</DependentUpon>
     </ClInclude>
     <ClInclude Include="SettingsViewModel.h">
       <SubType>Code</SubType>
@@ -212,7 +197,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DeviceResources.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
@@ -234,14 +218,6 @@
     <ClCompile Include="SupportPage.xaml.cpp">
       <DependentUpon>SupportPage.xaml</DependentUpon>
       <SubType>Code</SubType>
-    </ClCompile>
-    <ClCompile Include="BasicItem.cpp">
-      <SubType>Code</SubType>
-      <DependentUpon>BasicItem.idl</DependentUpon>
-    </ClCompile>
-    <ClCompile Include="BasicViewModel.cpp">
-      <SubType>Code</SubType>
-      <DependentUpon>BasicViewModel.idl</DependentUpon>
     </ClCompile>
     <ClCompile Include="SettingsViewModel.cpp">
       <SubType>Code</SubType>
@@ -265,18 +241,17 @@
       <DependentUpon>SupportPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Midl>
-    <Midl Include="BasicItem.idl">
-      <SubType>Code</SubType>
-    </Midl>
-    <Midl Include="BasicViewModel.idl">
-      <SubType>Code</SubType>
-    </Midl>
     <Midl Include="SettingsViewModel.idl">
       <SubType>Code</SubType>
     </Midl>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Shared1\Shared1.vcxproj">
+      <Project>{A1B2C3D4-E5F6-7890-ABCD-123456789ABC}</Project>
+    </ProjectReference>
   </ItemGroup>
   <!-- vcpkg dependencies for local debugging -->
   <ItemGroup>
