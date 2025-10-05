@@ -66,10 +66,17 @@ jobs:
         env:
           VCPKG_FEATURE_FLAGS: "registries,binarycaching,manifests"
 
-      - name: "Run VSTest(x64/Debug)"
-        run: |
-          vstest.console.exe /framework:frameworkuap10 UnitTestApp1.build.appxrecipe
-        working-directory: x64/Debug/UnitTestApp1
+      # - name: "Run VSTest(x64/Debug)"
+      #   run: |
+      #     vstest.console.exe /framework:frameworkuap10 UnitTestApp1.build.appxrecipe
+      #   working-directory: x64/Debug/UnitTestApp1
+      - uses: microsoft/vstest-action@v1.0.0
+        with:
+          otherConsoleOptions: /framework:frameworkuap10
+          testAssembly: UnitTestApp1.build.appxrecipe
+          platform: x64
+          searchFolder: x64/Debug/UnitTestApp1
+          codeCoverageEnabled: true
 
       - uses: actions/cache@v4.3.0
         with:
