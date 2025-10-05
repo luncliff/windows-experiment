@@ -14,8 +14,7 @@
     <Midl Include="SettingsPage.idl" />
     <Midl Include="TestPage1.idl" />
     <Midl Include="SupportPage.idl" />
-    <Midl Include="BasicItem.idl" />
-    <Midl Include="BasicViewModel.idl" />
+    <Midl Include="SettingsViewModel.idl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -25,9 +24,6 @@
     <ClCompile Include="SettingsPage.xaml.cpp" />
     <ClCompile Include="TestPage1.xaml.cpp" />
     <ClCompile Include="SupportPage.xaml.cpp" />
-    <ClCompile Include="BasicItem.cpp" />
-    <ClCompile Include="BasicViewModel.cpp" />
-    <ClCompile Include="DeviceResources.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -36,9 +32,6 @@
     <ClInclude Include="SettingsPage.xaml.h" />
     <ClInclude Include="TestPage1.xaml.h" />
     <ClInclude Include="SupportPage.xaml.h" />
-    <ClInclude Include="BasicItem.h" />
-    <ClInclude Include="BasicViewModel.h" />
-    <ClInclude Include="DeviceResources.h" />
     <ClInclude Include="StepTimer.h" />
   </ItemGroup>
   <ItemGroup>
@@ -50,6 +43,6 @@
     <Manifest Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="..\packages.config" />
   </ItemGroup>
 </Project>

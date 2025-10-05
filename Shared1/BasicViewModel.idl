@@ -1,6 +1,6 @@
 import "BasicItem.idl";
 
-namespace App1 {
+namespace Shared1 {
 
 runtimeclass BasicViewModel {
   BasicViewModel();
@@ -14,4 +14,4 @@ runtimeclass BasicViewModel {
   String GetLogFolderPath();
 }
 
-} // namespace App1
+} // namespace Shared1

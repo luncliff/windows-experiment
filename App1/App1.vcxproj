@@ -122,7 +122,7 @@
       <ErrorReporting Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">Send</ErrorReporting>
       <ErrorReporting Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Send</ErrorReporting>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">$(VcpkgInstalledDir)\$(VcpkgTriplet)\include;$(SolutionDir)Shared1;$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(VcpkgInstalledDir)\$(VcpkgTriplet)\include;$(SolutionDir)Shared1;$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(VcpkgInstalledDir)\$(VcpkgTriplet)\include;$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">%(AdditionalDependencies)</AdditionalDependencies>

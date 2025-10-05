@@ -2,7 +2,7 @@
 
 #include "BasicItem.g.h"
 
-namespace winrt::App1::implementation {
+namespace winrt::Shared1::implementation {
 
 struct BasicItem : BasicItemT<BasicItem> {
   private:
@@ -25,10 +25,10 @@ struct BasicItem : BasicItemT<BasicItem> {
     void PropertyChanged(winrt::event_token const& token) noexcept;
 };
 
-} // namespace winrt::App1::implementation
+} // namespace winrt::Shared1::implementation
 
-namespace winrt::App1::factory_implementation {
+namespace winrt::Shared1::factory_implementation {
 
 struct BasicItem : BasicItemT<BasicItem, implementation::BasicItem> {};
 
-} // namespace winrt::App1::factory_implementation
+} // namespace winrt::Shared1::factory_implementation

@@ -1,14 +1,16 @@
 #pragma once
 #include "MainWindow.g.h"
 
-#include "BasicViewModel.g.h"
 #include "SettingsViewModel.g.h"
+
+#include <winrt/Shared1.h> // generated file from Shared1 project
 
 namespace winrt::App1::implementation {
 using Microsoft::UI::Xaml::RoutedEventArgs;
 using Microsoft::UI::Xaml::Window;
 using Microsoft::UI::Xaml::WindowSizeChangedEventArgs;
 using Microsoft::UI::Xaml::WindowVisibilityChangedEventArgs;
+using Microsoft::UI::Xaml::Controls::Button;
 using Microsoft::UI::Xaml::Controls::Frame;
 using Microsoft::UI::Xaml::Controls::NavigationView;
 using Microsoft::UI::Xaml::Controls::NavigationViewBackRequestedEventArgs;
@@ -22,7 +24,7 @@ using Windows::Foundation::IInspectable;
 /// @see http://aka.ms/winui-project-info
 struct MainWindow : MainWindowT<MainWindow> {
   private:
-    App1::BasicViewModel viewmodel0 = nullptr;
+    Shared1::BasicViewModel viewmodel0 = nullptr;
     App1::SettingsViewModel viewmodel1 = nullptr;
     winrt::event_token settings_changed_token{};
 

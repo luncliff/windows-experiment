@@ -10,7 +10,6 @@
 
 #include <WinPixEventRuntime/pix3.h>
 
-#include "BasicViewModel.h"
 #include "StepTimer.h"
 
 namespace winrt::App1::implementation {
@@ -25,7 +24,7 @@ TestPage1::TestPage1() noexcept(false) {
     timer0.Tick({this, &TestPage1::on_timer_tick});
 }
 
-App1::BasicViewModel TestPage1::ViewModel() noexcept {
+Shared1::BasicViewModel TestPage1::ViewModel() noexcept {
     return viewmodel0;
 }
 
@@ -61,7 +60,7 @@ void TestPage1::OnNavigatedTo(const NavigationEventArgs& e) {
         throw winrt::hresult_invalid_argument(L"TestPage1 requires a ViewModel");
 
     // Get the ViewModel from the navigation parameter
-    viewmodel0 = arg0.try_as<App1::BasicViewModel>();
+    viewmodel0 = arg0.try_as<Shared1::BasicViewModel>();
     if (viewmodel0 == nullptr) {
         StatusTextBlock().Text(L"ViewModel is empty");
         return;
@@ -83,8 +82,7 @@ void TestPage1::OnNavigatedFrom(const NavigationEventArgs&) {
 }
 
 void TestPage1::on_test_button_click(IInspectable const&, RoutedEventArgs const&) {
-    App1::BasicViewModel viewmodel = ViewModel();
-    if (viewmodel) {
+    if (auto viewmodel = ViewModel(); viewmodel) {
         auto itemCount = viewmodel.Items().Size();
         auto message = std::format(L"TestPage1 has {} items in the ViewModel.", itemCount);
         StatusTextBlock().Text(message);

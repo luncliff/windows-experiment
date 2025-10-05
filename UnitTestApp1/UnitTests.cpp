@@ -1,7 +1,7 @@
 #include "pch.h"
 
 #include <CppUnitTest.h>
-#include <winrt/App1.h> // generated file from Shared1 project
+#include <winrt/Shared1.h> // generated file from Shared1 project
 
 #include "MainWindow.g.h"
 
@@ -9,8 +9,8 @@ using namespace winrt::Microsoft::UI::Xaml::Controls;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 using winrt::UnitTestApp1::MainWindow;
-using winrt::App1::BasicViewModel;
-using winrt::App1::BasicItem;
+using winrt::Shared1::BasicViewModel;
+using winrt::Shared1::BasicItem;
 
 class CppUnitTests : public TestClass<CppUnitTests> {
     MainWindow window{nullptr};

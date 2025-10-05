@@ -2,6 +2,10 @@ namespace App1 {
 
 [default_interface] runtimeclass TestPage1 : Microsoft.UI.Xaml.Controls.Page {
     TestPage1();
+
+    Shared1.BasicViewModel ViewModel {
+        get;
+    };
 }
 
 } // namespace App1

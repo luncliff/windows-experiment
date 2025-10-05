@@ -1,14 +1,15 @@
 #pragma once
 #include "TestPage1.g.h"
-#include "BasicViewModel.g.h"
 
-#include <DeviceResources.h>
+#include "../Shared1/DeviceResources.h"
+
 #include <microsoft.ui.xaml.media.dxinterop.h> // ISwapChainPanelNative for Microsoft namespace
+#include <winrt/Shared1.h>                     // generated file from Shared1 project
 
 namespace winrt::App1::implementation {
+using Microsoft::UI::Xaml::DispatcherTimer;
 using Microsoft::UI::Xaml::RoutedEventArgs;
 using Microsoft::UI::Xaml::Navigation::NavigationEventArgs;
-using Microsoft::UI::Xaml::DispatcherTimer;
 using winrt::Microsoft::UI::Xaml::SizeChangedEventArgs;
 using winrt::Windows::Foundation::IInspectable;
 using winrt::Windows::Foundation::TimeSpan;
@@ -17,7 +18,7 @@ struct TestPage1 : TestPage1T<TestPage1>, DX::IDeviceNotify {
   private:
     DX::DeviceResources resources{DXGI_FORMAT_B8G8R8A8_UNORM, DXGI_FORMAT_D24_UNORM_S8_UINT, 2};
     winrt::com_ptr<ISwapChainPanelNative> bridge = nullptr;
-    App1::BasicViewModel viewmodel0{nullptr};
+    Shared1::BasicViewModel viewmodel0{nullptr};
     DispatcherTimer timer0{};
 
   public:
@@ -30,7 +31,7 @@ struct TestPage1 : TestPage1T<TestPage1>, DX::IDeviceNotify {
     void panel0_size_changed(IInspectable const&, SizeChangedEventArgs const&);
     void on_timer_tick(IInspectable const&, IInspectable const&);
 
-    App1::BasicViewModel ViewModel() noexcept;
+    Shared1::BasicViewModel ViewModel() noexcept;
 
     void OnDeviceLost() noexcept override;
     void OnDeviceRestored() noexcept override;

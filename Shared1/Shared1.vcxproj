@@ -11,8 +11,7 @@
     <MinimalCoreWin>false</MinimalCoreWin>
     <ProjectGuid>{A1B2C3D4-E5F6-7890-ABCD-123456789ABC}</ProjectGuid>
     <ProjectName>Shared1</ProjectName>
-    <!-- Instead of 'winrt::Shared1' namespace, use 'winrt::App1' and 'winrt::App1::implementation' -->
-    <RootNamespace>App1</RootNamespace>
+    <RootNamespace>Shared1</RootNamespace>
     <TargetName>$(RootNamespace)</TargetName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>16.0</MinimumVisualStudioVersion>
