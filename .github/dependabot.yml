@@ -1,11 +1,25 @@
 # https://docs.github.com/en/code-security/dependabot
+# https://learn.microsoft.com/en-us/vcpkg/concepts/dependabot
 version: 2
 updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "monthly"
+    labels:
+      - "dependencies"
     assignees:
       - "luncliff"
+    commit-message:
+      prefix: "[skip ci] "
+
+  - package-ecosystem: "vcpkg"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    assignees:
+      - "luncliff"
+    labels:
+      - "dependencies"
     commit-message:
       prefix: "[skip ci] "
