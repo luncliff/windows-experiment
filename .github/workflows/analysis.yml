@@ -86,6 +86,5 @@ jobs:
       - uses: SonarSource/sonarqube-scan-action@v6
         with: # --define sonar.verbose=true?
           args: >
-            --define sonar.cfamily.build-wrapper-output="bw-output"
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+            --define "sonar.token=${{ secrets.SONAR_TOKEN }}"
+            --define "sonar.cfamily.build-wrapper-output=bw-output"
