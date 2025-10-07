@@ -42,9 +42,8 @@ void MainWindow::Provider(App1::ViewModelProvider value) noexcept(false) {
     if (value == nullptr)
         throw winrt::hresult_invalid_argument(L"ViewModelProvider cannot be null");
     provider = value;
-    auto settings = provider.Settings();
-    if (settings != nullptr)
-        settings_changed_token = provider.Settings().PropertyChanged({this, &MainWindow::on_settings_changed});
+    if (auto settings = provider.Settings(); settings != nullptr)
+        settings_changed_token = settings.PropertyChanged({this, &MainWindow::on_settings_changed});
 }
 
 App1::SettingsViewModel MainWindow::Settings() const noexcept {
@@ -78,13 +77,12 @@ void MainWindow::on_window_visibility_changed(IInspectable const&, WindowVisibil
     spdlog::info("{}: visibility {}", "MainWindow", e.Visible());
 }
 
+/// @see https://learn.microsoft.com/en-us/uwp/api/windows.ui.xaml.controls.frame.navigate
 void MainWindow::on_item_invoked(NavigationView const&, NavigationViewItemInvokedEventArgs const& e) {
-    // there are very limited types for params... read the document.
-    // see https://learn.microsoft.com/en-us/uwp/api/windows.ui.xaml.controls.frame.navigate
     Frame frame = ShellFrame();
     if (e.IsSettingsInvoked()) {
         // SettingsPage will use the SettingsViewModel
-        frame.Navigate(xaml_typename<App1::SettingsPage>(), Settings());
+        frame.Navigate(xaml_typename<App1::SettingsPage>(), Provider());
         return;
     }
 
@@ -92,13 +90,14 @@ void MainWindow::on_item_invoked(NavigationView const&, NavigationViewItemInvoke
     if (item == nullptr)
         return;
 
+    // Sharing the ViewModelProvider means that the Page can access multiple ViewModels for its logics and UserControls
     auto tag = unbox_value_or<winrt::hstring>(item.Tag(), L"");
     if (tag == L"TestPage1") {
         frame.Navigate(xaml_typename<App1::TestPage1>(), Provider().Basic());
         return;
     }
     if (tag == L"SupportPage") {
-        frame.Navigate(xaml_typename<App1::SupportPage>(), Provider().Basic());
+        frame.Navigate(xaml_typename<App1::SupportPage>(), Provider());
         return;
     }
 }

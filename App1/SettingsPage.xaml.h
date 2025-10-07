@@ -5,15 +5,15 @@
 
 namespace winrt::App1::implementation {
 using Microsoft::UI::Xaml::RoutedEventArgs;
-using Microsoft::UI::Xaml::Data::PropertyChangedEventHandler;
 using Microsoft::UI::Xaml::Data::PropertyChangedEventArgs;
+using Microsoft::UI::Xaml::Data::PropertyChangedEventHandler;
 using Microsoft::UI::Xaml::Navigation::NavigationEventArgs;
 using Windows::Foundation::IInspectable;
 
 struct SettingsPage : SettingsPageT<SettingsPage> {
   private:
     App1::SettingsViewModel viewmodel0{nullptr};
-    winrt::event_token property_changed_token{};
+    winrt::event_token settings_changed_token{};
 
     void UpdateCounterDisplay();
     void on_settings_property_changed(IInspectable const& sender, PropertyChangedEventArgs const& e);
@@ -25,7 +25,8 @@ struct SettingsPage : SettingsPageT<SettingsPage> {
     void OnNavigatedFrom(const NavigationEventArgs&);
 
     App1::SettingsViewModel ViewModel() noexcept;
-    
+
+    void setup_viewmodels(IInspectable) noexcept(false);
     void on_increment_counter_click(IInspectable const&, RoutedEventArgs const&);
     void on_decrement_counter_click(IInspectable const&, RoutedEventArgs const&);
     void on_reset_counter_click(IInspectable const&, RoutedEventArgs const&);

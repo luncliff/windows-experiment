@@ -11,12 +11,15 @@ struct SupportPage : SupportPageT<SupportPage> {
     Shared1::BasicViewModel viewmodel0{nullptr};
 
   public:
-    SupportPage();
+    SupportPage() noexcept = default;
 
     void OnNavigatedTo(const NavigationEventArgs&);
     void OnNavigatedFrom(const NavigationEventArgs&);
 
     Shared1::BasicViewModel ViewModel() noexcept;
+
+  private:
+    void setup_viewmodels(IInspectable) noexcept(false);
 };
 } // namespace winrt::App1::implementation
 

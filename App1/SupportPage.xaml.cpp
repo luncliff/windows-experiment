@@ -4,11 +4,18 @@
 #if __has_include("SupportPage.g.cpp")
 #include "SupportPage.g.cpp"
 #endif
+#include "ViewModelProvider.g.h"
 
 namespace winrt::App1::implementation {
 
-SupportPage::SupportPage() {
-    // Initialize support page
+void SupportPage::setup_viewmodels(IInspectable arg0) noexcept(false) {
+    if (arg0 == nullptr)
+        throw winrt::hresult_invalid_argument{L"Navigation parameter is null"};
+    auto provider = arg0.try_as<App1::ViewModelProvider>();
+    if (provider == nullptr)
+        throw winrt::hresult_invalid_argument{L"Navigation parameter is not a ViewModelProvider"};
+    if ((viewmodel0 = provider.Basic()) == nullptr)
+        throw winrt::hresult_invalid_argument{L"ViewModel is null"};
 }
 
 Shared1::BasicViewModel SupportPage::ViewModel() noexcept {
@@ -16,18 +23,13 @@ Shared1::BasicViewModel SupportPage::ViewModel() noexcept {
 }
 
 void SupportPage::OnNavigatedTo(const NavigationEventArgs& e) {
-    if (e == nullptr)
-        return;
-
-    // Get the ViewModel from the navigation parameter
-    if (e.Parameter() != nullptr) {
-        viewmodel0 = e.Parameter().try_as<Shared1::BasicViewModel>();
-        // ViewModel is available for future use in the support page
-    }
+    // Get the ViewModel from the navigation parameter. Ensure ViewModel is always valid
+    setup_viewmodels(e.Parameter());
 }
 
 void SupportPage::OnNavigatedFrom(const NavigationEventArgs&) {
     // Handle leaving the page via navigation
+    viewmodel0 = nullptr;
 }
 
 } // namespace winrt::App1::implementation
