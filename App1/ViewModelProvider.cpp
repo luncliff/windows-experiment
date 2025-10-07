@@ -17,7 +17,7 @@ App1::SettingsViewModel ViewModelProvider::Settings() const noexcept {
 
 void ViewModelProvider::Settings(App1::SettingsViewModel viewmodel) noexcept(false) {
     if (viewmodel == nullptr)
-        throw winrt::hresult_invalid_argument{};
+        throw winrt::hresult_invalid_argument{L"SettingsViewModel cannot be null"};
     settings = viewmodel;
 }
 
