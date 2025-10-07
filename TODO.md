@@ -40,6 +40,7 @@ High-Level Tasks:
 - Add lightweight timing helper (RAII scope logger) integrated with adapter.
 - Conditional compilation flags for high-frequency DX diagnostics.
 - Explore integration with ETW consumer tooling (trace session guidelines doc).
+- Potential Telemetry Channel (deferred): evaluate after core logging adapter integration.
 
 ## 5. Reliability / Resilience
 - Introduce retry/backoff for settings persistence failures.

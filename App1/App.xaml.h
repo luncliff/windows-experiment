@@ -1,6 +1,6 @@
 #pragma once
 #include "App.xaml.g.h"
-#include "SettingsViewModel.g.h"
+#include "ViewModelProvider.g.h"
 
 namespace winrt::App1::implementation {
 using Microsoft::UI::Xaml::LaunchActivatedEventArgs;
@@ -12,7 +12,7 @@ using Windows::Foundation::IInspectable;
 struct App : AppT<App> {
   private:
     Window window = nullptr;
-    App1::SettingsViewModel settings = nullptr;
+    App1::ViewModelProvider provider{};
     winrt::event_token settings_changed_token{};
 
   public:

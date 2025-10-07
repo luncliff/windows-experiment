@@ -115,7 +115,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions);WIN32_LEAN_AND_MEAN;SPDLOG_USE_STD_FORMAT</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DISABLE_XAML_GENERATED_MAIN;_DEBUG;%(PreprocessorDefinitions);WIN32_LEAN_AND_MEAN;SPDLOG_USE_STD_FORMAT</PreprocessorDefinitions>
       <EnableModules Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</EnableModules>
       <BuildStlModules Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</BuildStlModules>
       <EnableModules Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</EnableModules>
@@ -134,7 +134,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions);WIN32_LEAN_AND_MEAN;SPDLOG_USE_STD_FORMAT</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DISABLE_XAML_GENERATED_MAIN;NDEBUG;%(PreprocessorDefinitions);WIN32_LEAN_AND_MEAN;SPDLOG_USE_STD_FORMAT</PreprocessorDefinitions>
       <EnableModules Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</EnableModules>
       <BuildStlModules Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</BuildStlModules>
       <EnableModules Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</EnableModules>
@@ -169,6 +169,10 @@
     <ClInclude Include="SettingsViewModel.h">
       <SubType>Code</SubType>
       <DependentUpon>SettingsViewModel.idl</DependentUpon>
+    </ClInclude>
+    <ClInclude Include="ViewModelProvider.h">
+      <SubType>Code</SubType>
+      <DependentUpon>ViewModelProvider.idl</DependentUpon>
     </ClInclude>
     <ClInclude Include="StepTimer.h" />
     <ClInclude Include="TestPage1.xaml.h">
@@ -220,6 +224,10 @@
       <SubType>Code</SubType>
       <DependentUpon>SettingsViewModel.idl</DependentUpon>
     </ClCompile>
+    <ClCompile Include="ViewModelProvider.cpp">
+      <SubType>Code</SubType>
+      <DependentUpon>ViewModelProvider.idl</DependentUpon>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="MainWindow.idl">
@@ -239,6 +247,9 @@
       <SubType>Code</SubType>
     </Midl>
     <Midl Include="SettingsViewModel.idl">
+      <SubType>Code</SubType>
+    </Midl>
+    <Midl Include="ViewModelProvider.idl">
       <SubType>Code</SubType>
     </Midl>
   </ItemGroup>

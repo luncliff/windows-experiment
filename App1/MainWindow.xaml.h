@@ -24,16 +24,17 @@ using Windows::Foundation::IInspectable;
 /// @see http://aka.ms/winui-project-info
 struct MainWindow : MainWindowT<MainWindow> {
   private:
-    Shared1::BasicViewModel viewmodel0 = nullptr;
-    App1::SettingsViewModel viewmodel1 = nullptr;
+    App1::ViewModelProvider provider = nullptr;
     winrt::event_token settings_changed_token{};
 
   public:
     MainWindow() noexcept(false);
     ~MainWindow() noexcept;
 
+    App1::ViewModelProvider Provider() const noexcept;
+    void Provider(App1::ViewModelProvider) noexcept(false);
+
     App1::SettingsViewModel Settings() const noexcept;
-    void Settings(App1::SettingsViewModel) noexcept(false);
 
     uint64_t WindowHandle() const noexcept;
 
