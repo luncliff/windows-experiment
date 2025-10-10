@@ -33,7 +33,6 @@
 #include <atomic>
 #include <format>
 #include <memory>
-#include <mutex>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -58,8 +57,6 @@ struct CDeviceResources;
  */
 struct CDeviceResources : winrt::implements<CDeviceResources, ::IDeviceResources> {
   private:
-    mutable std::mutex m_mutex;
-
     // Direct3D properties
     DXGI_FORMAT m_backBufferFormat = DXGI_FORMAT_B8G8R8A8_UNORM;
     DXGI_FORMAT m_depthBufferFormat = DXGI_FORMAT_D32_FLOAT;
@@ -108,7 +105,7 @@ struct CDeviceResources : winrt::implements<CDeviceResources, ::IDeviceResources
     static constexpr UINT c_EnableHDR = 0x2;
 
     // Helper methods
-    void InitializeDXGIAdapter();
+    void InitializeDXGIAdapter(IDXGIFactory4* factory = nullptr);
     void InitializeAdapter(IDXGIAdapter1** ppAdapter,
                            DXGI_GPU_PREFERENCE preference = DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE) noexcept(false);
     void MoveToNextFrame();
@@ -119,7 +116,7 @@ struct CDeviceResources : winrt::implements<CDeviceResources, ::IDeviceResources
     HRESULT __stdcall InitializeDevice(DXGI_FORMAT backBufferFormat, DXGI_FORMAT depthBufferFormat,
                                        UINT backBufferCount, D3D_FEATURE_LEVEL minFeatureLevel,
                                        UINT flags) noexcept override;
-    HRESULT __stdcall CreateDeviceResources() noexcept override;
+    HRESULT __stdcall CreateDeviceResources(IDXGIAdapter1* adapter = nullptr) noexcept override;
     HRESULT __stdcall CreateWindowSizeDependentResources(UINT width, UINT height) noexcept override;
     HRESULT __stdcall HandleDeviceLost() noexcept override;
     HRESULT __stdcall GetOutputSize(UINT* pWidth, UINT* pHeight) noexcept override;

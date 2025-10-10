@@ -144,6 +144,54 @@ HANDLE m_fenceEvent;
 **Test Status:** ✅ Unit tests passing
 **Dependencies:** ✅ Self-contained (no Shared1 reference)
 
+## Optimizations Implemented
+
+### 1. Thread Safety Removal
+- ✅ **Removed std::mutex** - Eliminated `mutable std::mutex m_mutex` from class
+- ✅ **Removed mutex usage** - All `std::lock_guard<std::mutex> lock(m_mutex)` statements removed
+- ✅ **Removed headers** - `#include <mutex>` header removed
+- **Performance Impact:** Eliminated mutex locking overhead in all 17 COM interface methods
+
+### 2. Function Parameter Enhancement  
+- ✅ **Modified InitializeDXGIAdapter()** - Now accepts `IDXGIFactory4* factory = nullptr`
+  - Uses provided factory if not nullptr, otherwise creates new factory
+  - Eliminates need to always create new DXGI factory
+- ✅ **Modified CreateDeviceResources()** - Now accepts `IDXGIAdapter1* adapter = nullptr`
+  - Uses provided adapter if not nullptr, otherwise uses member adapter
+  - Allows external adapter specification for advanced scenarios
+
+### 3. Debug Guard Removal
+- ✅ **Removed debug conditionals** - Eliminated `#if defined(_DEBUG)` guards in InitializeDXGIAdapter
+- ✅ **Simplified factory creation** - Direct CreateDXGIFactory2 call without debug variations
+- **Performance Impact:** Consistent behavior across Debug/Release builds
+
+## Current API Improvements
+
+**Before Optimization:**
+```cpp
+void InitializeDXGIAdapter();                    // Always creates new factory
+HRESULT CreateDeviceResources();                 // Always uses member adapter
+// + mutex locking overhead in all methods
+```
+
+**After Optimization:**
+```cpp
+void InitializeDXGIAdapter(IDXGIFactory4* factory = nullptr);    // Flexible factory input
+HRESULT CreateDeviceResources(IDXGIAdapter1* adapter = nullptr); // Flexible adapter input
+// + no mutex overhead, no debug guards
+```
+
+**Usage Examples:**
+```cpp
+// Default behavior (backward compatible)
+deviceRes->InitializeDXGIAdapter();
+deviceRes->CreateDeviceResources();
+
+// Advanced usage with external objects
+deviceRes->InitializeDXGIAdapter(myFactory);
+deviceRes->CreateDeviceResources(myAdapter);
+```
+
 ## Implementation Summary
 
 ### Created Files/Modifications:

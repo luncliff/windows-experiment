@@ -53,33 +53,13 @@ DXGI_FORMAT CDeviceResources::NoSRGB(DXGI_FORMAT fmt) {
     }
 }
 
-void CDeviceResources::InitializeDXGIAdapter() {
-#if defined(_DEBUG)
-    // Enable the debug layer (requires the Graphics Tools "optional feature").
-    {
-        winrt::com_ptr<ID3D12Debug> debug;
-        if (SUCCEEDED(D3D12GetDebugInterface(__uuidof(ID3D12Debug), debug.put_void()))) {
-            debug->EnableDebugLayer();
-        }
-
-        winrt::com_ptr<ID3D12Debug1> debug1;
-        if (debug.try_as(debug1)) {
-            debug1->SetEnableGPUBasedValidation(true);
-            debug1->SetEnableSynchronizedCommandQueueValidation(true);
-        }
-
-        winrt::com_ptr<IDXGIInfoQueue> dxgiInfoQueue = nullptr;
-        if (SUCCEEDED(DXGIGetDebugInterface1(0, __uuidof(IDXGIInfoQueue), dxgiInfoQueue.put_void()))) {
-            winrt::check_hresult(
-                CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, __uuidof(IDXGIFactory4), m_dxgiFactory.put_void()));
-
-            dxgiInfoQueue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_ERROR, TRUE);
-            dxgiInfoQueue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_CORRUPTION, TRUE);
-        }
+void CDeviceResources::InitializeDXGIAdapter(IDXGIFactory4* factory) {
+    // Use provided factory if available, otherwise create new one
+    if (factory != nullptr) {
+        m_dxgiFactory.copy_from(factory);
+    } else {
+        winrt::check_hresult(CreateDXGIFactory2(0, __uuidof(IDXGIFactory4), m_dxgiFactory.put_void()));
     }
-#else
-    winrt::check_hresult(CreateDXGIFactory2(0, __uuidof(IDXGIFactory4), m_dxgiFactory.put_void()));
-#endif
 
     // Determine whether tearing support is available for fullscreen borderless windows.
     if (m_options & c_AllowTearing) {
@@ -165,8 +145,6 @@ HRESULT __stdcall CDeviceResources::InitializeDevice(DXGI_FORMAT backBufferForma
                                                      UINT backBufferCount, D3D_FEATURE_LEVEL minFeatureLevel,
                                                      UINT flags) noexcept {
     try {
-        std::lock_guard<std::mutex> lock(m_mutex);
-
         if (backBufferCount > MAX_BACK_BUFFER_COUNT)
             return E_INVALIDARG;
         if (minFeatureLevel < D3D_FEATURE_LEVEL_11_0)
@@ -193,16 +171,16 @@ HRESULT __stdcall CDeviceResources::InitializeDevice(DXGI_FORMAT backBufferForma
     }
 }
 
-HRESULT __stdcall CDeviceResources::CreateDeviceResources() noexcept {
+HRESULT __stdcall CDeviceResources::CreateDeviceResources(IDXGIAdapter1* adapter) noexcept {
     try {
-        std::lock_guard<std::mutex> lock(m_mutex);
-
-        if (!m_adapter)
+        // Use provided adapter if available, otherwise use member adapter
+        IDXGIAdapter1* adapterToUse = adapter ? adapter : m_adapter.get();
+        if (!adapterToUse)
             return E_NOT_VALID_STATE;
 
         // Create the Direct3D 12 API device object
         winrt::check_hresult(
-            D3D12CreateDevice(m_adapter.get(), m_d3dMinFeatureLevel, __uuidof(ID3D12Device), m_d3dDevice.put_void()));
+            D3D12CreateDevice(adapterToUse, m_d3dMinFeatureLevel, __uuidof(ID3D12Device), m_d3dDevice.put_void()));
 
         m_d3dDevice->SetName(L"DeviceResources");
 
@@ -281,7 +259,6 @@ HRESULT __stdcall CDeviceResources::CreateDeviceResources() noexcept {
 
 HRESULT __stdcall CDeviceResources::CreateWindowSizeDependentResources(UINT width, UINT height) noexcept {
     try {
-        std::lock_guard<std::mutex> lock(m_mutex);
 
         if (!m_d3dDevice)
             return E_NOT_VALID_STATE;
@@ -411,7 +388,6 @@ HRESULT __stdcall CDeviceResources::CreateWindowSizeDependentResources(UINT widt
 
 HRESULT __stdcall CDeviceResources::HandleDeviceLost() noexcept {
     try {
-        std::lock_guard<std::mutex> lock(m_mutex);
 
         for (UINT n = 0; n < m_backBufferCount; n++) {
             m_commandAllocators[n] = nullptr;
@@ -450,7 +426,6 @@ HRESULT __stdcall CDeviceResources::GetOutputSize(UINT* pWidth, UINT* pHeight) n
         if (!pWidth || !pHeight)
             return E_INVALIDARG;
 
-        std::lock_guard<std::mutex> lock(m_mutex);
         if (m_swapChain == nullptr)
             return E_NOT_VALID_STATE;
 
@@ -468,7 +443,6 @@ HRESULT __stdcall CDeviceResources::GetOutputSize(UINT* pWidth, UINT* pHeight) n
 
 HRESULT __stdcall CDeviceResources::IsTearingSupported(BOOL* pSupported) noexcept {
     try {
-        std::lock_guard<std::mutex> lock(m_mutex);
 
         if (!pSupported)
             return E_INVALIDARG;
@@ -486,7 +460,6 @@ HRESULT __stdcall CDeviceResources::IsTearingSupported(BOOL* pSupported) noexcep
 
 HRESULT __stdcall CDeviceResources::GetD3DDevice(ID3D12Device** ppDevice) noexcept {
     try {
-        std::lock_guard<std::mutex> lock(m_mutex);
 
         if (!ppDevice)
             return E_INVALIDARG;
@@ -507,7 +480,6 @@ HRESULT __stdcall CDeviceResources::GetD3DDevice(ID3D12Device** ppDevice) noexce
 
 HRESULT __stdcall CDeviceResources::GetDXGIFactory(IDXGIFactory4** ppFactory) noexcept {
     try {
-        std::lock_guard<std::mutex> lock(m_mutex);
 
         if (!ppFactory)
             return E_INVALIDARG;
@@ -528,7 +500,6 @@ HRESULT __stdcall CDeviceResources::GetDXGIFactory(IDXGIFactory4** ppFactory) no
 
 HRESULT __stdcall CDeviceResources::GetSwapChain(IDXGISwapChain3** ppSwapChain) noexcept {
     try {
-        std::lock_guard<std::mutex> lock(m_mutex);
 
         if (!ppSwapChain)
             return E_INVALIDARG;
@@ -549,7 +520,6 @@ HRESULT __stdcall CDeviceResources::GetSwapChain(IDXGISwapChain3** ppSwapChain) 
 
 HRESULT __stdcall CDeviceResources::GetCommandQueue(ID3D12CommandQueue** ppCommandQueue) noexcept {
     try {
-        std::lock_guard<std::mutex> lock(m_mutex);
 
         if (!ppCommandQueue)
             return E_INVALIDARG;
@@ -570,7 +540,6 @@ HRESULT __stdcall CDeviceResources::GetCommandQueue(ID3D12CommandQueue** ppComma
 
 HRESULT __stdcall CDeviceResources::GetDeviceFeatureLevel(D3D_FEATURE_LEVEL* pFeatureLevel) noexcept {
     try {
-        std::lock_guard<std::mutex> lock(m_mutex);
 
         if (!pFeatureLevel)
             return E_INVALIDARG;
@@ -588,7 +557,6 @@ HRESULT __stdcall CDeviceResources::GetDeviceFeatureLevel(D3D_FEATURE_LEVEL* pFe
 
 HRESULT __stdcall CDeviceResources::GetBackBufferFormat(DXGI_FORMAT* pFormat) noexcept {
     try {
-        std::lock_guard<std::mutex> lock(m_mutex);
 
         if (!pFormat)
             return E_INVALIDARG;
@@ -606,7 +574,6 @@ HRESULT __stdcall CDeviceResources::GetBackBufferFormat(DXGI_FORMAT* pFormat) no
 
 HRESULT __stdcall CDeviceResources::GetDepthBufferFormat(DXGI_FORMAT* pFormat) noexcept {
     try {
-        std::lock_guard<std::mutex> lock(m_mutex);
 
         if (!pFormat)
             return E_INVALIDARG;
@@ -624,7 +591,6 @@ HRESULT __stdcall CDeviceResources::GetDepthBufferFormat(DXGI_FORMAT* pFormat) n
 
 HRESULT __stdcall CDeviceResources::Prepare(D3D12_RESOURCE_STATES beforeState) noexcept {
     try {
-        std::lock_guard<std::mutex> lock(m_mutex);
 
         if (!m_commandList)
             return E_NOT_VALID_STATE;
@@ -656,7 +622,6 @@ HRESULT __stdcall CDeviceResources::Prepare(D3D12_RESOURCE_STATES beforeState) n
 
 HRESULT __stdcall CDeviceResources::Present(D3D12_RESOURCE_STATES beforeState) noexcept {
     try {
-        std::lock_guard<std::mutex> lock(m_mutex);
 
         if (!m_swapChain)
             return E_NOT_VALID_STATE;
@@ -704,7 +669,6 @@ HRESULT __stdcall CDeviceResources::Present(D3D12_RESOURCE_STATES beforeState) n
 
 HRESULT __stdcall CDeviceResources::ExecuteCommandList() noexcept {
     try {
-        std::lock_guard<std::mutex> lock(m_mutex);
 
         if (!m_commandList || !m_commandQueue)
             return E_NOT_VALID_STATE;
@@ -726,7 +690,6 @@ HRESULT __stdcall CDeviceResources::ExecuteCommandList() noexcept {
 
 HRESULT __stdcall CDeviceResources::WaitForGpu() noexcept {
     try {
-        std::lock_guard<std::mutex> lock(m_mutex);
 
         if (!m_commandQueue || !m_fence)
             return E_NOT_VALID_STATE;

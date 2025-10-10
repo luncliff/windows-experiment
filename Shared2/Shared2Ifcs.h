@@ -44,7 +44,7 @@ IDeviceResources : public IUnknown {
      * @details Sets up D3D12 device, command queue, and basic infrastructure
      * @return S_OK on success, error HRESULT on failure
      */
-    STDMETHOD(CreateDeviceResources)() = 0;
+    STDMETHOD(CreateDeviceResources)(IDXGIAdapter1* adapter = nullptr) = 0;
 
     /**
      * @brief Create size-dependent resources for specified dimensions
