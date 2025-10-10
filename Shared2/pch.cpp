@@ -214,3 +214,46 @@ HRESULT __stdcall CustomClassFactory::GetFactoryInfo(LPWSTR* info) noexcept {
 }
 
 } // namespace winrt::Shared2
+
+// Standard DLL export implementations
+extern "C" {
+
+SHARED2_API HRESULT STDAPICALLTYPE Shared2_DllCanUnloadNow() {
+    // For now, always allow unloading
+    // In a production DLL, you'd check if there are active objects
+    return S_OK;
+}
+
+SHARED2_API HRESULT STDAPICALLTYPE CreateCustomService(REFIID riid, void** ppvObject) {
+    try {
+        if (ppvObject == nullptr) {
+            return E_INVALIDARG;
+        }
+        
+        *ppvObject = nullptr;
+        
+        auto service = winrt::Shared2::make_custom_service();
+        return service->QueryInterface(riid, ppvObject);
+    }
+    catch (...) {
+        return E_UNEXPECTED;
+    }
+}
+
+SHARED2_API HRESULT STDAPICALLTYPE CreateCustomClassFactory(REFIID riid, void** ppvObject) {
+    try {
+        if (ppvObject == nullptr) {
+            return E_INVALIDARG;
+        }
+        
+        *ppvObject = nullptr;
+        
+        auto factory = winrt::Shared2::make_custom_class_factory();
+        return factory->QueryInterface(riid, ppvObject);
+    }
+    catch (...) {
+        return E_UNEXPECTED;
+    }
+}
+
+} // extern "C"

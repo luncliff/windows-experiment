@@ -4,6 +4,15 @@
 // Reference: https://learn.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iclassfactory-createinstance
 
 #include <unknwn.h>
+#include <objidl.h>
+#include <activation.h>
+
+// DLL Export macros
+#ifdef SHARED2_EXPORTS
+#define SHARED2_API __declspec(dllexport)
+#else
+#define SHARED2_API __declspec(dllimport)
+#endif
 
 // Forward declarations
 struct ICustomService;
@@ -85,3 +94,28 @@ constexpr winrt::guid IID_ICustomClassFactory{ 0x87654321, 0x4321, 0x8765, { 0xC
 // Class IDs for COM registration
 constexpr winrt::guid CLSID_CustomService{ 0xABCDEF01, 0x2345, 0x6789, { 0xAB, 0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67, 0x89 } };
 constexpr winrt::guid CLSID_CustomClassFactory{ 0xFEDCBA98, 0x7654, 0x3210, { 0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10 } };
+
+// Standard DLL exports for COM registration
+extern "C" {
+    /**
+     * @brief Standard COM DLL export - determines if DLL can be unloaded
+     * @return S_OK if DLL can be unloaded, S_FALSE otherwise
+     */
+    SHARED2_API HRESULT STDAPICALLTYPE Shared2_DllCanUnloadNow();
+    
+    /**
+     * @brief Factory function to create ICustomService instances
+     * @param riid Interface ID to query for
+     * @param ppvObject Pointer to receive the created object
+     * @return S_OK on success, error HRESULT on failure
+     */
+    SHARED2_API HRESULT STDAPICALLTYPE CreateCustomService(REFIID riid, void** ppvObject);
+    
+    /**
+     * @brief Factory function to create ICustomClassFactory instances
+     * @param riid Interface ID to query for
+     * @param ppvObject Pointer to receive the created object
+     * @return S_OK on success, error HRESULT on failure
+     */
+    SHARED2_API HRESULT STDAPICALLTYPE CreateCustomClassFactory(REFIID riid, void** ppvObject);
+}

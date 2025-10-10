@@ -260,6 +260,9 @@
     <ProjectReference Include="..\Shared1\Shared1.vcxproj">
       <Project>{A1B2C3D4-E5F6-7890-ABCD-123456789ABC}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Shared2\Shared2.vcxproj">
+      <Project>{B2C3D4E5-F6A7-8901-BCDE-234567890DEF}</Project>
+    </ProjectReference>
   </ItemGroup>
   <!-- vcpkg dependencies for local debugging -->
   <ItemGroup>
@@ -283,6 +286,17 @@
     <!-- WinPixEventRuntime -->
     <Content Include="$(SolutionDir)packages\WinPixEventRuntime.1.0.240308001\bin\$(Platform)\*.dll">
       <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>
+    <!-- Shared2 DLL -->
+    <Content Include="..\$(Platform)\$(Configuration)\Shared2.dll">
+      <Link>Shared2.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="..\$(Platform)\$(Configuration)\Shared2.pdb" Condition="'$(Configuration)'=='Debug'">
+      <Link>Shared2.pdb</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>false</Visible>
     </Content>

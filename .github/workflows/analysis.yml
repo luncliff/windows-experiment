@@ -62,7 +62,7 @@ jobs:
       - name: "Run build-wrapper(x64/Debug)"
         run: |
           build-wrapper-win-x86-64 --out-dir "bw-output" `
-            MSBuild windows-experiment.sln "/t:Shared1;App1;UnitTestApp1" /p:platform="x64" /p:configuration="Debug" `
+            MSBuild windows-experiment.sln "/t:Shared1;Shared2;App1;UnitTestApp1" /p:platform="x64" /p:configuration="Debug" `
               /nodeReuse:false /p:BuildProjectReferences=false
         env:
           VCPKG_FEATURE_FLAGS: "registries,binarycaching,manifests"

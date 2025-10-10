@@ -1,0 +1,7 @@
+EXPORTS
+    ; Standard COM DLL exports (renamed to avoid conflicts)
+    Shared2_DllCanUnloadNow
+    
+    ; Custom factory functions
+    CreateCustomService
+    CreateCustomClassFactory

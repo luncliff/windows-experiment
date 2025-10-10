@@ -11,6 +11,8 @@ Check current [concerns](./developer-concerns.md) and upcoming [work items](./TO
 - https://github.com/luncliff/windows-experiment/issues  
   The issues and milestones are note organized now. They be overhauled for GitHub Actions workflows soon.
 
+<!-- TODO: Place to put description for the project structure and file organization -->
+
 ## How To
 
 ### Setup

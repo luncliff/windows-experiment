@@ -8,7 +8,7 @@
 #include "TestPage1.g.cpp"
 #endif
 
-#include <WinPixEventRuntime/pix3.h>
+#include <pix3.h>
 
 #include "StepTimer.h"
 
