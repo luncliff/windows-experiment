@@ -1,18 +1,27 @@
 
 
-Use the [README.md](../README.md) for build/test instructions.
+## Guidelines
 
-## Coding Convention
+- Build and test before and after source changes. Use the [README.md](../README.md) and [analysis.yml](./workflows/analysis.yml) to confirm latest build/test steps.
+- Try web search to gather more references. If search result is not useful, request to user to provide more context or details. List the references in the README.md file's "References" section.
 
-Global functions will use snake_case. See [pch.h](../App1/pch.h) and [pch.cpp](../App1/pch.cpp).
+## Code Design and Implementation Strategies
 
-We use PascalCase for class names. However we mix PascalCase and snake_case for member functions.
-For example,
+The followings are for [App1](../App1/App1.vcxproj) project and [Shared1](../Shared1/Shared1.vcxproj) project.
 
-- [SettingsPage](../App1/SettingsPage.xaml.h) class overrides XAML Control virtual functions like [Page.OnNavigatedFrom](https://learn.microsoft.com/en-us/uwp/api/windows.ui.xaml.controls.page.onnavigatedfrom) and [Page.OnNavigatedTo](https://learn.microsoft.com/en-us/uwp/api/windows.ui.xaml.controls.page.onnavigatedto). For those existing functions in XAML, it will use PascalCase.
-- [MainWindow.xaml](../App1/MainWindow.xaml) defines custom event handlers in XAML file. To distinguish the handlers between XAML Control member functions, we will use snake_case. See [MainWindow.xaml.h](../App1/MainWindow.xaml.h)
+### XAML Page
 
-## Windows Development References
+- The [MainWindow](../App1/MainWindow.xaml) class implements page navigation and frame management. See [MainWindow::on_item_invoked](../App1/MainWindow.xaml.cpp) function.
+- The [ViewModelProvider](../App1/ViewModelProvider.idl) class helps the XAML Pages access to multiple ViewModel instances. Most of the ViewModel instances will be created in [App](../App1/App.xaml.cpp) class. They will be constructed and assigned in `OnLaunched` function, when they have runtime concerns. For the other cases, they will be created in the `App` class constructor.
+- Each Page will use Navigation parameters to acquire its required ViewModel instances.
+  - For example, [SettingsPage](../App1/SettingsPage.xaml.cpp) class overrides XAML Control virtual functions like [Page.OnNavigatedFrom](https://learn.microsoft.com/en-us/uwp/api/windows.ui.xaml.controls.page.onnavigatedfrom) and [Page.OnNavigatedTo](https://learn.microsoft.com/en-us/uwp/api/windows.ui.xaml.controls.page.onnavigatedto). For those existing functions in XAML, it will use PascalCase.
+- Like the [on_settings_changed](../App1/MainWindow.xaml.cpp) function of the MainWindow class, some classes may register event handlers to [SettingsViewModel](../App1/SettingsViewModel.idl) class. They will use event to read changed settings, then change their status and UI/UX related behaviors.
+
+### :construction: XAML UserControl
+
+(TBD)
+
+## References
 
 Always prefer search existing code and web posts, before creating new one.
 

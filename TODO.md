@@ -1,32 +1,16 @@
-# TODO (Forward-Looking) – Shared2 & Beyond
+# TODO (Forward-Looking)
 
 Scope: Items here are intentionally deferred until after Shared1 static library integration and validation.
 
-## 1. Shared2 (Planned WinRT / DLL Component)
+## 1. Shared2 (WinRT / DLL Component)
 
 Objectives:
 - Provide projected (WinRT) surfaces for stable ViewModel & service APIs.
 - Encapsulate legacy COM interop behind modern async-friendly wrappers.
 - Consolidate DirectX device management and interop helpers.
 
-High-Level Tasks:
-1. Define candidate IDL surfaces (minimal initial set):
-   - `ISettingsService` (async load/save, property get/set)
-   - `IBasicItemsProvider` (observable list projection?)
-   - `IGraphicsDeviceService` (device acquisition, device lost notifications)
-2. Draft IDL namespace strategy (stay under `App1` root to minimize friction)
-3. Introduce component project `Shared2` (DLL / WinRT component) with PCH + manifest.
-4. Implement adapter layer from Shared1 internal logic to projected types.
-5. Introduce COM wrapper(s) required for DX interop (document per-wrapper rationale).
-6. Migrate selective logging to use structured `LoggingFields` where beneficial.
-7. Evaluate channel taxonomy post-migration (merge/split decisions recorded in `developer-concerns.md`).
-8. Provide unit & integration tests (projection behavior, property notifications through WinRT boundary).
-9. Add performance profiling hooks (PIX markers, optional event counters) gated by build flag.
-10. Documentation: Update `work-note.md` with finalized Shared2 decisions.
-
 ## 2. DirectX / Graphics Consolidation
 - Inventory current `DX` namespace utilities (responsibilities, dependencies).
-- Decide extraction scope: which pieces move to Shared2 vs remain internal to App1.
 - Implement abstraction boundary (factory or service pattern) that shields UI from device recreation details.
 - Add test harness for device lost simulation (skip gracefully if unsupported environment).
 
@@ -51,11 +35,6 @@ High-Level Tasks:
 - Create `graphics-design.md` once DirectX migration starts.
 - Create `logging-rotation-design.md` for size governance strategy.
 - Expand README with a dedicated "Architecture Overview" after Shared2 surfaces stabilize.
-
-## 7. Open Questions (Not Blocking Shared1)
-- Do we require any cross-language consumption (e.g., C#, Python) soon? Influences urgency of Shared2.
-- Minimum OS build for future DX feature usage? (May raise from 22000 if advanced features adopted.)
-- Should telemetry opt-in status be persisted with settings service? (If yes, design data contract early.)
 
 ## 8. References
 - WinUI Controls: https://learn.microsoft.com/en-us/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.controls?view=windows-app-sdk-1.7

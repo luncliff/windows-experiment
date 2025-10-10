@@ -1,0 +1,7 @@
+EXPORTS
+    ; Standard COM DLL exports
+    DllCanUnloadNow
+    
+    ; Custom factory functions
+    CreateCustomService
+    CreateCustomClassFactory

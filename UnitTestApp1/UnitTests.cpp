@@ -3,6 +3,7 @@
 #include <CppUnitTest.h>
 #include <winrt/Shared1.h> // generated file from Shared1 project
 
+#include "../Shared2/Shared2Ifcs.h" // COM interface declarations
 #include "MainWindow.g.h"
 
 using namespace winrt::Microsoft::UI::Xaml::Controls;
@@ -64,5 +65,26 @@ class BasicViewModelTests : public TestClass<BasicViewModelTests> {
         } catch (const winrt::hresult_error& ex) {
             Assert::Fail(ex.message().c_str());
         }
+    }
+};
+
+class Shared2ClassFactoryTests : public TestClass<Shared2ClassFactoryTests> {
+    winrt::com_ptr<IClassFactory> factory = nullptr;
+
+  public:
+    TEST_METHOD_INITIALIZE(Initialize) {
+        // from Shared2Ifcs.h
+        HRESULT hr = ::CreateCustomClassFactory(factory.put());
+        if (FAILED(hr))
+            Assert::Fail(L"CreateCustomClassFactory failed");
+    }
+    TEST_METHOD_CLEANUP(Cleanup) {
+        factory = nullptr; // Cleanup logic if needed
+    }
+
+    TEST_METHOD(TestCreateInstance) {
+        winrt::com_ptr<ICustomService> service = nullptr;
+        Assert::AreEqual(factory->CreateInstance(nullptr, __uuidof(ICustomService), service.put_void()), S_OK);
+        Assert::IsTrue(service != nullptr);
     }
 };
