@@ -7,64 +7,59 @@ namespace winrt::Shared2 {
 HRESULT __stdcall CustomService::Initialize(LPCWSTR config) noexcept {
     try {
         std::lock_guard<std::mutex> lock(m_mutex);
-        
+
         if (m_initialized.load()) {
             return E_FAIL; // Already initialized
         }
-        
+
         if (config == nullptr) {
             return E_INVALIDARG;
         }
-        
+
         m_config = config;
         m_initialized.store(true);
-        
+
         return S_OK;
-    }
-    catch (...) {
+    } catch (...) {
         return E_UNEXPECTED;
     }
 }
 
-HRESULT __stdcall CustomService::ProcessData(
-    const BYTE* input, 
-    DWORD inputSize, 
-    BYTE** output, 
-    DWORD* outputSize) noexcept {
-    
+HRESULT __stdcall CustomService::ProcessData(const BYTE* input, DWORD inputSize, BYTE** output,
+                                             DWORD* outputSize) noexcept {
+
     try {
         if (!m_initialized.load()) {
             return E_FAIL; // Not initialized
         }
-        
+
         if (input == nullptr || output == nullptr || outputSize == nullptr) {
             return E_INVALIDARG;
         }
-        
+
         if (inputSize == 0) {
             *output = nullptr;
             *outputSize = 0;
             return S_OK;
         }
-        
+
         // Simple processing: copy input to output with size prefix
         DWORD totalSize = sizeof(DWORD) + inputSize;
         BYTE* result = static_cast<BYTE*>(CoTaskMemAlloc(totalSize));
         if (result == nullptr) {
             return E_OUTOFMEMORY;
         }
-        
+
         // Write size prefix
         *reinterpret_cast<DWORD*>(result) = inputSize;
         // Copy input data
         memcpy(result + sizeof(DWORD), input, inputSize);
-        
+
         *output = result;
         *outputSize = totalSize;
-        
+
         return S_OK;
-    }
-    catch (...) {
+    } catch (...) {
         return E_UNEXPECTED;
     }
 }
@@ -74,25 +69,24 @@ HRESULT __stdcall CustomService::GetStatus(LPWSTR* status) noexcept {
         if (status == nullptr) {
             return E_INVALIDARG;
         }
-        
+
         std::lock_guard<std::mutex> lock(m_mutex);
-        
-        std::wstring statusText = std::format(L"CustomService: {} (Config: {})", 
-            m_initialized.load() ? L"Initialized" : L"Not Initialized",
-            m_config.empty() ? L"None" : m_config);
-        
+
+        std::wstring statusText =
+            std::format(L"CustomService: {} (Config: {})", m_initialized.load() ? L"Initialized" : L"Not Initialized",
+                        m_config.empty() ? L"None" : m_config);
+
         size_t length = (statusText.length() + 1) * sizeof(wchar_t);
         LPWSTR result = static_cast<LPWSTR>(CoTaskMemAlloc(length));
         if (result == nullptr) {
             return E_OUTOFMEMORY;
         }
-        
+
         wcscpy_s(result, statusText.length() + 1, statusText.c_str());
         *status = result;
-        
+
         return S_OK;
-    }
-    catch (...) {
+    } catch (...) {
         return E_UNEXPECTED;
     }
 }
@@ -100,46 +94,35 @@ HRESULT __stdcall CustomService::GetStatus(LPWSTR* status) noexcept {
 HRESULT __stdcall CustomService::Shutdown() noexcept {
     try {
         std::lock_guard<std::mutex> lock(m_mutex);
-        
+
         m_config.clear();
         m_initialized.store(false);
-        
+
         return S_OK;
-    }
-    catch (...) {
+    } catch (...) {
         return E_UNEXPECTED;
     }
 }
 
-// CustomClassFactory implementation
-HRESULT __stdcall CustomClassFactory::CreateInstance(
-    IUnknown* pUnkOuter, 
-    REFIID riid, 
-    void** ppvObject) noexcept {
-    
+HRESULT __stdcall CustomClassFactory::CreateInstance(IUnknown* unknown, REFIID riid, void** ppv) noexcept {
     try {
-        if (ppvObject == nullptr) {
+        if (ppv == nullptr)
             return E_INVALIDARG;
-        }
-        
-        *ppvObject = nullptr;
-        
-        // No aggregation support
-        if (pUnkOuter != nullptr) {
+        if (unknown) // No aggregation support
             return CLASS_E_NOAGGREGATION;
+
+        if (IsEqualIID(riid, __uuidof(ICustomService))) {
+            auto service = winrt::make<CustomService>();
+            return service->QueryInterface(riid, ppv);
         }
-        
-        // Create and return the service
-        if (riid == __uuidof(ICustomService) || riid == IID_IUnknown) {
-            auto service = make_custom_service();
-            return service->QueryInterface(riid, ppvObject);
-        }
-        
         return E_NOINTERFACE;
-    }
-    catch (...) {
+    } catch (...) {
         return E_UNEXPECTED;
     }
+}
+
+ULONG CustomClassFactory::GetLockCount() const noexcept {
+    return m_lockCount.load();
 }
 
 HRESULT __stdcall CustomClassFactory::LockServer(BOOL fLock) noexcept {
@@ -150,65 +133,7 @@ HRESULT __stdcall CustomClassFactory::LockServer(BOOL fLock) noexcept {
             m_lockCount.fetch_sub(1);
         }
         return S_OK;
-    }
-    catch (...) {
-        return E_UNEXPECTED;
-    }
-}
-
-HRESULT __stdcall CustomClassFactory::CreateConfiguredInstance(
-    LPCWSTR config, 
-    REFIID riid, 
-    void** ppvObject) noexcept {
-    
-    try {
-        if (ppvObject == nullptr) {
-            return E_INVALIDARG;
-        }
-        
-        *ppvObject = nullptr;
-        
-        if (riid == __uuidof(ICustomService) || riid == IID_IUnknown) {
-            auto service = make_custom_service();
-            
-            // Initialize with configuration if provided
-            if (config != nullptr) {
-                HRESULT hr = service->Initialize(config);
-                if (FAILED(hr)) {
-                    return hr;
-                }
-            }
-            
-            return service->QueryInterface(riid, ppvObject);
-        }
-        
-        return E_NOINTERFACE;
-    }
-    catch (...) {
-        return E_UNEXPECTED;
-    }
-}
-
-HRESULT __stdcall CustomClassFactory::GetFactoryInfo(LPWSTR* info) noexcept {
-    try {
-        if (info == nullptr) {
-            return E_INVALIDARG;
-        }
-        
-        std::wstring factoryInfo = std::format(L"CustomClassFactory: LockCount={}", m_lockCount.load());
-        
-        size_t length = (factoryInfo.length() + 1) * sizeof(wchar_t);
-        LPWSTR result = static_cast<LPWSTR>(CoTaskMemAlloc(length));
-        if (result == nullptr) {
-            return E_OUTOFMEMORY;
-        }
-        
-        wcscpy_s(result, factoryInfo.length() + 1, factoryInfo.c_str());
-        *info = result;
-        
-        return S_OK;
-    }
-    catch (...) {
+    } catch (...) {
         return E_UNEXPECTED;
     }
 }
@@ -218,42 +143,39 @@ HRESULT __stdcall CustomClassFactory::GetFactoryInfo(LPWSTR* info) noexcept {
 // Standard DLL export implementations
 extern "C" {
 
-SHARED2_API HRESULT STDAPICALLTYPE Shared2_DllCanUnloadNow() {
-    // For now, always allow unloading
-    // In a production DLL, you'd check if there are active objects
-    return S_OK;
-}
-
-SHARED2_API HRESULT STDAPICALLTYPE CreateCustomService(REFIID riid, void** ppvObject) {
+HRESULT __stdcall CreateCustomClassFactory(IClassFactory** output) noexcept {
+    using namespace winrt::Shared2;
+    if (output == nullptr)
+        return E_INVALIDARG;
     try {
-        if (ppvObject == nullptr) {
-            return E_INVALIDARG;
-        }
-        
-        *ppvObject = nullptr;
-        
-        auto service = winrt::Shared2::make_custom_service();
-        return service->QueryInterface(riid, ppvObject);
-    }
-    catch (...) {
-        return E_UNEXPECTED;
+        auto factory = winrt::make<CustomClassFactory>();
+        factory.copy_to(output);
+        return S_OK;
+    } catch (const winrt::hresult_error& ex) {
+        return ex.code();
+    } catch (const std::exception&) {
+        return E_FAIL;
     }
 }
 
-SHARED2_API HRESULT STDAPICALLTYPE CreateCustomClassFactory(REFIID riid, void** ppvObject) {
+SHARED2_API HRESULT __stdcall CreateCustomService(REFIID riid, void** ppv) {
+    using namespace winrt::Shared2;
     try {
-        if (ppvObject == nullptr) {
+        if (ppv == nullptr)
             return E_INVALIDARG;
-        }
-        
-        *ppvObject = nullptr;
-        
-        auto factory = winrt::Shared2::make_custom_class_factory();
-        return factory->QueryInterface(riid, ppvObject);
-    }
-    catch (...) {
+        *ppv = nullptr;
+
+        auto service = winrt::make<CustomService>();
+        return service->QueryInterface(riid, ppv);
+    } catch (...) {
         return E_UNEXPECTED;
     }
 }
 
 } // extern "C"
+
+/// @see combaseapi.h
+__control_entrypoint(DllExport) STDAPI DllCanUnloadNow(void) {
+    // todo: count the active number of IClassFactory, then return S_OK if the count is zero
+    return S_OK;
+}

@@ -14,45 +14,49 @@
 
 // WinRT headers
 #undef GetCurrentTime
-#include <winrt/base.h>
-#include <winrt/Windows.Foundation.h>
-#include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.ApplicationModel.Activation.h>
+#include <winrt/Windows.Foundation.Collections.h>
+#include <winrt/Windows.Foundation.h>
 
 // Include our custom COM interface declarations
 #include "Shared2Ifcs.h"
 
 // Standard C++
+#include <atomic>
+#include <format>
 #include <memory>
+#include <mutex>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <vector>
-#include <mutex>
-#include <atomic>
-#include <format>
-#include <stdexcept>
 
 namespace winrt::Shared2 {
 
+// Interface IDs as constexpr for use with winrt::implements
+constexpr winrt::guid IID_ICustomService{0x12345678, 0x1234, 0x5678, {0x9A, 0xBC, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC}};
+
+// Class IDs for COM registration
+constexpr winrt::guid CLSID_CustomService{0xABCDEF01, 0x2345, 0x6789, {0xAB, 0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67, 0x89}};
+
 // Forward declarations of implementation classes
 struct CustomService;
-struct CustomClassFactory;
 
 /**
  * @brief Implementation of ICustomService using winrt::implements
  * @details Demonstrates COM implementation with automatic reference counting
  */
-struct CustomService : winrt::implements<CustomService, ::ICustomService>
-{
-private:
+struct CustomService : winrt::implements<CustomService, ::ICustomService> {
+  private:
     std::wstring m_config;
-    std::atomic<bool> m_initialized{ false };
+    std::atomic<bool> m_initialized{false};
     mutable std::mutex m_mutex;
 
-public:
+  public:
     // ICustomService implementation
     HRESULT __stdcall Initialize(LPCWSTR config) noexcept override;
-    HRESULT __stdcall ProcessData(const BYTE* input, DWORD inputSize, BYTE** output, DWORD* outputSize) noexcept override;
+    HRESULT __stdcall ProcessData(const BYTE* input, DWORD inputSize, BYTE** output,
+                                  DWORD* outputSize) noexcept override;
     HRESULT __stdcall GetStatus(LPWSTR* status) noexcept override;
     HRESULT __stdcall Shutdown() noexcept override;
 };
@@ -61,33 +65,17 @@ public:
  * @brief Implementation of ICustomClassFactory using winrt::implements
  * @details Custom class factory that creates ICustomService instances
  */
-struct CustomClassFactory : winrt::implements<CustomClassFactory, ::ICustomClassFactory, ::IClassFactory>
-{
-private:
-    std::atomic<ULONG> m_lockCount{ 0 };
+struct CustomClassFactory : winrt::implements<CustomClassFactory, ::IClassFactory> {
+  private:
+    std::atomic<ULONG> m_lockCount{0};
 
-public:
+  public:
     // IClassFactory implementation
     HRESULT __stdcall CreateInstance(IUnknown* pUnkOuter, REFIID riid, void** ppvObject) noexcept override;
     HRESULT __stdcall LockServer(BOOL fLock) noexcept override;
-    
-    // ICustomClassFactory implementation
-    HRESULT __stdcall CreateConfiguredInstance(LPCWSTR config, REFIID riid, void** ppvObject) noexcept override;
-    HRESULT __stdcall GetFactoryInfo(LPWSTR* info) noexcept override;
-    
+
     // Helper methods
-    ULONG GetLockCount() const noexcept { return m_lockCount.load(); }
+    ULONG GetLockCount() const noexcept;
 };
-
-/**
- * @brief Factory functions for creating COM objects
- */
-inline winrt::com_ptr<ICustomService> make_custom_service() {
-    return winrt::make<CustomService>();
-}
-
-inline winrt::com_ptr<ICustomClassFactory> make_custom_class_factory() {
-    return winrt::make<CustomClassFactory>();
-}
 
 } // namespace winrt::Shared2
