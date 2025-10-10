@@ -9,21 +9,6 @@ Objectives:
 - Encapsulate legacy COM interop behind modern async-friendly wrappers.
 - Consolidate DirectX device management and interop helpers.
 
-High-Level Tasks:
-1. Define candidate IDL surfaces (minimal initial set):
-   - `ISettingsService` (async load/save, property get/set)
-   - `IBasicItemsProvider` (observable list projection?)
-   - `IGraphicsDeviceService` (device acquisition, device lost notifications)
-2. Draft IDL namespace strategy (stay under `App1` root to minimize friction)
-3. Introduce component project `Shared2` (DLL / WinRT component) with PCH + manifest.
-4. Implement adapter layer from Shared1 internal logic to projected types.
-5. Introduce COM wrapper(s) required for DX interop (document per-wrapper rationale).
-6. Migrate selective logging to use structured `LoggingFields` where beneficial.
-7. Evaluate channel taxonomy post-migration (merge/split decisions recorded in `developer-concerns.md`).
-8. Provide unit & integration tests (projection behavior, property notifications through WinRT boundary).
-9. Add performance profiling hooks (PIX markers, optional event counters) gated by build flag.
-10. Documentation: Update `work-note.md` with finalized Shared2 decisions.
-
 ## 2. DirectX / Graphics Consolidation
 - Inventory current `DX` namespace utilities (responsibilities, dependencies).
 - Decide extraction scope: which pieces move to Shared2 vs remain internal to App1.
