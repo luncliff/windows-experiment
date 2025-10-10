@@ -1,7 +1,7 @@
 EXPORTS
     ; Standard COM DLL exports
-    DllCanUnloadNow
+    DllCanUnloadNow PRIVATE
     
-    ; Custom factory functions
-    CreateCustomService
+    ; Resources creation functions
     CreateCustomClassFactory
+    CreateDeviceResources
