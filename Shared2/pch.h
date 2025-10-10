@@ -21,6 +21,9 @@
 // Include our custom COM interface declarations
 #include "Shared2Ifcs.h"
 
+// Include Shared1 DeviceResources
+#include "../Shared1/DeviceResources.h"
+
 // Standard C++
 #include <atomic>
 #include <format>
@@ -35,12 +38,15 @@ namespace winrt::Shared2 {
 
 // Interface IDs as constexpr for use with winrt::implements
 constexpr winrt::guid IID_ICustomService{0x12345678, 0x1234, 0x5678, {0x9A, 0xBC, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC}};
+constexpr winrt::guid IID_IDeviceResources{0x23456789, 0x2345, 0x6789, {0xAB, 0xCD, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD}};
 
 // Class IDs for COM registration
 constexpr winrt::guid CLSID_CustomService{0xABCDEF01, 0x2345, 0x6789, {0xAB, 0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67, 0x89}};
+constexpr winrt::guid CLSID_DeviceResources{0xBCDEF012, 0x3456, 0x789A, {0xBC, 0xDE, 0xF0, 0x12, 0x34, 0x56, 0x78, 0x9A}};
 
 // Forward declarations of implementation classes
 struct CustomService;
+struct CDeviceResources;
 
 /**
  * @brief Implementation of ICustomService using winrt::implements
@@ -59,6 +65,37 @@ struct CustomService : winrt::implements<CustomService, ::ICustomService> {
                                   DWORD* outputSize) noexcept override;
     HRESULT __stdcall GetStatus(LPWSTR* status) noexcept override;
     HRESULT __stdcall Shutdown() noexcept override;
+};
+
+/**
+ * @brief Implementation of IDeviceResources using winrt::implements
+ * @details COM wrapper for DX::DeviceResources with proper error handling
+ */
+struct CDeviceResources : winrt::implements<CDeviceResources, ::IDeviceResources> {
+  private:
+    std::unique_ptr<DX::DeviceResources> m_deviceResources;
+    mutable std::mutex m_mutex;
+
+  public:
+    // IDeviceResources implementation
+    HRESULT __stdcall InitializeDevice(DXGI_FORMAT backBufferFormat, DXGI_FORMAT depthBufferFormat,
+                                      UINT backBufferCount, D3D_FEATURE_LEVEL minFeatureLevel, UINT flags) noexcept override;
+    HRESULT __stdcall CreateDeviceResources() noexcept override;
+    HRESULT __stdcall CreateWindowSizeDependentResources(UINT width, UINT height) noexcept override;
+    HRESULT __stdcall HandleDeviceLost() noexcept override;
+    HRESULT __stdcall GetOutputSize(UINT* pWidth, UINT* pHeight) noexcept override;
+    HRESULT __stdcall IsTearingSupported(BOOL* pSupported) noexcept override;
+    HRESULT __stdcall GetD3DDevice(ID3D12Device** ppDevice) noexcept override;
+    HRESULT __stdcall GetDXGIFactory(IDXGIFactory4** ppFactory) noexcept override;
+    HRESULT __stdcall GetSwapChain(IDXGISwapChain3** ppSwapChain) noexcept override;
+    HRESULT __stdcall GetCommandQueue(ID3D12CommandQueue** ppCommandQueue) noexcept override;
+    HRESULT __stdcall GetDeviceFeatureLevel(D3D_FEATURE_LEVEL* pFeatureLevel) noexcept override;
+    HRESULT __stdcall GetBackBufferFormat(DXGI_FORMAT* pFormat) noexcept override;
+    HRESULT __stdcall GetDepthBufferFormat(DXGI_FORMAT* pFormat) noexcept override;
+    HRESULT __stdcall Prepare(D3D12_RESOURCE_STATES beforeState) noexcept override;
+    HRESULT __stdcall Present(D3D12_RESOURCE_STATES beforeState) noexcept override;
+    HRESULT __stdcall ExecuteCommandList() noexcept override;
+    HRESULT __stdcall WaitForGpu() noexcept override;
 };
 
 /**

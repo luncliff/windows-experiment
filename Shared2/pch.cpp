@@ -115,6 +115,10 @@ HRESULT __stdcall CustomClassFactory::CreateInstance(IUnknown* unknown, REFIID r
             auto service = winrt::make<CustomService>();
             return service->QueryInterface(riid, ppv);
         }
+        else if (IsEqualIID(riid, __uuidof(IDeviceResources))) {
+            auto deviceResources = winrt::make<CDeviceResources>();
+            return deviceResources->QueryInterface(riid, ppv);
+        }
         return E_NOINTERFACE;
     } catch (...) {
         return E_UNEXPECTED;
@@ -133,6 +137,311 @@ HRESULT __stdcall CustomClassFactory::LockServer(BOOL fLock) noexcept {
             m_lockCount.fetch_sub(1);
         }
         return S_OK;
+    } catch (...) {
+        return E_UNEXPECTED;
+    }
+}
+
+// CDeviceResources implementation
+HRESULT __stdcall CDeviceResources::InitializeDevice(DXGI_FORMAT backBufferFormat, DXGI_FORMAT depthBufferFormat,
+                                                    UINT backBufferCount, D3D_FEATURE_LEVEL minFeatureLevel, UINT flags) noexcept {
+    try {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        
+        // Create the wrapped DeviceResources instance
+        m_deviceResources = std::make_unique<DX::DeviceResources>(
+            backBufferFormat, depthBufferFormat, backBufferCount, minFeatureLevel, flags);
+        
+        return S_OK;
+    } catch (const winrt::hresult_error& ex) {
+        return ex.code();
+    } catch (const std::exception&) {
+        return E_FAIL;
+    } catch (...) {
+        return E_UNEXPECTED;
+    }
+}
+
+HRESULT __stdcall CDeviceResources::CreateDeviceResources() noexcept {
+    try {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        if (!m_deviceResources)
+            return E_NOT_VALID_STATE;
+            
+        m_deviceResources->CreateDeviceResources();
+        return S_OK;
+    } catch (const winrt::hresult_error& ex) {
+        return ex.code();
+    } catch (const std::exception&) {
+        return E_FAIL;
+    } catch (...) {
+        return E_UNEXPECTED;
+    }
+}
+
+HRESULT __stdcall CDeviceResources::CreateWindowSizeDependentResources(UINT width, UINT height) noexcept {
+    try {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        if (!m_deviceResources)
+            return E_NOT_VALID_STATE;
+            
+        m_deviceResources->CreateWindowSizeDependentResources(width, height);
+        return S_OK;
+    } catch (const winrt::hresult_error& ex) {
+        return ex.code();
+    } catch (const std::exception&) {
+        return E_FAIL;
+    } catch (...) {
+        return E_UNEXPECTED;
+    }
+}
+
+HRESULT __stdcall CDeviceResources::HandleDeviceLost() noexcept {
+    try {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        if (!m_deviceResources)
+            return E_NOT_VALID_STATE;
+            
+        m_deviceResources->HandleDeviceLost();
+        return S_OK;
+    } catch (const winrt::hresult_error& ex) {
+        return ex.code();
+    } catch (const std::exception&) {
+        return E_FAIL;
+    } catch (...) {
+        return E_UNEXPECTED;
+    }
+}
+
+HRESULT __stdcall CDeviceResources::GetOutputSize(UINT* pWidth, UINT* pHeight) noexcept {
+    try {
+        if (!pWidth || !pHeight)
+            return E_INVALIDARG;
+            
+        std::lock_guard<std::mutex> lock(m_mutex);
+        if (!m_deviceResources)
+            return E_NOT_VALID_STATE;
+            
+        RECT outputSize = m_deviceResources->GetOutputSize();
+        *pWidth = static_cast<UINT>(outputSize.right - outputSize.left);
+        *pHeight = static_cast<UINT>(outputSize.bottom - outputSize.top);
+        return S_OK;
+    } catch (...) {
+        return E_UNEXPECTED;
+    }
+}
+
+HRESULT __stdcall CDeviceResources::IsTearingSupported(BOOL* pSupported) noexcept {
+    try {
+        if (!pSupported)
+            return E_INVALIDARG;
+            
+        std::lock_guard<std::mutex> lock(m_mutex);
+        if (!m_deviceResources)
+            return E_NOT_VALID_STATE;
+            
+        *pSupported = m_deviceResources->IsTearingSupported() ? TRUE : FALSE;
+        return S_OK;
+    } catch (...) {
+        return E_UNEXPECTED;
+    }
+}
+
+HRESULT __stdcall CDeviceResources::GetD3DDevice(ID3D12Device** ppDevice) noexcept {
+    try {
+        if (!ppDevice)
+            return E_INVALIDARG;
+            
+        std::lock_guard<std::mutex> lock(m_mutex);
+        if (!m_deviceResources)
+            return E_NOT_VALID_STATE;
+            
+        auto device = m_deviceResources->GetD3DDevice();
+        if (!device)
+            return E_NOT_VALID_STATE;
+            
+        device->AddRef();
+        *ppDevice = device;
+        return S_OK;
+    } catch (...) {
+        return E_UNEXPECTED;
+    }
+}
+
+HRESULT __stdcall CDeviceResources::GetDXGIFactory(IDXGIFactory4** ppFactory) noexcept {
+    try {
+        if (!ppFactory)
+            return E_INVALIDARG;
+            
+        std::lock_guard<std::mutex> lock(m_mutex);
+        if (!m_deviceResources)
+            return E_NOT_VALID_STATE;
+            
+        auto factory = m_deviceResources->GetDXGIFactory();
+        if (!factory)
+            return E_NOT_VALID_STATE;
+            
+        factory->AddRef();
+        *ppFactory = factory;
+        return S_OK;
+    } catch (...) {
+        return E_UNEXPECTED;
+    }
+}
+
+HRESULT __stdcall CDeviceResources::GetSwapChain(IDXGISwapChain3** ppSwapChain) noexcept {
+    try {
+        if (!ppSwapChain)
+            return E_INVALIDARG;
+            
+        std::lock_guard<std::mutex> lock(m_mutex);
+        if (!m_deviceResources)
+            return E_NOT_VALID_STATE;
+            
+        auto swapChain = m_deviceResources->GetSwapChain();
+        if (!swapChain)
+            return E_NOT_VALID_STATE;
+            
+        swapChain->AddRef();
+        *ppSwapChain = swapChain;
+        return S_OK;
+    } catch (...) {
+        return E_UNEXPECTED;
+    }
+}
+
+HRESULT __stdcall CDeviceResources::GetCommandQueue(ID3D12CommandQueue** ppCommandQueue) noexcept {
+    try {
+        if (!ppCommandQueue)
+            return E_INVALIDARG;
+            
+        std::lock_guard<std::mutex> lock(m_mutex);
+        if (!m_deviceResources)
+            return E_NOT_VALID_STATE;
+            
+        auto commandQueue = m_deviceResources->GetCommandQueue();
+        if (!commandQueue)
+            return E_NOT_VALID_STATE;
+            
+        commandQueue->AddRef();
+        *ppCommandQueue = commandQueue;
+        return S_OK;
+    } catch (...) {
+        return E_UNEXPECTED;
+    }
+}
+
+HRESULT __stdcall CDeviceResources::GetDeviceFeatureLevel(D3D_FEATURE_LEVEL* pFeatureLevel) noexcept {
+    try {
+        if (!pFeatureLevel)
+            return E_INVALIDARG;
+            
+        std::lock_guard<std::mutex> lock(m_mutex);
+        if (!m_deviceResources)
+            return E_NOT_VALID_STATE;
+            
+        *pFeatureLevel = m_deviceResources->GetDeviceFeatureLevel();
+        return S_OK;
+    } catch (...) {
+        return E_UNEXPECTED;
+    }
+}
+
+HRESULT __stdcall CDeviceResources::GetBackBufferFormat(DXGI_FORMAT* pFormat) noexcept {
+    try {
+        if (!pFormat)
+            return E_INVALIDARG;
+            
+        std::lock_guard<std::mutex> lock(m_mutex);
+        if (!m_deviceResources)
+            return E_NOT_VALID_STATE;
+            
+        *pFormat = m_deviceResources->GetBackBufferFormat();
+        return S_OK;
+    } catch (...) {
+        return E_UNEXPECTED;
+    }
+}
+
+HRESULT __stdcall CDeviceResources::GetDepthBufferFormat(DXGI_FORMAT* pFormat) noexcept {
+    try {
+        if (!pFormat)
+            return E_INVALIDARG;
+            
+        std::lock_guard<std::mutex> lock(m_mutex);
+        if (!m_deviceResources)
+            return E_NOT_VALID_STATE;
+            
+        *pFormat = m_deviceResources->GetDepthBufferFormat();
+        return S_OK;
+    } catch (...) {
+        return E_UNEXPECTED;
+    }
+}
+
+HRESULT __stdcall CDeviceResources::Prepare(D3D12_RESOURCE_STATES beforeState) noexcept {
+    try {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        if (!m_deviceResources)
+            return E_NOT_VALID_STATE;
+            
+        m_deviceResources->Prepare(beforeState);
+        return S_OK;
+    } catch (const winrt::hresult_error& ex) {
+        return ex.code();
+    } catch (const std::exception&) {
+        return E_FAIL;
+    } catch (...) {
+        return E_UNEXPECTED;
+    }
+}
+
+HRESULT __stdcall CDeviceResources::Present(D3D12_RESOURCE_STATES beforeState) noexcept {
+    try {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        if (!m_deviceResources)
+            return E_NOT_VALID_STATE;
+            
+        m_deviceResources->Present(beforeState);
+        return S_OK;
+    } catch (const winrt::hresult_error& ex) {
+        return ex.code();
+    } catch (const std::exception&) {
+        return E_FAIL;
+    } catch (...) {
+        return E_UNEXPECTED;
+    }
+}
+
+HRESULT __stdcall CDeviceResources::ExecuteCommandList() noexcept {
+    try {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        if (!m_deviceResources)
+            return E_NOT_VALID_STATE;
+            
+        m_deviceResources->ExecuteCommandList();
+        return S_OK;
+    } catch (const winrt::hresult_error& ex) {
+        return ex.code();
+    } catch (const std::exception&) {
+        return E_FAIL;
+    } catch (...) {
+        return E_UNEXPECTED;
+    }
+}
+
+HRESULT __stdcall CDeviceResources::WaitForGpu() noexcept {
+    try {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        if (!m_deviceResources)
+            return E_NOT_VALID_STATE;
+            
+        m_deviceResources->WaitForGpu();
+        return S_OK;
+    } catch (const winrt::hresult_error& ex) {
+        return ex.code();
+    } catch (const std::exception&) {
+        return E_FAIL;
     } catch (...) {
         return E_UNEXPECTED;
     }
@@ -167,6 +476,20 @@ SHARED2_API HRESULT __stdcall CreateCustomService(REFIID riid, void** ppv) {
 
         auto service = winrt::make<CustomService>();
         return service->QueryInterface(riid, ppv);
+    } catch (...) {
+        return E_UNEXPECTED;
+    }
+}
+
+SHARED2_API HRESULT __stdcall CreateDeviceResources(REFIID riid, void** ppv) noexcept {
+    using namespace winrt::Shared2;
+    try {
+        if (ppv == nullptr)
+            return E_INVALIDARG;
+        *ppv = nullptr;
+
+        auto deviceResources = winrt::make<CDeviceResources>();
+        return deviceResources->QueryInterface(riid, ppv);
     } catch (...) {
         return E_UNEXPECTED;
     }
