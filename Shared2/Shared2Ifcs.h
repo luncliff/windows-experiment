@@ -1,10 +1,9 @@
+/**
+ * @file Shared2Ifcs.h - Custom Windows COM interface declarations
+ * @see https://learn.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iclassfactory-createinstance
+ */
 #pragma once
-// @file: Shared2Ifcs.h - Custom Windows COM interface declarations
-// Purpose: Declares COM interfaces that will be implemented using winrt::implements
-// Reference: https://learn.microsoft.com/en-us/windows/win32/api/unknwn/nf-unknwn-iclassfactory-createinstance
-
-#include <activation.h>
-#include <objidl.h>
+#include <minwinbase.h>
 #include <unknwn.h>
 
 // DirectX headers for interface declarations
@@ -19,45 +18,7 @@
 #endif
 
 // Forward declarations
-struct ICustomService;
 struct IDeviceResources;
-
-/**
- * @brief Custom COM service interface
- * @details Example interface for demonstrating COM implementation with C++/WinRT
- */
-MIDL_INTERFACE("12345678-1234-5678-9ABC-123456789ABC")
-ICustomService : public IUnknown {
-    /**
-     * @brief Initialize the service with configuration parameters
-     * @param config Configuration string
-     * @return S_OK on success, error HRESULT on failure
-     */
-    STDMETHOD(Initialize)(LPCWSTR config) = 0;
-
-    /**
-     * @brief Process data using the service
-     * @param input Input data buffer
-     * @param inputSize Size of input buffer in bytes
-     * @param output Output data buffer (allocated by callee)
-     * @param outputSize Size of output buffer in bytes
-     * @return S_OK on success, error HRESULT on failure
-     */
-    STDMETHOD(ProcessData)(const BYTE* input, DWORD inputSize, BYTE** output, DWORD* outputSize) = 0;
-
-    /**
-     * @brief Get service status information
-     * @param status Pointer to receive status string (allocated by callee)
-     * @return S_OK on success, error HRESULT on failure
-     */
-    STDMETHOD(GetStatus)(LPWSTR * status) = 0;
-
-    /**
-     * @brief Cleanup service resources
-     * @return S_OK on success, error HRESULT on failure
-     */
-    STDMETHOD(Shutdown)() = 0;
-};
 
 /**
  * @brief DirectX Device Resources COM interface
@@ -75,8 +36,8 @@ IDeviceResources : public IUnknown {
      * @param flags Device creation flags (see DeviceResources constants)
      * @return S_OK on success, error HRESULT on failure
      */
-    STDMETHOD(InitializeDevice)(DXGI_FORMAT backBufferFormat, DXGI_FORMAT depthBufferFormat, 
-                               UINT backBufferCount, D3D_FEATURE_LEVEL minFeatureLevel, UINT flags) = 0;
+    STDMETHOD(InitializeDevice)(DXGI_FORMAT backBufferFormat, DXGI_FORMAT depthBufferFormat, UINT backBufferCount,
+                                D3D_FEATURE_LEVEL minFeatureLevel, UINT flags) = 0;
 
     /**
      * @brief Create device-dependent resources
@@ -106,63 +67,63 @@ IDeviceResources : public IUnknown {
      * @param pHeight Pointer to receive height in pixels
      * @return S_OK on success, error HRESULT on failure
      */
-    STDMETHOD(GetOutputSize)(UINT* pWidth, UINT* pHeight) = 0;
+    STDMETHOD(GetOutputSize)(UINT * pWidth, UINT * pHeight) = 0;
 
     /**
      * @brief Check if tearing (variable refresh rate) is supported
      * @param pSupported Pointer to receive boolean result
      * @return S_OK on success, error HRESULT on failure
      */
-    STDMETHOD(IsTearingSupported)(BOOL* pSupported) = 0;
+    STDMETHOD(IsTearingSupported)(BOOL * pSupported) = 0;
 
     /**
      * @brief Get the D3D12 device interface
      * @param ppDevice Pointer to receive ID3D12Device interface
      * @return S_OK on success, error HRESULT on failure
      */
-    STDMETHOD(GetD3DDevice)(ID3D12Device** ppDevice) = 0;
+    STDMETHOD(GetD3DDevice)(ID3D12Device * *ppDevice) = 0;
 
     /**
      * @brief Get the DXGI factory interface
      * @param ppFactory Pointer to receive IDXGIFactory4 interface
      * @return S_OK on success, error HRESULT on failure
      */
-    STDMETHOD(GetDXGIFactory)(IDXGIFactory4** ppFactory) = 0;
+    STDMETHOD(GetDXGIFactory)(IDXGIFactory4 * *ppFactory) = 0;
 
     /**
      * @brief Get the swap chain interface
      * @param ppSwapChain Pointer to receive IDXGISwapChain3 interface
      * @return S_OK on success, error HRESULT on failure
      */
-    STDMETHOD(GetSwapChain)(IDXGISwapChain3** ppSwapChain) = 0;
+    STDMETHOD(GetSwapChain)(IDXGISwapChain3 * *ppSwapChain) = 0;
 
     /**
      * @brief Get the command queue interface
      * @param ppCommandQueue Pointer to receive ID3D12CommandQueue interface
      * @return S_OK on success, error HRESULT on failure
      */
-    STDMETHOD(GetCommandQueue)(ID3D12CommandQueue** ppCommandQueue) = 0;
+    STDMETHOD(GetCommandQueue)(ID3D12CommandQueue * *ppCommandQueue) = 0;
 
     /**
      * @brief Get the current feature level
      * @param pFeatureLevel Pointer to receive D3D_FEATURE_LEVEL
      * @return S_OK on success, error HRESULT on failure
      */
-    STDMETHOD(GetDeviceFeatureLevel)(D3D_FEATURE_LEVEL* pFeatureLevel) = 0;
+    STDMETHOD(GetDeviceFeatureLevel)(D3D_FEATURE_LEVEL * pFeatureLevel) = 0;
 
     /**
      * @brief Get back buffer format
      * @param pFormat Pointer to receive DXGI_FORMAT
      * @return S_OK on success, error HRESULT on failure
      */
-    STDMETHOD(GetBackBufferFormat)(DXGI_FORMAT* pFormat) = 0;
+    STDMETHOD(GetBackBufferFormat)(DXGI_FORMAT * pFormat) = 0;
 
     /**
      * @brief Get depth buffer format
      * @param pFormat Pointer to receive DXGI_FORMAT
      * @return S_OK on success, error HRESULT on failure
      */
-    STDMETHOD(GetDepthBufferFormat)(DXGI_FORMAT* pFormat) = 0;
+    STDMETHOD(GetDepthBufferFormat)(DXGI_FORMAT * pFormat) = 0;
 
     /**
      * @brief Prepare for rendering (setup command list and render targets)
@@ -192,6 +153,6 @@ IDeviceResources : public IUnknown {
 };
 
 extern "C" {
-SHARED2_API HRESULT STDAPICALLTYPE CreateCustomClassFactory(IClassFactory** output) noexcept;
+SHARED2_API HRESULT STDAPICALLTYPE CreateCustomClassFactory(::IClassFactory** output) noexcept;
 SHARED2_API HRESULT STDAPICALLTYPE CreateDeviceResources(REFIID riid, void** ppv) noexcept;
 }

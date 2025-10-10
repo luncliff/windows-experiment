@@ -138,11 +138,6 @@
     <ClInclude Include="Shared2Ifcs.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Shared1\Shared1.vcxproj">
-      <Project>{A1B2C3D4-E5F6-7890-ABCD-123456789ABC}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\packages.config" />
     <None Include="Shared2.def" />
   </ItemGroup>
