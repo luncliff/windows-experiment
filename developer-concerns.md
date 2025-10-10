@@ -1,8 +1,5 @@
 # Developer Concerns / Design Scratchpad
 
-Purpose: Evolving, lower-level design notes not yet finalized for `work-note.md`.
-Scope: Shared1 (static lib now) & preparatory thoughts for future Shared2.
-
 ---
 ## 1. Logging Channel Strategy (Deep Dive)
 
@@ -130,30 +127,6 @@ Migration Steps Outline:
 1. Document existing responsibilities (device creation, swap chain binding) – TODO
 2. Introduce an interface-like abstract boundary in Shared1 (optional) – maybe skip until projection.
 3. Move implementation to Shared2 with WinRT-friendly factory functions.
-
-## 6. Task Backlog (Dev-Facing)
-
-Short-Term (Shared1):
-- Finalize logging adapter minimal surface.
-- Implement adapter + null behavior.
-- Extract `SettingsState` (logic) from `SettingsViewModel`.
-- Provide unit tests for change notification using adapter stub.
-
-Mid-Term (Pre-Shared2):
-- Introduce DX helper consolidation design doc.
-- Evaluate logging volume; decide if channel split adjustments needed.
-- Add performance counters (timing) guarded by adapter feature flag.
-
-Long-Term (Shared2):
-- WinRT projection of stable surfaces.
-- COM interop wrappers.
-- Telemetry channel implementation (if approved).
-- DX device service projection.
-
-## 7. Open Questions (Keep Updated)
-- Do we require structured logging (fields/keywords) or is formatted string sufficient for PoC? (Leaning: formatted only now.)
-- Add `LoggingFields` usage for key-value pairs? (Defer until a use case emerges.)
-- Introduce async-safe logging queue if high-frequency DX events appear? (Monitor first.)
 
 ---
 (End of developer-concerns scratchpad)
