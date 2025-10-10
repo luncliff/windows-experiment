@@ -132,10 +132,12 @@
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="CDeviceResources.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="Shared2Ifcs.h" />
+    <ClInclude Include="CDeviceResources.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\packages.config" />
