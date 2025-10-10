@@ -71,6 +71,9 @@ struct CDeviceResources : winrt::implements<CDeviceResources, ::IDeviceResources
     D3D12_RECT m_scissorRect{};
     bool m_isWindowVisible = true;
 
+    // Resource naming
+    std::wstring m_resourceName;
+
     // Device creation options
     static constexpr UINT c_AllowTearing = 0x1;
     static constexpr UINT c_EnableHDR = 0x2;
@@ -103,6 +106,7 @@ struct CDeviceResources : winrt::implements<CDeviceResources, ::IDeviceResources
     HRESULT __stdcall Present(D3D12_RESOURCE_STATES beforeState) noexcept override;
     HRESULT __stdcall ExecuteCommandList() noexcept override;
     HRESULT __stdcall WaitForGpu() noexcept override;
+    HRESULT __stdcall SetName(LPCWSTR name, UINT32 namelen) noexcept override;
 };
 
 } // namespace winrt::Shared2

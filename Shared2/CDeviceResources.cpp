@@ -153,8 +153,6 @@ HRESULT __stdcall CDeviceResources::CreateDeviceResources(IDXGIAdapter1* adapter
         winrt::check_hresult(
             D3D12CreateDevice(adapter, m_d3dMinFeatureLevel, __uuidof(ID3D12Device), m_d3dDevice.put_void()));
 
-        m_d3dDevice->SetName(L"DeviceResources");
-
 #ifndef NDEBUG
         winrt::com_ptr<ID3D12InfoQueue> d3dInfoQueue;
         if (m_d3dDevice.try_as(d3dInfoQueue)) {
@@ -170,7 +168,6 @@ HRESULT __stdcall CDeviceResources::CreateDeviceResources(IDXGIAdapter1* adapter
 
         winrt::check_hresult(
             m_d3dDevice->CreateCommandQueue(&queueDesc, __uuidof(ID3D12CommandQueue), m_commandQueue.put_void()));
-        m_commandQueue->SetName(L"DeviceResources");
 
         // Create descriptor heaps for render target views and depth stencil views.
         D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
@@ -193,10 +190,6 @@ HRESULT __stdcall CDeviceResources::CreateDeviceResources(IDXGIAdapter1* adapter
         for (UINT n = 0; n < m_backBufferCount; n++) {
             winrt::check_hresult(m_d3dDevice->CreateCommandAllocator(
                 D3D12_COMMAND_LIST_TYPE_DIRECT, __uuidof(ID3D12CommandAllocator), m_commandAllocators[n].put_void()));
-
-            wchar_t name[25] = {};
-            swprintf_s(name, L"Render target %u", n);
-            m_commandAllocators[n]->SetName(name);
         }
 
         // Create a command list for recording graphics commands.
@@ -204,14 +197,11 @@ HRESULT __stdcall CDeviceResources::CreateDeviceResources(IDXGIAdapter1* adapter
             m_d3dDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocators[0].get(), nullptr,
                                            __uuidof(ID3D12GraphicsCommandList), m_commandList.put_void()));
         winrt::check_hresult(m_commandList->Close());
-        m_commandList->SetName(L"DeviceResources");
 
         // Create a fence for tracking GPU execution progress.
         winrt::check_hresult(m_d3dDevice->CreateFence(m_fenceValues[m_backBufferIndex], D3D12_FENCE_FLAG_NONE,
                                                       __uuidof(ID3D12Fence), m_fence.put_void()));
         m_fenceValues[m_backBufferIndex]++;
-
-        m_fence->SetName(L"DeviceResources");
 
         m_fenceEvent.attach(CreateEventW(nullptr, FALSE, FALSE, nullptr));
         if (!m_fenceEvent) {
@@ -282,10 +272,6 @@ HRESULT __stdcall CDeviceResources::CreateWindowSizeDependentResources(UINT widt
 
             m_d3dDevice->CreateRenderTargetView(m_renderTargets[n].get(), nullptr, rtvDescriptor);
 
-            wchar_t name[25] = {};
-            swprintf_s(name, L"Render target %u", n);
-            m_renderTargets[n]->SetName(name);
-
             rtvDescriptor.ptr += m_rtvDescriptorSize;
         }
 
@@ -320,8 +306,6 @@ HRESULT __stdcall CDeviceResources::CreateWindowSizeDependentResources(UINT widt
             winrt::check_hresult(m_d3dDevice->CreateCommittedResource(
                 &depthHeapProperties, D3D12_HEAP_FLAG_NONE, &depthStencilDesc, D3D12_RESOURCE_STATE_DEPTH_WRITE,
                 &depthOptimizedClearValue, __uuidof(ID3D12Resource), m_depthStencil.put_void()));
-
-            m_depthStencil->SetName(L"Depth stencil");
 
             D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
             dsvDesc.Format = m_depthBufferFormat;
@@ -549,6 +533,56 @@ HRESULT __stdcall CDeviceResources::WaitForGpu() noexcept {
         return S_OK;
     } catch (const winrt::hresult_error& ex) {
         return ex.code();
+    }
+}
+
+HRESULT __stdcall CDeviceResources::SetName(LPCWSTR name, UINT32 namelen) noexcept {
+    try {
+        if (!name)
+            return E_INVALIDARG;
+
+        m_resourceName = {name, namelen};
+
+        // Apply names to existing D3D12 resources
+        if (m_d3dDevice)
+            m_d3dDevice->SetName(m_resourceName.c_str());
+
+        if (m_commandQueue)
+            m_commandQueue->SetName(m_resourceName.c_str());
+
+        if (m_commandList)
+            m_commandList->SetName(m_resourceName.c_str());
+
+        if (m_fence)
+            m_fence->SetName(m_resourceName.c_str());
+
+        // Command allocators with indexed names
+        for (UINT n = 0; n < m_backBufferCount; n++) {
+            if (m_commandAllocators[n]) {
+                auto allocatorName = std::format(L"{} Command Allocator {}", m_resourceName, n);
+                m_commandAllocators[n]->SetName(allocatorName.c_str());
+            }
+        }
+
+        // Render targets with indexed names
+        for (UINT n = 0; n < m_backBufferCount; n++) {
+            if (m_renderTargets[n]) {
+                auto targetName = std::format(L"{} Render Target {}", m_resourceName, n);
+                m_renderTargets[n]->SetName(targetName.c_str());
+            }
+        }
+
+        // Depth stencil
+        if (m_depthStencil) {
+            auto depthName = std::format(L"{} Depth Stencil", m_resourceName);
+            m_depthStencil->SetName(depthName.c_str());
+        }
+
+        return S_OK;
+    } catch (const std::exception&) {
+        return E_FAIL; // probably formatting error or string memory issue
+    } catch (...) {
+        return E_UNEXPECTED;
     }
 }
 

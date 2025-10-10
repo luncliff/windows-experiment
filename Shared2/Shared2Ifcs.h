@@ -150,6 +150,13 @@ IDeviceResources : public IUnknown {
      * @return S_OK on success, error HRESULT on failure
      */
     STDMETHOD(WaitForGpu)() = 0;
+
+    /**
+     * @brief Set the name for DirectX resources for debugging/profiling
+     * @param name Wide character string name to assign to resources
+     * @return S_OK on success, error HRESULT on failure
+     */
+    STDMETHOD(SetName)(LPCWSTR name, UINT32 namelen) = 0;
 };
 
 extern "C" {

@@ -242,3 +242,92 @@ The COM interface provides a solid foundation for size-independent resource crea
 - Maintain compatibility with existing Shared1 implementation
 - Use existing COM patterns from Shared2 (CustomService/CustomClassFactory)
 - Plan for future SwapChainPanel integration in UnitTestApp1/MainWindow.xaml
+
+---
+
+# CDeviceResources SetName Implementation - Work Notes
+
+## Current State Analysis
+
+### CDeviceResources Class Structure
+- **Location**: `Shared2/CDeviceResources.h` and `Shared2/CDeviceResources.cpp`
+- **Base Interface**: `IDeviceResources` (defined in `Shared2Ifcs.h`)
+- **Implementation**: Uses `winrt::implements<CDeviceResources, ::IDeviceResources>`
+
+### Current SetName Usage in CDeviceResources.cpp
+Found 7 hardcoded SetName calls in resource creation:
+1. Line 156: `m_d3dDevice->SetName(L"DeviceResources")`
+2. Line 173: `m_commandQueue->SetName(L"DeviceResources")`
+3. Line 199: `m_commandAllocators[n]->SetName(name)` (uses formatted name)
+4. Line 207: `m_commandList->SetName(L"DeviceResources")`
+5. Line 214: `m_fence->SetName(L"DeviceResources")`
+6. Line 287: `m_renderTargets[n]->SetName(name)` (uses formatted name)
+7. Line 324: `m_depthStencil->SetName(L"Depth stencil")`
+
+### Current CreateDeviceResources function in pch.cpp
+- Line 42-51: Creates CDeviceResources instance without setting name
+- Comment placeholder: `// ... set the default name here ...`
+
+## Implementation Plan
+
+### 1. Add SetName to IDeviceResources Interface
+- **File**: `Shared2/Shared2Ifcs.h`
+- **Method**: `STDMETHOD(SetName)(LPCWSTR name) = 0;`
+- **Purpose**: Allow external callers to set the name for D3D12 resources
+
+### 2. Add SetName Implementation to CDeviceResources
+- **File**: `Shared2/CDeviceResources.h`
+- **Add member variable**: `std::wstring m_resourceName;`
+- **Add method declaration**: `HRESULT __stdcall SetName(LPCWSTR name) noexcept override;`
+
+### 3. Implement SetName in CDeviceResources.cpp
+- **File**: `Shared2/CDeviceResources.cpp`
+- **Add implementation**: Store name and apply to all existing D3D12 resources
+- **Apply to**: Device, CommandQueue, CommandList, Fence, CommandAllocators, RenderTargets, DepthStencil
+
+### 4. Remove Hardcoded SetName Calls
+- **File**: `Shared2/CDeviceResources.cpp`
+- **Action**: Remove all 7 hardcoded SetName calls from resource creation methods
+- **Reason**: Names will be set through SetName method instead
+
+### 5. Use Default Name in CreateDeviceResources
+- **File**: `Shared2/pch.cpp`
+- **Action**: Call SetName with `L"DeviceResources"` after creating CDeviceResources instance
+- **Location**: Replace comment at line 50
+
+## Technical Considerations
+
+### Resource Naming Strategy
+- **Base Name**: Stored in `m_resourceName` member variable
+- **Derived Names**: Use base name + resource type suffix
+  - Device: `{base name}`
+  - CommandQueue: `{base name}`
+  - CommandList: `{base name}`
+  - Fence: `{base name}`
+  - CommandAllocators: `{base name} Command Allocator {n}`
+  - RenderTargets: `{base name} Render Target {n}`
+  - DepthStencil: `{base name} Depth Stencil`
+
+### Error Handling
+- SetName should return `S_OK` on success
+- Handle null pointer case
+- Apply names only to valid (non-null) resources
+
+### Performance Impact
+- SetName calls are for debugging/profiling only
+- No performance impact in Release builds
+- String operations minimal overhead
+
+## Implementation Order
+1. Update `IDeviceResources` interface in `Shared2Ifcs.h`
+2. Add member variable and method declaration in `CDeviceResources.h`
+3. Implement SetName method in `CDeviceResources.cpp`
+4. Remove hardcoded SetName calls from resource creation
+5. Update `CreateDeviceResources` in `pch.cpp` to use default name
+6. Build and test the implementation
+
+## Expected Outcome
+- Flexible resource naming through SetName interface
+- Default "DeviceResources" name applied when created
+- Clean separation between resource creation and naming
+- Better debugging/profiling support with meaningful resource names

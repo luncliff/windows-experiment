@@ -47,6 +47,8 @@ HRESULT __stdcall CreateDeviceResources(REFIID riid, void** ppv) noexcept {
         if (!ppv)
             return E_INVALIDARG;
         auto res = winrt::make<CDeviceResources>();
+        std::wstring_view name = L"DeviceResources";
+        res->SetName(name.data(), static_cast<uint32_t>(name.length()));
         return res->QueryInterface(riid, ppv);
     } catch (const winrt::hresult_error& ex) {
         return ex.code();

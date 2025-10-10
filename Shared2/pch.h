@@ -32,9 +32,6 @@
 
 namespace winrt::Shared2 {
 
-// Forward declarations of implementation classes
-struct CDeviceResources;
-
 /**
  * @brief Implementation of ICustomClassFactory using winrt::implements
  * @details Custom class factory that creates ICustomService instances
