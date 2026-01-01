@@ -45,7 +45,7 @@ jobs:
       - uses: NuGet/setup-nuget@v2
         with:
            nuget-version: '6.x'
-      - uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v6
+      - uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v7
 
       - uses: lukka/run-vcpkg@v11.5
         with:
@@ -86,7 +86,7 @@ jobs:
           key: "vcpkg-${{ runner.os }}"
           path: "${{ github.workspace }}/packages"
 
-      - uses: SonarSource/sonarqube-scan-action@v6
+      - uses: SonarSource/sonarqube-scan-action@v7
         with: # todo: separate sonar.links.ci for triggers
           args: >
             --define "sonar.token=${{ secrets.SONAR_TOKEN }}"
