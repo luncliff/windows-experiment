@@ -1,20 +1,20 @@
 {
-    "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg-configuration.schema.json",
-    "default-registry": {
-        "kind": "git",
-        "repository": "https://github.com/Microsoft/vcpkg",
-        "reference": "2025.06.13",
-        "baseline": "ef7dbf94b9198bc58f45951adcf1f041fcbc5ea0"
-    },
-    "registries": [
-        {
-            "repository": "https://github.com/luncliff/vcpkg-registry",
-            "kind": "git",
-            "packages": [
-                "opencl-headers",
-                "opencl"
-            ],
-            "baseline": "7a2f5e6bc2171d5f9399e77ce256d6cbcb6f17bb"
-        }
-    ]
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg-configuration.schema.json",
+  "default-registry": {
+    "kind": "git",
+    "repository": "https://github.com/Microsoft/vcpkg",
+    "reference": "2025.06.13",
+    "baseline": "ef7dbf94b9198bc58f45951adcf1f041fcbc5ea0"
+  },
+  "registries": [
+    {
+      "repository": "https://github.com/luncliff/vcpkg-registry",
+      "kind": "git",
+      "packages": [
+        "opencl-headers",
+        "opencl"
+      ],
+      "baseline": "b11078599a1c5695bd2a866121e3c4bdc727ba5d"
+    }
+  ]
 }
