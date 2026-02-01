@@ -75,12 +75,12 @@ jobs:
             /Settings:"${{ github.workspace }}/test.runsettings"
         working-directory: x64/Debug/UnitTestApp1
 
-      - uses: actions/cache@v4.3.0
+      - uses: actions/cache@v5.0.3
         with:
           key: "sonar-${{ runner.os }}"
           path: "${{ github.workspace }}/.sonar" # SONAR_USER_HOME
 
-      - uses: actions/cache@v4.3.0
+      - uses: actions/cache@v5.0.3
         if: ${{ false }}
         with:
           key: "vcpkg-${{ runner.os }}"
